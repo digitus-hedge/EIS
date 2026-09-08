@@ -1,4 +1,3 @@
-
 <?php
 
 use App\Http\Controllers\Admin\AuthController;
@@ -12,39 +11,40 @@ use App\Http\Controllers\Admin\StatController;
 use App\Http\Controllers\Admin\WhyChooseUsController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ServiceDetailController;
+use App\Http\Controllers\Admin\AboutController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AboutPageController;
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
-Route::get('/', [HomeController::class, 'index']);
+Route::get('/about', [AboutPageController::class, 'index'])->name('about');
 
+Route::get('/services', function () {
+    return view('web.services');
+})->name('services');
 
 Route::get('/services/{slug}', [ServiceDetailController::class, 'show']);
 
 
 Route::prefix('admin')->name('admin.')->group(function () {
 
-    // Guest routes (login)
     Route::get('login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('login', [AuthController::class, 'login'])->name('login.submit');
 
-    // Protected routes
     Route::middleware('auth')->group(function () {
         Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
         Route::get('home', [DashboardController::class, 'home'])->name('home');
 
-        // Banner Section routes (singleton — one banner only)
-        Route::get('home/banner', [BannerController::class, 'index'])->name('home.banner');       // Shows form directly (pre-filled if exists)
-        Route::post('home/banner', [BannerController::class, 'store'])->name('home.banner.store'); // Creates or updates
+        Route::get('home/banner', [BannerController::class, 'index'])->name('home.banner');
+        Route::post('home/banner', [BannerController::class, 'store'])->name('home.banner.store');
 
-        Route::get('home/about', [HomeAboutController::class, 'index'])->name('home.about');       // Shows form directly (pre-filled if exists)
-        Route::post('home/about', [HomeAboutController::class, 'store'])->name('home.about.store'); // Creates or updates
+        Route::get('home/about', [HomeAboutController::class, 'index'])->name('home.about');
+        Route::post('home/about', [HomeAboutController::class, 'store'])->name('home.about.store');
 
         Route::get('home/stats', [StatController::class, 'index'])->name('home.stats');
         Route::post('home/stats', [StatController::class, 'store'])->name('home.stats.store');
 
-        Route::get('home/service-section', [ServiceSectionController::class, 'index'])->name('home.services.section');       // Shows form directly (pre-filled if exists)
-        Route::post('home/service-section', [ServiceSectionController::class, 'store'])->name('home.services.section.store'); // Creates or updates
-
+        Route::get('home/service-section', [ServiceSectionController::class, 'index'])->name('home.services.section');
+        Route::post('home/service-section', [ServiceSectionController::class, 'store'])->name('home.services.section.store');
 
         Route::get('home/services', [ServiceController::class, 'index'])->name('home.services');
         Route::get('home/services/create', [ServiceController::class, 'create'])->name('home.services.create');
@@ -63,20 +63,19 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('services', [DashboardController::class, 'services'])->name('services');
         Route::get('contacts', [DashboardController::class, 'contacts'])->name('contacts');
         Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+
+        //about us page 
+
+      //about us page
+//about us page
+    Route::get('banner', [AboutController::class, 'banner'])->name('about.banner');
+    Route::post('banner', [AboutController::class, 'storeBanner'])->name('about.banner.store');
+    Route::get('about', [AboutController::class, 'about'])->name('about.about');
+    Route::post('about', [AboutController::class, 'storeAbout'])->name('about.about.store');
+    Route::get('who-we-are', [AboutController::class, 'whoWeAre'])->name('about.who-we-are');
+    Route::post('who-we-are', [AboutController::class, 'storeWhoWeAre'])->name('about.who-we-are.store');
+    
+
     });
 
-
-
-
-
-
-
-    //front end
-    Route::get('/', function () {
-    return view('home');
-    })->name('home');
-
-    Route::get('/about', function () {
-        return view('web.about');
-    })->name('about');
 });

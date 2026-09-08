@@ -222,13 +222,22 @@
 
 
 
-            <li><a href="{{ route('admin.about') }}"
-                    class="{{ request()->routeIs('admin.about') ? 'active' : '' }}">About</a></li>
-            <li><a href="{{ route('admin.home.services') }}"
-                    class="{{ request()->routeIs('admin.home.services') || (request()->routeIs('admin.home.services.*') && !request()->routeIs('admin.home.services.section*')) ? 'active' : '' }}">Services</a>
+            <li class="has-submenu {{ request()->routeIs('admin.about') || request()->routeIs('admin.about.*') ? 'open' : '' }}">
+                <a onclick="toggleSubmenu(this)">
+                    About
+                    <i class="bi bi-chevron-right chevron"></i>
+                </a>
+                <ul class="submenu">
+                    <li><a href="{{ route('admin.about.banner') }}"
+                            class="{{ request()->routeIs('admin.about.banner*') ? 'active' : '' }}">Banner</a></li>
+                     <li><a href="{{ route('admin.about.about') }}"
+                            class="{{ request()->routeIs('admin.about.about*') ? 'active' : '' }}">About</a></li>
+                    
+                    <li><a href="{{ route('admin.about.who-we-are') }}"
+                            class="{{ request()->routeIs('admin.about.who-we-are*') ? 'active' : '' }}">Who We Are</a></li>
+                    
+                </ul>
             </li>
-            <li><a href="{{ route('admin.contacts') }}"
-                    class="{{ request()->routeIs('admin.contacts') ? 'active' : '' }}">Contacts</a></li>
         </ul>
     </div>
 

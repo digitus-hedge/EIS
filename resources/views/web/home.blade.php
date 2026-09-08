@@ -411,184 +411,312 @@
 }
 
 /* ===== Small tablet — wrap to 2 columns ===== */
-@media (max-width: 900px){
+@media (max-width: 900px) and (min-width: 601px){
   .stats{ padding:60px 24px; }
   .stats-row{ flex-wrap:wrap; row-gap:18px; }
   .stats-item{ flex:0 0 calc(50% - 9px); }
   .stats-heading{ margin-bottom:36px; }
 }
-
-/* ===== Phones — auto-sliding carousel ===== */
+/* ===== Phones — auto-sliding carousel (matches services carousel) ===== */
 @media (max-width: 600px){
   .stats{ padding:48px 0 44px; }
-  .stats-inner{ padding:0 24px; }
-  .stats-heading{ margin-bottom:30px; }
+  .stats-inner{ padding:0; }
+  .stats-heading{ margin-bottom:30px; padding:0 24px; }
+  .stats-eyebrow{ padding:0 24px; }
+
+  .stats-row-wrap{
+    position:relative;
+    width:100%;
+    overflow:hidden;
+  }
+
+  .stats-row-wrap::before,
+  .stats-row-wrap::after{
+    content:"";
+    position:absolute;
+    top:0;
+    bottom:0;
+    width:28px;
+    z-index:3;
+    pointer-events:none;
+  }
+
+  .stats-row-wrap::before{
+    left:0;
+    background:linear-gradient(to right, var(--orange) 0%, rgba(232,121,45,0) 100%);
+  }
+
+  .stats-row-wrap::after{
+    right:0;
+    background:linear-gradient(to left, #f0893f 0%, rgba(240,137,63,0) 100%);
+  }
 
   .stats-row{
-    display:flex;
-    flex-wrap:nowrap;
-    overflow-x:hidden;      /* JS drives the scroll, no manual swipe needed */
+    display:flex !important;
+    flex-wrap:nowrap !important;
+    overflow-x:hidden;
     scroll-snap-type:x mandatory;
     gap:16px;
-    padding:4px 24px 4px;
-    margin:0 -24px;
+    padding:4px 24px;
+    margin:0;
+    row-gap:0 !important;
   }
 
   .stats-item{
-    flex:0 0 78%;
+    flex:0 0 100% !important;
+    max-width:100%;
     scroll-snap-align:center;
   }
 
-  .stats-dots{ display:flex; }
+  .stats-dots{ display:flex; padding:0 24px; }
 }
-
 @media (max-width: 380px){
-  .stats-item{ flex:0 0 84%; padding:28px 16px 24px; }
+  .stats-item{ flex:0 0 100% !important; padding:28px 16px 24px; }
   .stats-value{ font-size:32px; }
 }
 
-  .services{
-    position:relative;
-    background:#ffffff;
-    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-    padding:80px 60px 100px;
-  }
+.services{
+  position:relative;
+  background:#ffffff;
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  padding:80px 60px 100px;
+}
 
-  .services *{ box-sizing:border-box; }
+.services *{ box-sizing:border-box; }
 
-  .services-inner{
-    display:flex;
-    align-items:flex-start;
-    gap:70px;
-  }
+.services-inner{
+  display:flex;
+  align-items:flex-start;
+  gap:70px;
+}
 
+.services-left{
+  flex:0 0 50%;
+  max-width:none;
+  position:sticky;
+  top:40px;
+  align-self:flex-start;
+}
+
+.services-eyebrow{
+  color:#E8792D;
+  font-weight:700;
+  font-size:19px;
+  margin:0 0 14px;
+}
+
+.services-heading{
+  font-size:clamp(28px, 3vw, 40px);
+  line-height:1.2;
+  font-weight:500;
+  color:#111111;
+  margin:0 0 22px;
+  white-space:pre-line;
+}
+
+.services-sub{
+  font-size:17px;
+  line-height:1.6;
+  color:#4a4a4a;
+  margin:0 0 34px;
+}
+
+.services-photo{
+  width:100%;
+  height:350px;
+  aspect-ratio: 4 / 3;
+  border-radius:24px;
+  overflow:hidden;
+  margin-bottom:18px;
+  background-color:#e8e8e8;
+  background-position:center;
+  background-size:cover;
+  background-repeat:no-repeat;
+  transition:box-shadow 0.4s ease;
+}
+
+.services-photo:hover{
+  box-shadow:0 20px 44px rgba(0,0,0,0.18);
+}
+
+.services-right{
+  flex:0 0 50%;
+  max-width:50%;
+}
+
+.services-grid{
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:36px 28px;
+}
+
+.service-card{
+  min-width:0;
+  padding:14px;
+  border-radius:20px;
+  transition:transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s ease, background 0.4s ease;
+}
+
+.service-card:hover{
+  transform:translateY(-8px);
+  box-shadow:0 20px 40px rgba(0,0,0,0.10);
+  background:#fafafa;
+}
+
+.service-card:hover .service-photo{
+  transform:scale(1.06);
+}
+
+.service-card:hover .service-title{
+  color:var(--orange);
+}
+
+.service-photo{
+  width:80%;
+  aspect-ratio: 16 / 9;
+  max-height:150px;
+  border-radius:24px;
+  overflow:hidden;
+  margin-bottom:18px;
+  background-color:#e8e8e8;
+  background-position:center;
+  background-size:cover;
+  background-repeat:no-repeat;
+  transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);
+}
+
+.service-title{
+  font-size:19px;
+  line-height:1.3;
+  font-weight:700;
+  color:#111111;
+  margin:0 0 10px;
+}
+
+.service-desc{
+  font-size:14.5px;
+  line-height:1.55;
+  color:#5a5a5a;
+  margin:0 0 14px;
+  display:-webkit-box;
+  -webkit-line-clamp:3;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+
+.service-link{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  color:#111111;
+  text-decoration:none;
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:0.4px;
+  transition:gap 0.2s ease, color 0.2s ease;
+}
+.service-link .arrow{
+  color:#E8792D;
+  font-size:16px;
+  transition:transform 0.2s ease;
+}
+.service-link:hover{ gap:12px; color:#E8792D; }
+.service-link:hover .arrow{ transform:translateX(3px); }
+
+.services-empty{
+  font-size:15px;
+  color:#8a8a8a;
+  padding:20px 0;
+}
+
+/* ===== Mobile auto-scroll carousel dots ===== */
+.services-dots{
+  display:none;
+  justify-content:center;
+  gap:8px;
+  margin-top:20px;
+}
+
+.services-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#dcdcdc;
+  border:none;
+  padding:0;
+  cursor:pointer;
+  transition:background 0.2s ease, transform 0.2s ease;
+}
+.services-dot:hover{
+  background:#f0b98a;
+  transform:scale(1.15);
+}
+.services-dot.active{
+  background:var(--orange);
+  transform:scale(1.3);
+}
+
+@media (max-width: 1100px){
+  .services-grid{ grid-template-columns:repeat(2, 1fr); }
+}
+
+@media (max-width: 900px){
+  .services{ padding:56px 24px 70px; }
+  .services-inner{ flex-direction:column; gap:44px; }
   .services-left{
-    flex:0 0 50%;
-    max-width:none;
-    position:sticky;
-    top:40px;
-    align-self:flex-start;
-  }
-
-  .services-eyebrow{
-    color:#E8792D;
-    font-weight:700;
-    font-size:19px;
-    margin:0 0 14px;
-  }
-
-  .services-heading{
-    font-size:clamp(28px, 3vw, 40px);
-    line-height:1.2;
-    font-weight:500;
-    color:#111111;
-    margin:0 0 22px;
-  }
-
-  .services-sub{
-    font-size:17px;
-    line-height:1.6;
-    color:#4a4a4a;
-    margin:0 0 34px;
-  }
-
-  .services-photo{
+    position:static;
     width:100%;
-    height:350px;
-    aspect-ratio: 4 / 3;
-    border-radius:24px;
-    overflow:hidden;
-    margin-bottom:18px;
-    background-image:url('{{ asset('images/services/our_services.jpeg') }}');
-    background-position:center;
-    background-size:cover;
-    background-repeat:no-repeat;
+    max-width:100%;
+    flex-basis:auto;
   }
-
   .services-right{
-    flex:0 0 50%;
-    max-width:50%;
+    width:100%;
+    max-width:100%;
+    flex-basis:auto;
   }
+  .services-heading{
+    word-break:break-word;
+    overflow-wrap:break-word;
+  }
+  .services-sub{
+    word-break:break-word;
+    overflow-wrap:break-word;
+  }
+  .services-grid{ grid-template-columns:repeat(2, 1fr); gap:28px 20px; }
+}
+
+/* ===== Phones — single card auto-sliding carousel ===== */
+@media (max-width: 560px){
+  .services-heading{ font-size:clamp(22px, 6.5vw, 28px); }
+  .services-sub{ font-size:15px; line-height:1.55; }
+  .services-photo{ height:220px; }
 
   .services-grid{
-    display:grid;
-    grid-template-columns:repeat(2, 1fr);
-    gap:36px 28px;
+    display:flex;
+    flex-wrap:nowrap;
+    overflow-x:hidden;
+    scroll-snap-type:x mandatory;
+    gap:16px;
+    padding:4px 4px 4px;
+    margin:0;
+    width:100%;
   }
 
-  .service-card{ min-width:0; }
-
-  .service-photo{
-    width:80%;
-    aspect-ratio: 16 / 9;
-    max-height:150px;
-    border-radius:24px;
-    overflow:hidden;
-    margin-bottom:18px;
-    background-color:#e8e8e8;
-    background-position:center;
-    background-size:cover;
-    background-repeat:no-repeat;
+  .service-card{
+    flex:0 0 100%;
+    max-width:100%;
+    scroll-snap-align:center;
   }
 
-  .service-title{
-    font-size:19px;
-    line-height:1.3;
-    font-weight:700;
-    color:#111111;
-    margin:0 0 10px;
-  }
+  .service-photo{ width:100%; max-height:220px; }
 
-  .service-desc{
-    font-size:14.5px;
-    line-height:1.55;
-    color:#5a5a5a;
-    margin:0 0 14px;
-  }
-
-  .service-link{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    color:#111111;
-    text-decoration:none;
-    font-size:13px;
-    font-weight:700;
-    letter-spacing:0.4px;
-    transition:gap 0.2s ease, color 0.2s ease;
-  }
-  .service-link .arrow{
-    color:#E8792D;
-    font-size:16px;
-    transition:transform 0.2s ease;
-  }
-  .service-link:hover{ gap:12px; color:#E8792D; }
-  .service-link:hover .arrow{ transform:translateX(3px); }
-
-  @media (max-width: 1100px){
-    .services-grid{ grid-template-columns:repeat(2, 1fr); }
-  }
-
-  @media (max-width: 900px){
-    .services{ padding:56px 24px 70px; }
-    .services-inner{ flex-direction:column; gap:44px; }
-    .services-left{
-      position:static;
-      max-width:none;
-      flex-basis:auto;
-    }
-    .services-grid{ grid-template-columns:repeat(2, 1fr); gap:28px 20px; }
-  }
-
-  @media (max-width: 560px){
-    .services-grid{ grid-template-columns:1fr; }
-  }
-
+  .services-dots{ display:flex; }
+}
 .trusted{
   position:relative;
   background:linear-gradient(135deg, var(--orange) 0%, #f0893f 100%);
   font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  padding:64px 60px 60px;
+  padding:40px 30px 60px;
   text-align:center;
   overflow:hidden;
 }
@@ -658,16 +786,32 @@
 
 .trusted-track-wrap{
   position:relative;
-  width:80%;
-  padding:8px 10px;              /* was: 8px 0 — now matches section's own left/right padding */
+  width:100%;
+  max-width:1200px;
+  margin:0 auto;
+  padding:8px 0;
   overflow:hidden;
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
-          mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+
+  -webkit-mask-image:linear-gradient(
+    90deg,
+    transparent 0%,
+    #000 8%,
+    #000 92%,
+    transparent 100%
+  );
+
+  mask-image:linear-gradient(
+    90deg,
+    transparent 0%,
+    #000 8%,
+    #000 92%,
+    transparent 100%
+  );
 }
 
 .trusted-track{
   display:flex;
-  align-items:center;
+
   gap:36px;
   width:max-content;
   will-change:transform;
@@ -680,10 +824,10 @@
 
 .trusted-logo{
   flex:0 0 auto;
-  width:160px;
-  height:76px;
+  width:210px;
+  height:120px;
   background:#ffffff;
-  border-radius:16px;
+  border-radius:25px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -742,11 +886,24 @@
   .trusted-track-wrap{ padding:6px 16px; }
   .trusted-logo{ width:104px; height:52px; padding:10px 16px; }
 }
-  .why{
+.why{
     position:relative;
-    background:#ffffff;
+    background:linear-gradient(180deg, #fafafa 0%, #ffffff 12%);
     font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-    padding:90px 60px 100px;
+    padding:90px 60px 110px;
+    overflow:hidden;
+  }
+
+  .why::before{
+    content:"";
+    position:absolute;
+    top:-180px;
+    right:-180px;
+    width:420px;
+    height:420px;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(232,121,45,0.06) 0%, rgba(232,121,45,0) 70%);
+    pointer-events:none;
   }
 
   .why *{ box-sizing:border-box; }
@@ -776,18 +933,19 @@
     margin:0;
   }
 
-  .why-body{
+   .why-body{
     position:relative;
     display:flex;
     align-items:stretch;
-    gap:50px;
+    gap:44px;
   }
 
   .why-tabs-box{
-    flex:0 0 300px;
-    background:var(--orange);
-    border-radius:18px;
-    padding:40px 32px;
+    flex:0 0 270px;
+    background:linear-gradient(165deg, var(--orange) 0%, #d1691f 100%);
+    border-radius:20px;
+    padding:36px 28px;
+    box-shadow:0 20px 44px rgba(232,121,45,0.28);
   }
 
   .why-tabs{
@@ -840,10 +998,21 @@
   }
   .why-tab.active::before{ width:16px; }
   .why-tab:hover{ color:rgba(255,255,255,0.85); }
+  .why-tabs-box::before{
+    content:"";
+  }
 
+  .why-tab{
+    padding-bottom:2px;
+  }
+
+  .why-tab.active .why-tab-num{
+    opacity:1;
+  }
   .why-content-wrap{
     position:relative;
     flex:1;
+    min-width:0;
     display:flex;
     align-items:center;
     overflow:hidden;
@@ -852,7 +1021,7 @@
   .why-panel{
     display:none;
     align-items:center;
-    gap:50px;
+    gap:38px;
     width:100%;
   }
 
@@ -879,7 +1048,7 @@
     to{ transform:translateX(0); opacity:1; }
   }
 
-  .why-panel-text{ flex:1; min-width:240px; }
+  .why-panel-text{ flex:0 0 38%; min-width:220px; max-width:38%; }
 
   .why-panel-eyebrow{
     color:var(--orange);
@@ -890,19 +1059,20 @@
   }
 
   .why-panel-heading{
-    font-size:clamp(26px, 2.8vw, 36px);
-    line-height:1.25;
-    font-weight:500;
+    font-size:clamp(24px, 2.4vw, 32px);
+    line-height:1.22;
+    font-weight:600;
     color:#111111;
-    margin:0 0 20px;
+    margin:0 0 16px;
+    letter-spacing:-0.3px;
   }
 
   .why-panel-desc{
-    font-size:16.5px;
-    line-height:1.65;
-    color:#4a4a4a;
+    font-size:15.5px;
+    line-height:1.68;
+    color:#5a5a5a;
     margin:0 0 26px;
-    max-width:440px;
+    max-width:none;
   }
 
   .why-panel-link{
@@ -920,19 +1090,61 @@
   .why-panel-link:hover{ gap:14px; color:var(--orange); }
   .why-panel-link:hover .arrow{ transform:translateX(3px); }
 
-  .why-panel-photo{
-    flex:0 0 42%;
-    max-width:480px;
-    aspect-ratio: 5 / 4.2;
-    border-radius:16px;
+    .why-panel-photo{
+    position:relative;
+    flex:1;
+    min-width:0;
+    max-width:none;
+    height:400px;
+    border-radius:20px;
     overflow:hidden;
     background: linear-gradient(165deg, #d9a441 0%, #b97a2e 35%, #5c4326 65%, #2a2016 100%);
+    box-shadow:0 24px 50px rgba(0,0,0,0.16);
+    transition:transform 0.5s cubic-bezier(0.16,1,0.3,1), box-shadow 0.5s ease;
   }
 
-  @media (max-width: 1100px){
+  .why-panel-photo::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,0.35) 100%);
+    pointer-events:none;
+  }
+
+  .why-panel-photo:hover{
+    transform:translateY(-6px);
+    box-shadow:0 32px 60px rgba(0,0,0,0.22);
+  }
+
+  .why-panel-badge{
+    position:absolute;
+    bottom:20px;
+    left:20px;
+    z-index:2;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(255,255,255,0.95);
+    backdrop-filter:blur(4px);
+    border-radius:12px;
+    padding:10px 16px;
+    font-size:12.5px;
+    font-weight:800;
+    letter-spacing:0.4px;
+    color:var(--navy);
+    text-transform:uppercase;
+  }
+
+  .why-panel-badge .num{
+    color:var(--orange);
+    font-size:14px;
+  }
+
+   @media (max-width: 1100px){
     .why-content-wrap{ overflow:visible; }
-    .why-panel{ flex-direction:column; align-items:flex-start; gap:30px; }
-    .why-panel-photo{ max-width:none; width:100%; flex-basis:auto; }
+    .why-panel{ flex-direction:column; align-items:flex-start; gap:26px; }
+    .why-panel-text{ max-width:none; flex-basis:auto; width:100%; }
+    .why-panel-photo{ width:100%; flex-basis:auto; height:320px; }
   }
 
   @media (max-width: 900px){
@@ -946,7 +1158,7 @@
   position:relative;
   background:#ffffff;
   font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  padding:90px 60px 100px;
+  padding:10px 60px 100px;
   overflow:hidden;
 }
 
@@ -1042,7 +1254,7 @@
 .presence-content{
   flex:0 0 50%;
   max-width:50%;
-  min-width:350px;
+  margin-left:50px;
 }
 
 .presence-eyebrow{
@@ -1053,7 +1265,7 @@
 }
 
 .presence-heading{
-  font-size:28px;
+  font-size:48px;
   font-weight:600;
   color:#111111;
   margin:0 0 26px;
@@ -1142,52 +1354,64 @@
     <p class="stats-eyebrow reveal">Our Track Record</p>
     <h2 class="stats-heading reveal">Numbers That Speak For Themselves</h2>
 
-    <div class="stats-row" id="statsRow">
-      @foreach (($stat->items ?? []) as $index => $item)
-        <div class="stats-item reveal reveal-delay-{{ min($index, 3) }}">
-          <div class="stats-icon-line"></div>
-          <p class="stats-value" data-count-to="{{ preg_replace('/[^0-9]/', '', $item['value']) }}" data-count-suffix="{{ preg_replace('/[0-9]/', '', $item['value']) }}">{{ $item['value'] }}</p>
-          <p class="stats-label">{{ $item['label'] }}</p>
-        </div>
-      @endforeach
+    <div class="stats-row-wrap">
+      <div class="stats-row" id="statsRow">
+        @foreach (($stat->items ?? []) as $index => $item)
+          <div class="stats-item reveal reveal-delay-{{ min($index, 3) }}">
+            <div class="stats-icon-line"></div>
+            <p class="stats-value" data-count-to="{{ preg_replace('/[^0-9]/', '', $item['value']) }}" data-count-suffix="{{ preg_replace('/[0-9]/', '', $item['value']) }}">{{ $item['value'] }}</p>
+            <p class="stats-label">{{ $item['label'] }}</p>
+          </div>
+        @endforeach
+      </div>
     </div>
 
     <div class="stats-dots" id="statsDots"></div>
   </div>
 </section>
 
-@php
-  $services = [
-      ['title' => 'Premium Thread Inspection',   'image' => 'service1.jpeg',   'desc' => 'Inspection of premium connections and threads by qualified personnel using established industry procedures.'],
-      ['title' => 'Drill Pipe Inspection',        'image' => 'service2.jpeg',        'desc' => 'Inspection of premium connections and threads by qualified personnel using established industry procedures.'],
-      ['title' => 'Magnetic Particle Inspection', 'image' => 'service3.jpeg', 'desc' => 'Inspection of premium connections and threads by qualified personnel using established industry procedures.'],
-      ['title' => 'Die Penetrant Inspection',     'image' => 'service4.jpeg',     'desc' => 'Inspection of premium connections and threads by qualified personnel using established industry procedures.'],
-      ['title' => 'Ultrasonic Thickness Testing', 'image' => 'service5.jpeg',        'desc' => 'Inspection of premium connections and threads by qualified personnel using established industry procedures.'],
-      ['title' => 'Visual & Dimensional Inspection', 'image' => 'service6.jpeg', 'desc' => 'Inspection of premium connections and threads by qualified personnel using established industry procedures.'],
-  ];
-@endphp
-
 <section class="services">
   <div class="services-inner">
 
     <div class="services-left">
-      <p class="services-eyebrow">Our Services</p>
-      <h2 class="services-heading">Specialized inspection for drilling and oilfield equipment</h2>
-      <p class="services-sub">Specialized services designed to improve asset integrity, safety and performance</p>
-      <div class="services-photo" role="img" aria-label="Offshore oil and gas platform"></div>
+      <p class="services-eyebrow">{{ $serviceSection->label ?? 'Our Services' }}</p>
+      <h2 class="services-heading">{{ $serviceSection->heading ?? 'Specialized inspection for drilling and oilfield equipment' }}</h2>
+      <p class="services-sub">{{ $serviceSection->description ?? 'Specialized services designed to improve asset integrity, safety and performance' }}</p>
+
+      @if(!empty($serviceSection->image))
+        <div
+          class="services-photo"
+          style="background-image:url('{{ asset('storage/' . $serviceSection->image) }}')"
+          role="img"
+          aria-label="{{ $serviceSection->heading ?? 'Our services' }}"
+        ></div>
+      @else
+        <div class="services-photo" role="img" aria-label="Offshore oil and gas platform"></div>
+      @endif
     </div>
 
     <div class="services-right">
-      <div class="services-grid">
-        @foreach ($services as $service)
-          <div class="service-card">
-            <div class="service-photo" style="background-image:url('{{ asset('images/services/' . $service['image']) }}')" role="img" aria-label="{{ $service['title'] }}"></div>
-            <h3 class="service-title">{{ $service['title'] }}</h3>
-            <p class="service-desc">{{ $service['desc'] }}</p>
-            <a href="{{ url('/services') }}" class="service-link">READ MORE <span class="arrow">&#8594;</span></a>
-          </div>
-        @endforeach
-      </div>
+      @if(($services ?? collect())->isNotEmpty())
+        <div class="services-grid" id="servicesGrid">
+          @foreach ($services as $service)
+            <div class="service-card">
+              <div
+                class="service-photo"
+                style="background-image:url('{{ !empty($service->image) ? asset('storage/' . $service->image) : '' }}')"
+                role="img"
+                aria-label="{{ $service->title }}"
+              ></div>
+              <h3 class="service-title">{{ $service->title }}</h3>
+              <p class="service-desc">{{ $service->description }}</p>
+              <a href="{{ url('/services/' . $service->slug) }}" class="service-link">READ MORE <span class="arrow">&#8594;</span></a>
+            </div>
+          @endforeach
+        </div>
+
+        <div class="services-dots" id="servicesDots"></div>
+      @else
+        <p class="services-empty">No services published yet.</p>
+      @endif
     </div>
 
   </div>
@@ -1204,64 +1428,41 @@
 
   <div class="trusted-track-wrap">
     <div class="trusted-track" id="trustedTrack">
-      @for ($i = 0; $i < 2; $i++)
-        @foreach ($trustedLogos as $logo)
-          <div class="trusted-logo">
-            <img src="{{ asset('storage/' . $logo) }}" alt="Client logo" loading="lazy">
-          </div>
-      @endforeach
-      @endfor
+      @for ($i = 0; $i < 4; $i++)
+    @foreach ($trustedLogos as $logo)
+        <div class="trusted-logo">
+            <img src="{{ asset('storage/' . $logo) }}"
+                 alt="Client logo"
+                 loading="lazy">
+        </div>
+    @endforeach
+@endfor
     </div>
   </div>
 </section>
 
 @php
-  $whyItems = [
-      [
-          'number' => '01',
-          'label' => 'Experience',
-          'heading' => "Oil & Gas Inspection\nExpertise",
-          'desc' => 'Focused specifically on inspection requirements within the Oil and Gas Industries, with extensive experience in the inspection, testing, and quality assessment of drilling and downhole equipment, ensuring compliance with industry standards and operational requirements',
-      ],
-      [
-          'number' => '02',
-          'label' => 'Qualification',
-          'heading' => "Qualified & Certified\nPersonnel",
-          'desc' => 'Inspections are carried out by API and ASNT Level 2 qualified personnel, trained to established industry procedures, ensuring consistent, defensible results across every job.',
-      ],
-      [
-          'number' => '03',
-          'label' => 'Technology',
-          'heading' => "Modern NDT\nEquipment",
-          'desc' => 'Field and shop-based inspections are supported by modern non-destructive testing equipment, keeping accuracy and turnaround times in line with current industry practice.',
-      ],
-      [
-          'number' => '04',
-          'label' => 'Flexibility',
-          'heading' => "On-Site, Field &\nShop-Based Coverage",
-          'desc' => 'Services flex to the job — on-site at the rig, in the field, or shop-based at an EIS facility — so operations are not held up waiting on inspection capacity.',
-      ],
-      [
-          'number' => '05',
-          'label' => 'Asset Support',
-          'heading' => "Full Asset Integrity\nSupport",
-          'desc' => 'From incoming inspection through in-service monitoring, EIS supports the full lifecycle of critical oilfield assets to keep them safe and compliant.',
-      ],
-      [
-          'number' => '06',
-          'label' => 'Repair Capability',
-          'heading' => "Equipped Repair &\nReconditioning",
-          'desc' => 'Equipped inspection sheds and repair facilities mean issues found during inspection can often be addressed on the spot, minimizing downtime.',
-      ],
-  ];
+  $whyItems = collect($whyChooseUs->items ?? [])->map(function ($item, $index) {
+      return [
+          'number'  => str_pad($index + 1, 2, '0', STR_PAD_LEFT),
+          'label'   => $item['title'] ?? '',
+          'heading' => $item['subheading'] ?? '',
+          'desc'    => $item['description'] ?? '',
+          'image'   => $item['image'] ?? null,
+      ];
+  })->values()->all();
 @endphp
 
 <section class="why">
   <div class="why-top">
-    <p class="why-eyebrow">Why Choose EIS Ltd</p>
-    <h2 class="why-heading">Inspection Expertise<br>You Can Rely On</h2>
-    <p class="why-sub">Specialized oil and gas inspection services backed by qualified personnel, modern non-destructive testing equipment and practical field experience</p>
-  </div>
+  <div class="why-top-left reveal reveal-left">
+      <p class="why-eyebrow">Why Choose EIS Ltd</p>
+      <h2 class="why-heading">{{ $whyChooseUs->heading ?? 'Inspection Expertise You Can Rely On' }}</h2>
+    </div>
+    <div class="why-top-right reveal reveal-right">
+      <p class="why-sub">{{ $whyChooseUs->description ?? 'Specialized oil and gas inspection services backed by qualified personnel, modern non-destructive testing equipment and practical field experience' }}</p>
+    </div>
+</div>
 
   <div class="why-body">
     <div class="why-tabs-box">
@@ -1286,7 +1487,18 @@
             <p class="why-panel-desc">{{ $item['desc'] }}</p>
             <a href="{{ url('/services') }}" class="why-panel-link">LEARN MORE <span class="arrow">&#8594;</span></a>
           </div>
-          <div class="why-panel-photo" role="img" aria-label="{{ $item['label'] }}"></div>
+          <div
+  class="why-panel-photo"
+  role="img"
+  aria-label="{{ $item['label'] }}"
+  @if(!empty($item['image']))
+    style="background-image:url('{{ asset('storage/' . $item['image']) }}'); background-size:cover; background-position:center;"
+  @endif
+>
+  <span class="why-panel-badge">
+    <span class="num">{{ $item['number'] }}</span> {{ strtoupper($item['label']) }}
+  </span>
+</div>
         </div>
       @endforeach
     </div>
@@ -1306,7 +1518,7 @@
 
     <div class="presence-content reveal reveal-right">
       <p class="presence-eyebrow">Regional Presence</p>
-      <h2 class="presence-heading">Erbil &amp; Dubai</h2>
+      <h1 class="presence-heading">Erbil &amp; Dubai</h1>
       <p class="presence-desc">EIS Ltd has offices in Erbil, Iraq and the Jebel Ali Free Zone in Dubai, providing access to oilfield services, machine shops, port facilities, storage and logistics operations.</p>
       <a href="{{ url('/contact') }}" class="presence-cta">Contact EIS</a>
     </div>
@@ -1512,6 +1724,80 @@
     revealEls.forEach(function (el) { el.classList.add('in-view'); });
     document.querySelectorAll('[data-count-to]').forEach(animateCount);
   }
+
+  (function () {
+  const row = document.getElementById('servicesGrid');
+  const dotsWrap = document.getElementById('servicesDots');
+  if (!row || !dotsWrap) return;
+
+  const items = Array.from(row.children);
+  if (items.length <= 1) return;
+
+  items.forEach(function (_, i) {
+    const dot = document.createElement('button');
+    dot.type = 'button';
+    dot.className = 'services-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', 'Go to service ' + (i + 1));
+    dot.addEventListener('click', function () {
+      scrollToIndex(i);
+      resetAutoplay();
+    });
+    dotsWrap.appendChild(dot);
+  });
+
+  const dots = Array.from(dotsWrap.children);
+  let current = 0;
+  let autoplayTimer;
+  let isMobile = window.matchMedia('(max-width: 560px)').matches;
+
+  function scrollToIndex(i) {
+    const item = items[i];
+    if (!item) return;
+    row.scrollTo({ left: item.offsetLeft - row.offsetLeft, behavior: 'smooth' });
+    current = i;
+    dots.forEach(function (d, idx) { d.classList.toggle('active', idx === i); });
+  }
+
+  function startAutoplay() {
+    if (!isMobile) return;
+    clearInterval(autoplayTimer);
+    autoplayTimer = setInterval(function () {
+      const next = (current + 1) % items.length;
+      scrollToIndex(next);
+    }, 3500);
+  }
+
+  function resetAutoplay() {
+    clearInterval(autoplayTimer);
+    startAutoplay();
+  }
+
+  let scrollTimeout;
+  row.addEventListener('scroll', function () {
+    clearInterval(autoplayTimer);
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(function () {
+      const rowLeft = row.scrollLeft;
+      let closest = 0;
+      let closestDist = Infinity;
+      items.forEach(function (item, i) {
+        const dist = Math.abs(item.offsetLeft - row.offsetLeft - rowLeft);
+        if (dist < closestDist) { closestDist = dist; closest = i; }
+      });
+      current = closest;
+      dots.forEach(function (d, idx) { d.classList.toggle('active', idx === closest); });
+      startAutoplay();
+    }, 150);
+  });
+
+  window.addEventListener('resize', function () {
+    isMobile = window.matchMedia('(max-width: 560px)').matches;
+    if (isMobile) startAutoplay();
+    else clearInterval(autoplayTimer);
+  });
+
+  startAutoplay();
+})();
 </script>
 
 @endsection

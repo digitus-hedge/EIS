@@ -18,7 +18,8 @@ class HomeController extends Controller
         $about  = HomeAbout::first();
         $stat   = Stat::first();
         $serviceSection = ServiceSection::first();
-        $services = Service::where('status', 1)
+        $services = Service::latest()
+            ->take(6)
             ->get();
         $clientSection = ClientSection::first();
         $whyChooseUs = WhyChooseUs::first();

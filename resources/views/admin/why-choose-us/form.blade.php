@@ -40,95 +40,95 @@
     </h4>
 </div>
 
-<form action="{{ route('admin.home.why-choose-us.store') }}" method="POST" enctype="multipart/form-data" class="banner-form">
+<form action="{{ route('admin.home.why-choose-us.store') }}" method="POST" enctype="multipart/form-data" class="banner-form" id="whyForm">
     @csrf
 
     <div class="container-fluid px-0">
         <div class="row">
 
-            {{-- Main heading block --}}
             <div class="col-md-12">
                 <div class="form-card">
                     <div class="form-group">
-                        <label><i class="bi bi-type-h1"></i> Heading</label>
+                        <label><i class="bi bi-type-h1"></i> Main Heading</label>
                         <input type="text" name="heading" value="{{ old('heading', $why->heading) }}"
                                class="{{ $errors->has('heading') ? 'input-error' : '' }}"
-                               placeholder="e.g. Quality and accountability in every operation.">
+                               placeholder="e.g. Inspection Expertise You Can Rely On">
                         @error('heading')
                             <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
                         @enderror
                     </div>
                     <div class="form-group" style="margin-top:16px;">
-                        <label><i class="bi bi-card-text"></i> Description</label>
-                        <textarea name="description" rows="3" placeholder="Our approach is built around...">{{ old('description', $why->description) }}</textarea>
+                        <label><i class="bi bi-card-text"></i> Main Description</label>
+                        <textarea name="description" rows="3" placeholder="Specialized oil and gas inspection services backed by...">{{ old('description', $why->description) }}</textarea>
+                        @error('description')
+                            <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                        @enderror
                     </div>
                 </div>
             </div>
 
-            {{-- Mission --}}
-            @php $blocks = [
-                'mission' => 'Mission',
-                'vision' => 'Vision',
-                'values' => 'Core Values',
-            ]; @endphp
-
-            @foreach ($blocks as $key => $label)
-                <div class="col-md-4">
-                    <div class="form-card block-card">
-                        <label class="section-label"><i class="bi bi-flag"></i> {{ $label }}</label>
-
-                        <div class="form-group">
-                            <label>Title</label>
-                            <input type="text" name="{{ $key }}_title" value="{{ old($key.'_title', $why->{$key.'_title'}) }}" placeholder="{{ $label }}">
-                        </div>
-
-                        <div class="form-group" style="margin-top:12px;">
-                            <label>Description</label>
-                            <textarea name="{{ $key }}_description" rows="4" placeholder="Describe the {{ strtolower($label) }}...">{{ old($key.'_description', $why->{$key.'_description'}) }}</textarea>
-                        </div>
-
-                        <div class="form-group" style="margin-top:12px;">
-                            <label>Background Image</label>
-                            <p class="hint-text">Max <strong>2MB</strong> — JPG, PNG, WEBP</p>
-
-                            <div class="image-upload-box">
-                                <div class="preview-wrap">
-                                    @if ($why->{$key.'_image'})
-                                        <img src="{{ Storage::url($why->{$key.'_image'}) }}" class="preview-img" id="preview-{{ $key }}">
-                                    @else
-                                        <div class="preview-placeholder" id="preview-{{ $key }}">
-                                            <i class="bi bi-image"></i>
-                                        </div>
-                                    @endif
-                                </div>
-                                <label class="upload-btn">
-                                    <i class="bi bi-upload"></i> Choose file
-                                    <input type="file" name="{{ $key }}_image" accept="image/*"
-                                           onchange="previewImage(this, 'preview-{{ $key }}')" hidden>
-                                </label>
-                                @error($key.'_image')
-                                    <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-
-            {{-- Commitment (text only, no image) --}}
             <div class="col-md-12">
-                <div class="form-card block-card commitment-card">
-                    <label class="section-label"><i class="bi bi-shield-check"></i> Commitment</label>
-
-                    <div class="form-group">
-                        <label>Title</label>
-                        <input type="text" name="commitment_title" value="{{ old('commitment_title', $why->commitment_title) }}" placeholder="e.g. OUR COMMITMENT">
+                <div class="form-card">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+                        <label class="section-label" style="margin:0;"><i class="bi bi-list-check"></i> Items (max 6)</label>
+                        <button type="button" class="btn-add-item" id="addItemBtn">
+                            <i class="bi bi-plus-lg"></i> Add Item
+                        </button>
                     </div>
 
-                    <div class="form-group" style="margin-top:12px;">
-                        <label>Description</label>
-                        <textarea name="commitment_description" rows="4" placeholder="We are committed to providing...">{{ old('commitment_description', $why->commitment_description) }}</textarea>
+                    <div id="itemsWrap">
+                        @php $existingItems = old('items', $why->items ?? []); @endphp
+                        @foreach ($existingItems as $index => $item)
+                            <div class="item-row" data-index="{{ $index }}">
+                                <div class="item-row-header">
+                                    <span class="item-number">{{ $index + 1 }}</span>
+                                    <button type="button" class="btn-remove-item"><i class="bi bi-trash"></i> Remove</button>
+                                </div>
+
+                                <div class="item-row-body">
+                                    <div class="item-col">
+                                        <div class="form-group">
+                                            <label>Title</label>
+                                            <input type="text" name="items[{{ $index }}][title]" value="{{ $item['title'] ?? '' }}" placeholder="e.g. Qualification">
+                                        </div>
+                                        <div class="form-group" style="margin-top:12px;">
+                                            <label>Subheading</label>
+                                            <input type="text" name="items[{{ $index }}][subheading]" value="{{ $item['subheading'] ?? '' }}" placeholder="e.g. Qualified & Certified Personnel">
+                                        </div>
+                                        <div class="form-group" style="margin-top:12px;">
+                                            <label>Description</label>
+                                            <textarea name="items[{{ $index }}][description]" rows="4" placeholder="Describe this point...">{{ $item['description'] ?? '' }}</textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="item-col item-col-image">
+                                        <label>Image</label>
+                                        <p class="hint-text">Max <strong>2MB</strong> — JPG, PNG, WEBP</p>
+
+                                        <div class="image-upload-box">
+                                            <div class="preview-wrap">
+                                                @if (!empty($item['image']))
+                                                    <img src="{{ Storage::url($item['image']) }}" class="preview-img" id="preview-item-{{ $index }}">
+                                                @else
+                                                    <div class="preview-placeholder" id="preview-item-{{ $index }}">
+                                                        <i class="bi bi-image"></i>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                            <label class="upload-btn">
+                                                <i class="bi bi-upload"></i> Choose file
+                                                <input type="file" name="items[{{ $index }}][image]" accept="image/*"
+                                                       onchange="previewImage(this, 'preview-item-{{ $index }}')" hidden>
+                                            </label>
+                                            <input type="hidden" name="items[{{ $index }}][existing_image]" value="{{ $item['image'] ?? '' }}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
+
+                    <p class="hint-text" id="itemsLimitHint" style="display:none;">Maximum of 6 items reached.</p>
                 </div>
             </div>
 
@@ -147,6 +147,9 @@
 </form>
 
 <script>
+    const MAX_ITEMS = 6;
+    let itemIndex = {{ count($existingItems) }};
+
     function previewImage(input, previewId) {
         const preview = document.getElementById(previewId);
         if (input.files && input.files[0]) {
@@ -165,6 +168,98 @@
             reader.readAsDataURL(input.files[0]);
         }
     }
+
+    function buildItemRow(index) {
+        const wrap = document.createElement('div');
+        wrap.className = 'item-row';
+        wrap.dataset.index = index;
+        wrap.innerHTML = `
+            <div class="item-row-header">
+                <span class="item-number">${index + 1}</span>
+                <button type="button" class="btn-remove-item"><i class="bi bi-trash"></i> Remove</button>
+            </div>
+            <div class="item-row-body">
+                <div class="item-col">
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" name="items[${index}][title]" placeholder="e.g. Qualification">
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+                        <label>Subheading</label>
+                        <input type="text" name="items[${index}][subheading]" placeholder="e.g. Qualified & Certified Personnel">
+                    </div>
+                    <div class="form-group" style="margin-top:12px;">
+                        <label>Description</label>
+                        <textarea name="items[${index}][description]" rows="4" placeholder="Describe this point..."></textarea>
+                    </div>
+                </div>
+                <div class="item-col item-col-image">
+                    <label>Image</label>
+                    <p class="hint-text">Max <strong>2MB</strong> — JPG, PNG, WEBP</p>
+                    <div class="image-upload-box">
+                        <div class="preview-wrap">
+                            <div class="preview-placeholder" id="preview-item-${index}">
+                                <i class="bi bi-image"></i>
+                            </div>
+                        </div>
+                        <label class="upload-btn">
+                            <i class="bi bi-upload"></i> Choose file
+                            <input type="file" name="items[${index}][image]" accept="image/*"
+                                   onchange="previewImage(this, 'preview-item-${index}')" hidden>
+                        </label>
+                        <input type="hidden" name="items[${index}][existing_image]" value="">
+                    </div>
+                </div>
+            </div>
+        `;
+        return wrap;
+    }
+
+    function renumberItems() {
+        document.querySelectorAll('#itemsWrap .item-row').forEach(function (row, i) {
+            row.querySelector('.item-number').textContent = i + 1;
+        });
+    }
+
+    function updateAddButtonState() {
+        const count = document.querySelectorAll('#itemsWrap .item-row').length;
+        const addBtn = document.getElementById('addItemBtn');
+        const hint = document.getElementById('itemsLimitHint');
+        addBtn.style.display = count >= MAX_ITEMS ? 'none' : 'inline-flex';
+        hint.style.display = count >= MAX_ITEMS ? 'block' : 'none';
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const wrap = document.getElementById('itemsWrap');
+
+        if (wrap.children.length === 0) {
+            wrap.appendChild(buildItemRow(itemIndex));
+            itemIndex++;
+        }
+
+        updateAddButtonState();
+
+        document.getElementById('addItemBtn').addEventListener('click', function () {
+            const count = document.querySelectorAll('#itemsWrap .item-row').length;
+            if (count >= MAX_ITEMS) return;
+            wrap.appendChild(buildItemRow(itemIndex));
+            itemIndex++;
+            updateAddButtonState();
+        });
+
+        wrap.addEventListener('click', function (e) {
+            const btn = e.target.closest('.btn-remove-item');
+            if (!btn) return;
+            const row = btn.closest('.item-row');
+            if (document.querySelectorAll('#itemsWrap .item-row').length <= 1) {
+                Swal.fire({ icon: 'warning', title: 'At least one item is required', confirmButtonColor: '#3b3b58' });
+                return;
+            }
+            row.remove();
+            renumberItems();
+            updateAddButtonState();
+        });
+    });
 </script>
 
 <style>
@@ -173,7 +268,7 @@
     .form-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; }
     .form-header h4 { display: flex; align-items: center; gap: 8px; color: #1e1e2d; }
     .banner-form { width: 100%; }
-    .form-card { background: #fff; padding: 22px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 18px; height: calc(100% - 18px); }
+    .form-card { background: #fff; padding: 22px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 18px; }
     .form-group label { display: block; margin-bottom: 7px; font-weight: 600; font-size: 13px; color: #333; }
     .form-group input[type="text"], .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; outline: none; font-family: inherit; resize: vertical; }
     .form-group input:focus, .form-group textarea:focus { border-color: #3b3b58; }
@@ -182,8 +277,18 @@
     .input-error { border-color: #e74c3c !important; background: #fff8f8; }
     .field-error { display: flex; align-items: center; gap: 5px; color: #e74c3c; font-size: 12.5px; margin-top: 6px; }
 
-    .block-card { border-top: 3px solid #b40707; }
-    .commitment-card { border-top: 3px solid #3b3b58; }
+    .btn-add-item { display:inline-flex; align-items:center; gap:6px; background:#3b3b58; color:#fff; border:none; padding:9px 16px; border-radius:6px; font-size:13.5px; font-weight:600; cursor:pointer; }
+    .btn-add-item:hover { background:#2b2b42; }
+
+    .item-row { border:1px solid #eee; border-radius:8px; padding:18px; margin-bottom:16px; border-top:3px solid #E8792D; }
+    .item-row-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+    .item-number { display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:50%; background:#f4f6f9; color:#3b3b58; font-weight:700; font-size:13px; }
+    .btn-remove-item { display:inline-flex; align-items:center; gap:5px; background:#fdecea; color:#c0392b; border:none; padding:6px 12px; border-radius:6px; font-size:12.5px; font-weight:600; cursor:pointer; }
+    .btn-remove-item:hover { background:#fbdad6; }
+
+    .item-row-body { display:flex; gap:24px; }
+    .item-col { flex:1; min-width:0; }
+    .item-col-image { flex:0 0 240px; }
 
     .image-upload-box { display: flex; flex-direction: column; align-items: flex-start; }
     .preview-wrap { width: 100%; }
@@ -197,6 +302,11 @@
     .btn-cancel:hover { background: #f4f6f9; }
     .btn-submit { display: flex; align-items: center; gap: 7px; background: #3b3b58; color: #fff; border: none; padding: 11px 24px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; }
     .btn-submit:hover { background: #2b2b42; }
+
+    @media (max-width: 700px) {
+        .item-row-body { flex-direction: column; }
+        .item-col-image { flex-basis: auto; }
+    }
 </style>
 
 @endsection

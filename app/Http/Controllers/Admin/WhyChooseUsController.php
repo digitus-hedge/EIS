@@ -3,79 +3,66 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\WhyChooseUsRequest;
 use App\Models\WhyChooseUs;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver;
+use Illuminate\Support\Facades\Storage;
 
 class WhyChooseUsController extends Controller
 {
-    protected int $imageWidth = 700;
-    protected int $imageHeight = 800;
-    protected int $compressQuality = 70;
-
-    /**
-     * SHOW FORM — always the single Why Choose Us section (or empty model if none exists yet)
-     */
     public function index()
     {
         $why = WhyChooseUs::first() ?? new WhyChooseUs();
         return view('admin.why-choose-us.form', compact('why'));
     }
 
-    /**
-     * STORE — creates the section if none exists, otherwise updates the existing one
-     */
-    public function store(WhyChooseUsRequest $request)
+    public function store(Request $request)
     {
-        $data = $request->validated();
+        $validated = $request->validate([
+            'heading'                => 'required|string',
+            'description'            => 'required|string',
+            'items'                  => 'required|array|min:1|max:6',
+            'items.*.title'          => 'required|string|max:255',
+            'items.*.subheading'     => 'nullable|string|max:255',
+            'items.*.description'    => 'required|string',
+            'items.*.image'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'items.*.existing_image' => 'nullable|string',
+        ]);
 
         $why = WhyChooseUs::first() ?? new WhyChooseUs();
-        $why->heading = $data['heading'];
-        $why->description = $data['description'] ?? null;
+        $why->heading     = $validated['heading'];
+        $why->description = $validated['description'];
 
-        $why->mission_title = $data['mission_title'] ?? null;
-        $why->mission_description = $data['mission_description'] ?? null;
+        $items = [];
+        foreach ($request->input('items', []) as $index => $itemData) {
+            $image = $itemData['existing_image'] ?? null;
 
-        $why->vision_title = $data['vision_title'] ?? null;
-        $why->vision_description = $data['vision_description'] ?? null;
-
-        $why->values_title = $data['values_title'] ?? null;
-        $why->values_description = $data['values_description'] ?? null;
-
-        $why->commitment_title = $data['commitment_title'] ?? null;
-        $why->commitment_description = $data['commitment_description'] ?? null;
-
-        foreach (['mission_image', 'vision_image', 'values_image'] as $field) {
-            if ($request->hasFile($field)) {
-                if ($why->{$field}) {
-                    Storage::disk('public')->delete($why->{$field});
+            if ($request->hasFile("items.$index.image")) {
+                if (!empty($image)) {
+                    Storage::disk('public')->delete($image);
                 }
-                $why->{$field} = $this->processAndStoreImage($request->file($field));
+                $image = $request->file("items.$index.image")->store('why-choose-us', 'public');
             }
+
+            $items[] = [
+                'title'       => $itemData['title'],
+                'subheading'  => $itemData['subheading'] ?? '',
+                'description' => $itemData['description'],
+                'image'       => $image,
+            ];
         }
 
+        // Delete images belonging to items that were removed in this save
+        $oldImages = collect($why->items ?? [])->pluck('image')->filter();
+        $newImages = collect($items)->pluck('image')->filter();
+        foreach ($oldImages->diff($newImages) as $removed) {
+            Storage::disk('public')->delete($removed);
+        }
+
+        $why->items = $items;
         $why->save();
 
         return redirect()
             ->route('admin.home.why-choose-us')
             ->with('success', 'Why Choose Us section saved successfully.');
-    }
-
-    private function processAndStoreImage($file): string
-    {
-        $filename = 'why-choose-us/' . Str::random(20) . '.webp';
-
-        $manager = new ImageManager(new Driver());
-        $image = $manager->read($file);
-        $image->cover($this->imageWidth, $this->imageHeight);
-        $encoded = $image->toWebp(quality: $this->compressQuality);
-
-        Storage::disk('public')->put($filename, (string) $encoded);
-
-        return $filename;
     }
 }

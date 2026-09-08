@@ -35,6 +35,16 @@
     z-index:1;
   }
 
+  /* Video background fills the same space as image slides */
+  .hero-video{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    z-index:1;
+  }
+
   .hero-dots{
     position:absolute;
     left:60px;
@@ -189,41 +199,56 @@
 </style>
 
 @php
-  // Collect whichever banner images are populated into one array
-  $heroImages = collect([$banner->image_1 ?? null, $banner->image_2 ?? null, $banner->image_3 ?? null])
-      ->filter()
-      ->values();
+  // Does the backend have a video for this banner?
+  $heroVideo = $banner->video ?? null;
 
-  // Fallback to a default static image if no banner images exist in DB
-  if ($heroImages->isEmpty()) {
-      $heroImages = collect(['images/hero_image.jpeg']);
+  // Only build the image slideshow if there is NO video
+  $heroImages = collect([]);
+  if (empty($heroVideo)) {
+      $heroImages = collect([$banner->image_1 ?? null, $banner->image_2 ?? null, $banner->image_3 ?? null])
+          ->filter()
+          ->values();
+      // No static fallback image anymore — if empty, the section just shows the gradient background.
   }
 @endphp
 
 <section class="hero">
 @include('web.layout.navbar')
 
-  <div class="hero-slides">
-    @foreach ($heroImages as $index => $image)
-      <img
-        src="{{ Str::startsWith($image, 'images/') ? asset($image) : asset('storage/' . $image) }}"
-        class="hero-slide @if($index === 0) active @endif"
-        alt="{{ $banner->title ?? 'Banner image' }}"
-      >
-    @endforeach
-  </div>
-
-  @if ($heroImages->count() > 1)
-    <div class="hero-dots" id="heroDots">
+  @if (!empty($heroVideo))
+    {{-- Video takes priority over images --}}
+    <video
+      class="hero-video"
+      src="{{ Str::startsWith($heroVideo, 'images/') ? asset($heroVideo) : asset('storage/' . $heroVideo) }}"
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="auto"
+    ></video>
+  @elseif ($heroImages->isNotEmpty())
+    <div class="hero-slides">
       @foreach ($heroImages as $index => $image)
-        <button
-          type="button"
-          class="hero-dot @if($index === 0) active @endif"
-          data-slide="{{ $index }}"
-          aria-label="Slide {{ $index + 1 }}"
-        ></button>
+        <img
+          src="{{ Str::startsWith($image, 'images/') ? asset($image) : asset('storage/' . $image) }}"
+          class="hero-slide @if($index === 0) active @endif"
+          alt="{{ $banner->title ?? 'Banner image' }}"
+        >
       @endforeach
     </div>
+
+    @if ($heroImages->count() > 1)
+      <div class="hero-dots" id="heroDots">
+        @foreach ($heroImages as $index => $image)
+          <button
+            type="button"
+            class="hero-dot @if($index === 0) active @endif"
+            data-slide="{{ $index }}"
+            aria-label="Slide {{ $index + 1 }}"
+          ></button>
+        @endforeach
+      </div>
+    @endif
   @endif
 
   <div class="rig-decor" aria-hidden="true"></div>
@@ -264,6 +289,7 @@
       }, 6000);
     }
 
+    // Only runs when the image slideshow is present (i.e. no video)
     if (heroSlides.length > 1) {
       heroDots.forEach(function (dot) {
         dot.addEventListener('click', function () {

@@ -14,5 +14,6 @@ class ServiceSection extends Model
         'label',
         'heading',
         'description',
+        'image',
     ];
 }
