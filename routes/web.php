@@ -14,6 +14,9 @@ use App\Http\Controllers\ServiceDetailController;
 use App\Http\Controllers\Admin\AboutController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AboutPageController;
+use App\Http\Controllers\Admin\ServicePageController;
+
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/about', [AboutPageController::class, 'index'])->name('about');
@@ -84,6 +87,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('operation', [AboutController::class, 'operation'])->name('about.operation');
         Route::post('operation/videos', [AboutController::class, 'storeOperationVideo'])->name('about.operation.videos.store');
         Route::delete('operation/videos/{video}', [AboutController::class, 'destroyOperationVideo'])->name('about.operation.videos.destroy');
+
+        Route::get('service/banner', [ServicePageController::class, 'banner'])->name('service.banner');
+        Route::post('service/banner', [ServicePageController::class, 'storeBanner'])->name('service.banner.store');
+
+        Route::get('service/our-service', [ServicePageController::class, 'ourService'])->name('service.our-service');
+        Route::post('service/our-service', [ServicePageController::class, 'storeOurService'])->name('service.our-service.store');
     
 
     });

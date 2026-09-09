@@ -370,7 +370,7 @@
       <ul class="nav-links" id="navLinks">
         <li><a href="{{ url('/') }}" class="{{ request()->is('/') ? 'active' : '' }}">Home</a></li>
         <li><a href="{{ url('/about') }}" class="{{ request()->is('about') ? 'active' : '' }}">About Us</a></li>
-        <li><a href="{{ url('/services') }}" class="{{ request()->is('services*') ? 'active' : '' }}">Services</a></li>
+         <li><a href="{{ url('/services') }}" class="{{ request()->is('services*') ? 'active' : '' }}">Services</a></li>
         <li><a href="{{ url('/contact') }}" class="{{ request()->is('contact') ? 'active' : '' }}">Contact</a></li>
 
         <li class="nav-mobile-info">
