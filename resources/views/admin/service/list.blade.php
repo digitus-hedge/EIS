@@ -49,18 +49,15 @@
     <table class="styled-table">
         <thead>
             <tr>
-                <th>Order</th>
                 <th>Image</th>
                 <th>Title</th>
                 <th>Description</th>
-                <th>Status</th>
                 <th class="text-right">Actions</th>
             </tr>
         </thead>
         <tbody>
             @forelse ($services as $service)
             <tr>
-                <td>{{ $service->sort_order }}</td>
                 <td>
                     @if ($service->image)
                     <img src="{{ Storage::url($service->image) }}" class="thumb">
@@ -70,13 +67,6 @@
                 </td>
                 <td class="title-cell">{{ $service->title }}</td>
                 <td class="desc-cell">{{ Str::limit($service->description, 70) ?: '—' }}</td>
-                <td>
-                    @if ($service->status)
-                        <span class="status-badge status-active"><i class="bi bi-check-circle-fill"></i> Active</span>
-                    @else
-                        <span class="status-badge status-inactive"><i class="bi bi-x-circle-fill"></i> Inactive</span>
-                    @endif
-                </td>
                 <td class="text-right">
                     <div class="action-icons">
                         <a href="{{ route('admin.home.services.edit', $service->id) }}" class="icon-btn icon-edit" title="Edit">

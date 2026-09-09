@@ -10,15 +10,21 @@ class Service extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'title', 'slug', 'description', 'process_description',
-        'technical_scope', 'specifications', 'image', 'gallery',
-        'status',
+        'title',
+        'slug',
+        'description',
+        'process_description',
+        'technical_scope',
+        'specifications',
+        'image',
+        'gallery',
+        'inspection_process'
     ];
 
     protected $casts = [
         'technical_scope' => 'array',
         'specifications'  => 'array',
         'gallery'         => 'array',
-        'status'          => 'boolean',
+        'inspection_process' => 'array',
     ];
 }

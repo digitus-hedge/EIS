@@ -240,6 +240,11 @@
                      <li><a href="{{ route('admin.about.operation') }}"
                             class="{{ request()->routeIs('admin.about.operation*') ? 'active' : '' }}">Operations</a></li>
                 </ul>
+
+                    <li><a href="{{ route('admin.home.services') }}"
+                    class="{{ request()->routeIs('admin.home.services') || (request()->routeIs('admin.home.services.*') && !request()->routeIs('admin.home.services.behind-the-scenes*') && !request()->routeIs('admin.home.services.section*')) ? 'active' : '' }}">Master Service</a>
+            </li>
+            
             </li>
         </ul>
     </div>

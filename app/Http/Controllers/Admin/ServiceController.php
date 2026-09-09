@@ -84,6 +84,70 @@ class ServiceController extends Controller
             ->with('success', 'Service deleted successfully.');
     }
 
+
+
+    // private function fillService(Service $service, array $data, Request $request): void
+    // {
+    //     $service->title = $data['title'];
+    //     $service->slug = Str::slug($data['title']);
+    //     $service->description = $data['description'];
+    //     $service->process_description = $data['process_description'] ?? null;
+
+    //     $service->meta_title = $data['meta_title'] ?? null;
+    //     $service->meta_description = $data['meta_description'] ?? null;
+
+
+    //     $service->technical_scope = collect($data['technical_scope'] ?? [])
+    //         ->filter(fn($v) => trim((string) $v) !== '')
+    //         ->values()
+    //         ->all();
+
+    //     $service->specifications = collect($data['specifications'] ?? [])
+    //         ->filter(fn($row) => !empty($row['specification']) || !empty($row['details']) || !empty($row['compliance']))
+    //         ->values()
+    //         ->all();
+
+
+    //     if ($request->hasFile('image')) {
+    //         if ($service->image) {
+    //             Storage::disk('public')->delete($service->image);
+    //         }
+    //         $service->image = $this->processAndStoreImage($request->file('image'));
+    //     }
+
+    //     if ($request->hasFile('banner_image')) {
+    //         if ($service->banner_image) {
+    //             Storage::disk('public')->delete($service->banner_image);
+    //         }
+    //         $service->banner_image = $this->processAndStoreImage($request->file('banner_image'));
+    //     }
+
+
+    //     $currentGallery = $service->gallery ?? [];
+
+    //     if ($request->filled('remove_gallery')) {
+    //         $toRemove = $request->input('remove_gallery');
+
+    //         foreach ($toRemove as $path) {
+    //             Storage::disk('public')->delete($path);
+    //         }
+
+    //         $currentGallery = array_values(array_diff($currentGallery, $toRemove));
+    //     }
+
+    //     if ($request->hasFile('gallery')) {
+    //         $slotsAvailable = max(0, 6 - count($currentGallery));
+
+    //         foreach ($request->file('gallery') as $index => $file) {
+    //             if ($index >= $slotsAvailable) break; // enforce max 6 total
+    //             $currentGallery[] = $this->processAndStoreImage($file);
+    //         }
+    //     }
+
+    //     $service->gallery = count($currentGallery) > 0 ? array_values($currentGallery) : null;
+
+    // }
+
     private function fillService(Service $service, array $data, Request $request): void
     {
         $service->title = $data['title'];
@@ -91,18 +155,20 @@ class ServiceController extends Controller
         $service->description = $data['description'];
         $service->process_description = $data['process_description'] ?? null;
 
+        $service->meta_title = $data['meta_title'] ?? null;
+        $service->meta_description = $data['meta_description'] ?? null;
+
         $service->technical_scope = collect($data['technical_scope'] ?? [])
-            ->filter(fn ($v) => trim((string) $v) !== '')
+            ->filter(fn($v) => trim((string) $v) !== '')
             ->values()
             ->all();
 
         $service->specifications = collect($data['specifications'] ?? [])
-            ->filter(fn ($row) => !empty($row['specification']) || !empty($row['details']) || !empty($row['compliance']))
+            ->filter(fn($row) => !empty($row['specification']) || !empty($row['details']) || !empty($row['compliance']))
             ->values()
             ->all();
 
-        $service->status = $data['status'] ?? 0;
-
+        // ===== Hero image =====
         if ($request->hasFile('image')) {
             if ($service->image) {
                 Storage::disk('public')->delete($service->image);
@@ -110,26 +176,70 @@ class ServiceController extends Controller
             $service->image = $this->processAndStoreImage($request->file('image'));
         }
 
-        if ($request->hasFile('gallery')) {
-            $existingGallery = $service->gallery ?? [];
-            foreach ($request->file('gallery') as $file) {
-                if (count($existingGallery) >= 3) break;
-                $existingGallery[] = $this->processAndStoreImage($file);
+        if ($request->hasFile('banner_image')) {
+            if ($service->banner_image) {
+                Storage::disk('public')->delete($service->banner_image);
             }
-            $service->gallery = array_values($existingGallery);
+            $service->banner_image = $this->processAndStoreImage($request->file('banner_image'));
         }
 
-        // Remove gallery images the admin marked for deletion
+        // ===== Gallery: handle removals FIRST, then additions =====
+        $currentGallery = $service->gallery ?? [];
+
         if ($request->filled('remove_gallery')) {
             $toRemove = $request->input('remove_gallery');
-            $currentGallery = $service->gallery ?? [];
 
             foreach ($toRemove as $path) {
                 Storage::disk('public')->delete($path);
             }
 
-            $service->gallery = array_values(array_diff($currentGallery, $toRemove));
+            $currentGallery = array_values(array_diff($currentGallery, $toRemove));
         }
+
+        if ($request->hasFile('gallery')) {
+            $slotsAvailable = max(0, 6 - count($currentGallery));
+
+            foreach ($request->file('gallery') as $index => $file) {
+                if ($index >= $slotsAvailable) break;
+                $currentGallery[] = $this->processAndStoreImage($file);
+            }
+        }
+
+        $service->gallery = count($currentGallery) > 0 ? array_values($currentGallery) : null;
+
+        // ===== Inspection Process: heading + description + image per row =====
+        $inspectionInput = $data['inspection_process'] ?? [];
+        $oldInspection = $service->inspection_process ?? [];
+        $processedInspection = [];
+
+        foreach ($inspectionInput as $index => $row) {
+            $heading = trim($row['heading'] ?? '');
+            $description = trim($row['description'] ?? '');
+            $hasNewImage = $request->hasFile("inspection_process.$index.image");
+
+            // skip rows that are entirely empty (no heading, no description, no image, no existing image kept)
+            if ($heading === '' && $description === '' && !$hasNewImage && empty($row['existing_image'])) {
+                continue;
+            }
+
+            $imagePath = $row['existing_image'] ?? null;
+
+            if ($hasNewImage) {
+                // delete the old image for this specific row if it's being replaced
+                if (!empty($oldInspection[$index]['image'])) {
+                    Storage::disk('public')->delete($oldInspection[$index]['image']);
+                }
+                $imagePath = $this->processAndStoreImage($request->file("inspection_process.$index.image"));
+            }
+
+            $processedInspection[] = [
+                'heading'     => $heading,
+                'description' => $description,
+                'image'       => $imagePath,
+            ];
+        }
+
+        $service->inspection_process = count($processedInspection) > 0 ? array_values($processedInspection) : null;
     }
 
     private function processAndStoreImage($file): string
