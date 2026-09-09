@@ -53,6 +53,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('home/services/{service}', [ServiceController::class, 'update'])->name('home.services.update');
         Route::delete('home/services/{service}', [ServiceController::class, 'destroy'])->name('home.services.destroy');
 
+
+        
+
         Route::get('home/clients', [ClientSectionController::class, 'index'])->name('home.clients');
         Route::post('home/clients', [ClientSectionController::class, 'store'])->name('home.clients.store');
 
