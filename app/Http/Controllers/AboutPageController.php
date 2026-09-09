@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AboutUs;
+use App\Models\RegionalLocation;
 
 class AboutPageController extends Controller
 {
@@ -10,6 +11,10 @@ class AboutPageController extends Controller
     {
         $about = AboutUs::first();
 
-        return view('web.about', compact('about'));
+        $locations = RegionalLocation::with('offices')
+            ->orderBy('sort_order')
+            ->get();
+
+        return view('web.about', compact('about', 'locations'));
     }
 }

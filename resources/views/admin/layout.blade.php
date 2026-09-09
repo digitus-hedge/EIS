@@ -235,7 +235,10 @@
                     
                     <li><a href="{{ route('admin.about.who-we-are') }}"
                             class="{{ request()->routeIs('admin.about.who-we-are*') ? 'active' : '' }}">Who We Are</a></li>
-                    
+                    <li><a href="{{ route('admin.about.regional-footprint') }}"
+                            class="{{ request()->routeIs('admin.about.regional-footprint*') ? 'active' : '' }}">Regional Footprint</a></li>
+                     <li><a href="{{ route('admin.about.operation') }}"
+                            class="{{ request()->routeIs('admin.about.operation*') ? 'active' : '' }}">Operations</a></li>
                 </ul>
             </li>
         </ul>

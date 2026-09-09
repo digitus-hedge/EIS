@@ -385,13 +385,8 @@
   font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   padding:60px 60px 100px;
 }
-
 .footprint *{ box-sizing:border-box; }
-
-.footprint-inner{
-  margin:0 auto;
-}
-
+.footprint-inner{ margin:0 auto; }
 .footprint-top{ margin-bottom:50px; }
 
 .footprint-eyebrow{
@@ -400,7 +395,6 @@
   font-size:19px;
   margin:0 0 14px;
 }
-
 .footprint-heading{
   font-size:clamp(30px, 3.6vw, 46px);
   line-height:1.2;
@@ -416,106 +410,134 @@
   gap:50px;
 }
 
-.footprint-body::before{
-  content:"";
-  position:absolute;
-  top:0;
-  bottom:0;
-  left:48%;
-  width:1px;
-  background:#e6e6e6;
-  pointer-events:none;
-}
-
 .footprint-map{
   flex:0 0 48%;
+  aspect-ratio: 4 / 2;   /* was 4 / 3.4 — lower second number = shorter map */
   border-radius:26px;
   overflow:hidden;
   box-shadow:0 20px 44px rgba(0,0,0,0.12);
   transition:box-shadow 0.3s ease;
 }
+.footprint-map:hover{ box-shadow:0 28px 56px rgba(0,0,0,0.2); }
+#footprintMap{ width:100%; height:100%; }
 
-.footprint-map:hover{
-  box-shadow:0 28px 56px rgba(0,0,0,0.2);
+/* Red pin marker */
+.footprint-pin{
+  width:30px; height:42px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+  filter: drop-shadow(0 6px 10px rgba(0,0,0,0.35));
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
 }
-
-.footprint-map img{
-  display:block;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  transition:transform 0.6s cubic-bezier(0.16,1,0.3,1);
-}
-
-.footprint-map:hover img{
-  transform:scale(1.06);
-}
+.footprint-pin.is-active{ transform: scale(1.25) translateY(-3px); }
+.footprint-pin svg{ display:block; }
 
 .footprint-locations{
   flex:1;
   min-width:0;
-  display:flex;
-  flex-direction:column;
-  gap:32px;
-  padding-left:0;
+  position:relative;
+  min-height:480px;
 }
 
+.footprint-locations::-webkit-scrollbar{ width:6px; }
+.footprint-locations::-webkit-scrollbar-track{ background:#f0f0f0; border-radius:10px; }
+.footprint-locations::-webkit-scrollbar-thumb{ background:var(--orange); border-radius:10px; }
+
+.footprint-location-panel{
+  display:none;
+  flex-direction:column;
+  gap:28px;
+}
+.footprint-location-panel.is-active{ display:flex; }
+.footprint-location-panel.is-leaving{
+  display:flex;
+  position:absolute;
+  top:0; left:0; width:100%;
+  animation: footprintSlideOutLeft 0.4s ease forwards;
+}
+.footprint-location-panel.is-entering{
+  animation: footprintSlideInRight 0.4s ease forwards;
+}
+@keyframes footprintSlideOutLeft{
+  from{ transform:translateX(0); opacity:1; }
+  to{ transform:translateX(-30px); opacity:0; }
+}
+@keyframes footprintSlideInRight{
+  from{ transform:translateX(30px); opacity:0; }
+  to{ transform:translateX(0); opacity:1; }
+}
+
+.footprint-panel-title{
+  font-size:20px;
+  font-weight:700;
+  color:var(--orange);
+  margin:0;
+}
+.footprint-offices-viewport{
+  overflow:hidden;
+}
+
+.footprint-offices-track{
+  display:flex;
+  transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);
+}
+
+.footprint-office-page{
+  flex:0 0 100%;
+  display:flex;
+  flex-direction:column;
+  gap:30px;
+  min-height:460px; /* keeps 2-office pages and 1-office pages the same height */
+}
+
+.footprint-dots{
+  display:flex;
+  gap:9px;
+  margin-top:20px;
+}
+
+.footprint-dot{
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:#e0e0e0;
+  border:none;
+  padding:0;
+  cursor:pointer;
+  transition:background 0.2s ease, transform 0.2s ease;
+}
+
+.footprint-dot.active{
+  background:var(--orange);
+  transform:scale(1.25);
+}
 .footprint-location{
   display:flex;
   align-items:center;
   gap:38px;
 }
-
 .footprint-location-photo{
   flex:0 0 320px;
-  height:200px;
+  height:220px;   /* was 200px */
   border-radius:26px;
   overflow:hidden;
+  background:#f2f2f2;
   box-shadow:0 14px 30px rgba(0,0,0,0.14);
   transition:box-shadow 0.3s ease, transform 0.3s ease;
 }
-
-.footprint-location-photo:hover{
-  box-shadow:0 20px 40px rgba(232,121,45,0.22);
-  transform:translateY(-4px);
-}
-
-.footprint-location-photo img{
-  display:block;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  transition:transform 0.6s cubic-bezier(0.16,1,0.3,1);
-}
-
-.footprint-location-photo:hover img{
-  transform:scale(1.1);
-}
+.footprint-location-photo:hover{ box-shadow:0 20px 40px rgba(232,121,45,0.22); transform:translateY(-4px); }
+.footprint-location-photo img{ display:block; width:100%; height:100%; object-fit:cover; transition:transform 0.6s cubic-bezier(0.16,1,0.3,1); }
+.footprint-location-photo:hover img{ transform:scale(1.1); }
 
 .footprint-location-text{ flex:1; min-width:0; }
-
-.footprint-location-title{
-  font-size:24px;
-  font-weight:600;
-  color:#111111;
-  margin:0 0 8px;
-}
-
-.footprint-location-desc{
-  font-size:16px;
-  line-height:1.5;
-  color:#4a4a4a;
-  margin:0;
-}
-.footprint-location-desc strong{ color:#111111; font-weight:600; }
+.footprint-location-title{ font-size:22px; font-weight:600; color:#111111; margin:0 0 8px; }
+.footprint-location-desc{ font-size:16px; line-height:1.5; color:#4a4a4a; margin:0; }
 
 @media (max-width: 1100px){
   .footprint-body{ flex-direction:column; }
   .footprint-body::before{ display:none; }
-  .footprint-map{ flex-basis:auto; width:100%; aspect-ratio:16/10; }
-  .footprint-locations{ padding-left:0; }
+  .footprint-map{ flex-basis:auto; width:100%; aspect-ratio:16/9; }  /* was 16/10 */
 }
-
 @media (max-width: 700px){
   .footprint{ padding:64px 24px 70px; }
   .footprint-location{ flex-direction:column; align-items:flex-start; gap:16px; }
@@ -525,7 +547,7 @@
   position:relative;
   background:#ffffff;
   font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  padding:60px 60px 100px;
+  padding:20px 60px 100px;
 }
 
 .operation *{ box-sizing:border-box; }
@@ -1064,6 +1086,9 @@
          role="img" aria-label="EIS inspectors reviewing plans on site"></div>
   </div>
 </section>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <section class="footprint">
   <div class="footprint-inner">
     <div class="footprint-top reveal reveal-left">
@@ -1073,30 +1098,49 @@
 
     <div class="footprint-body">
       <div class="footprint-map reveal reveal-left reveal-delay-1">
-        <img src="{{ asset('images/erbil_map.jpeg') }}" alt="Map showing EIS location in Erbil, Iraq">
+        <div id="footprintMap"></div>
       </div>
 
-      <div class="footprint-locations">
-        <div class="footprint-location reveal reveal-right reveal-delay-1">
-          <div class="footprint-location-photo">
-            <img src="{{ asset('images/erbil_facility.jpeg') }}" alt="EIS facility in Erbil, Iraq">
-          </div>
-          <div class="footprint-location-text">
-            <h3 class="footprint-location-title">Erbil, Iraq</h3>
-            <p class="footprint-location-desc">Headquarters &amp; inspection operations</p>
-          </div>
-        </div>
+      <div class="footprint-locations" id="footprintLocations">
+  @forelse ($locations as $index => $location)
+    @php $officeChunks = $location->offices->chunk(2)->values(); @endphp
+    <div class="footprint-location-panel{{ $index === 0 ? ' is-active' : '' }}" data-location-id="{{ $location->id }}">
+      <h3 class="footprint-panel-title">{{ $location->title }}</h3>
 
-        <div class="footprint-location reveal reveal-right reveal-delay-2">
-          <div class="footprint-location-photo">
-            <img src="{{ asset('images/dubai_facility.jpeg') }}" alt="EIS facility in Dubai, UAE">
-          </div>
-          <div class="footprint-location-text">
-            <h3 class="footprint-location-title">Dubai, UAE</h3>
-            <p class="footprint-location-desc">Regional operations &amp; client support</p>
-          </div>
+      <div class="footprint-offices-viewport">
+        <div class="footprint-offices-track" data-office-track>
+          @foreach ($officeChunks as $chunk)
+            <div class="footprint-office-page">
+              @foreach ($chunk as $office)
+                <div class="footprint-location reveal reveal-right">
+                  <div class="footprint-location-photo">
+                    @if ($office->image)
+                      <img src="{{ asset('storage/' . $office->image) }}" alt="{{ $office->title }}">
+                    @endif
+                  </div>
+                  <div class="footprint-location-text">
+                    <h4 class="footprint-location-title">{{ $office->title }}</h4>
+                    <p class="footprint-location-desc">{{ $office->description }}</p>
+                  </div>
+                </div>
+              @endforeach
+            </div>
+          @endforeach
         </div>
       </div>
+
+      @if ($officeChunks->count() > 1)
+        <div class="footprint-dots" data-office-dots>
+          @foreach ($officeChunks as $i => $chunk)
+            <button type="button" class="footprint-dot{{ $i === 0 ? ' active' : '' }}" data-page-index="{{ $i }}" aria-label="Show offices page {{ $i + 1 }}"></button>
+          @endforeach
+        </div>
+      @endif
+    </div>
+  @empty
+    <p style="color:#888;">No locations added yet.</p>
+  @endforelse
+</div>
     </div>
   </div>
 </section>
@@ -1338,5 +1382,149 @@ capabilityTabs.forEach(function (tab) {
       capabilityAnimating = false;
     }, 450);
   });
+});
+</script>
+@php
+  $footprintMapData = $locations->map(function ($loc) {
+      return [
+          'id'  => $loc->id,
+          'lat' => (float) $loc->latitude,
+          'lng' => (float) $loc->longitude,
+      ];
+  });
+@endphp
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const mapEl = document.getElementById('footprintMap');
+  const locationsEl = document.getElementById('footprintLocations');
+
+  const locations = @json($footprintMapData);
+  if (!mapEl || !locations.length) return;
+
+  const map = L.map('footprintMap', { scrollWheelZoom: false });
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors',
+      maxZoom: 19,
+  }).addTo(map);
+
+  function initOfficeCarousels() {
+    document.querySelectorAll('.footprint-location-panel').forEach(function (panel) {
+        const track = panel.querySelector('[data-office-track]');
+        const dotsWrap = panel.querySelector('[data-office-dots]');
+        if (!track) return;
+
+        const pages = track.children.length;
+        if (pages <= 1) return;
+
+        let index = 0;
+        let interval = null;
+
+        function goTo(i) {
+            index = (i + pages) % pages;
+            track.style.transform = 'translateX(-' + (index * 100) + '%)';
+            if (dotsWrap) {
+                dotsWrap.querySelectorAll('.footprint-dot').forEach(function (dot, di) {
+                    dot.classList.toggle('active', di === index);
+                });
+            }
+        }
+
+        function start() {
+            stop();
+            interval = setInterval(function () { goTo(index + 1); }, 4000);
+        }
+
+        function stop() {
+            if (interval) clearInterval(interval);
+            interval = null;
+        }
+
+        if (dotsWrap) {
+            dotsWrap.querySelectorAll('.footprint-dot').forEach(function (dot) {
+                dot.addEventListener('click', function () {
+                    goTo(parseInt(dot.getAttribute('data-page-index'), 10));
+                    start(); // restart the timer after a manual click
+                });
+            });
+        }
+
+        panel._carouselStart = start;
+        panel._carouselStop = stop;
+    });
+
+    // Start auto-sliding for whichever panel is active on page load
+    document.querySelectorAll('.footprint-location-panel.is-active').forEach(function (p) {
+        if (p._carouselStart) p._carouselStart();
+    });
+}
+
+initOfficeCarousels();
+
+  function pinIcon(active) {
+      return L.divIcon({
+          className: '',
+          html: '<div class="footprint-pin' + (active ? ' is-active' : '') + '">' +
+              '<svg width="30" height="42" viewBox="0 0 30 42" xmlns="http://www.w3.org/2000/svg">' +
+              '<path d="M15 0C6.7 0 0 6.7 0 15c0 11.25 15 27 15 27s15-15.75 15-27C30 6.7 23.3 0 15 0z" fill="#E63946"/>' +
+              '<circle cx="15" cy="15" r="6" fill="#fff"/>' +
+              '</svg></div>',
+          iconSize: [30, 42],
+          iconAnchor: [15, 42],
+      });
+  }
+
+  const markers = {};
+  const bounds = [];
+
+  locations.forEach(function (loc, i) {
+      const marker = L.marker([loc.lat, loc.lng], { icon: pinIcon(i === 0) }).addTo(map);
+      marker.on('click', function () { setActiveLocation(loc.id); });
+      markers[loc.id] = marker;
+      bounds.push([loc.lat, loc.lng]);
+  });
+
+  if (bounds.length > 1) {
+    map.fitBounds(bounds, { padding: [40, 40] });
+} else {
+    map.setView(bounds[0], 11);
+}
+
+
+  let activeId = locations[0].id;
+  let animating = false;
+
+  function setActiveLocation(id) {
+    if (animating || String(id) === String(activeId)) return;
+
+    const currentPanel = document.querySelector('.footprint-location-panel.is-active');
+    const nextPanel = document.querySelector('.footprint-location-panel[data-location-id="' + id + '"]');
+    if (!nextPanel) return;
+
+    animating = true;
+
+    if (currentPanel && currentPanel._carouselStop) currentPanel._carouselStop();   // NEW
+
+    Object.keys(markers).forEach(function (mid) {
+        markers[mid].setIcon(pinIcon(String(mid) === String(id)));
+    });
+
+    if (currentPanel) {
+        currentPanel.classList.remove('is-active');
+        currentPanel.classList.add('is-leaving');
+    }
+    nextPanel.classList.add('is-active', 'is-entering');
+
+    if (nextPanel._carouselStart) nextPanel._carouselStart();   // NEW
+
+    setTimeout(function () {
+        if (currentPanel) currentPanel.classList.remove('is-leaving');
+        nextPanel.classList.remove('is-entering');
+        animating = false;
+    }, 400);
+
+    activeId = id;
+}
 });
 </script>

@@ -19,15 +19,15 @@ class BannerRequest extends FormRequest
             'title'       => 'required|string|min:3|max:255',
             'description' => 'required|string|max:2000',
 
-            'image_1' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:2048',
-            'image_2' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:2048',
-            'image_3' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:2048',
+            'image_1' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:5120',
+            'image_2' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:5120',
+            'image_3' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:5120',
 
-            'video'   => 'nullable|mimes:mp4,mov,avi,wmv|max:5120',
+            'video'   => 'nullable|mimes:mp4,mov,avi,wmv|max:10240',
         ];
     }
 
-    public function messages(): array
+   public function messages(): array
     {
         return [
             'title.required'       => 'Please enter a banner title.',
@@ -45,12 +45,12 @@ class BannerRequest extends FormRequest
             'image_2.mimes'        => 'Image 2 must be a JPG, PNG, or WEBP file.',
             'image_3.mimes'        => 'Image 3 must be a JPG, PNG, or WEBP file.',
 
-            'image_1.max'          => 'Image 1 must not exceed 2MB.',
-            'image_2.max'          => 'Image 2 must not exceed 2MB.',
-            'image_3.max'          => 'Image 3 must not exceed 2MB.',
+            'image_1.max'          => 'Image 1 must not exceed 5MB.',
+            'image_2.max'          => 'Image 2 must not exceed 5MB.',
+            'image_3.max'          => 'Image 3 must not exceed 5MB.',
 
             'video.mimes'          => 'Video must be a file of type: MP4, MOV, AVI, or WMV.',
-            'video.max'            => 'Video must not exceed 5MB.',
+            'video.max'            => 'Video must not exceed 10MB.',
         ];
     }
 

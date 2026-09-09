@@ -17,7 +17,7 @@ class HomeAboutRequest extends FormRequest
         return [
             'title'       => 'required|string|min:3|max:255',
             'description' => 'required|string',
-            'image'       => 'nullable|image|mimes:jpeg,jpg,png,webp|max:2048',
+            'image'       => 'nullable|image|mimes:jpeg,jpg,png,webp|max:5120',
         ];
     }
 

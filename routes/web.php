@@ -65,15 +65,22 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
         //about us page 
+        Route::get('banner', [AboutController::class, 'banner'])->name('about.banner');
+        Route::post('banner', [AboutController::class, 'storeBanner'])->name('about.banner.store');
+        Route::get('about', [AboutController::class, 'about'])->name('about.about');
+        Route::post('about', [AboutController::class, 'storeAbout'])->name('about.about.store');
+        Route::get('who-we-are', [AboutController::class, 'whoWeAre'])->name('about.who-we-are');
+        Route::post('who-we-are', [AboutController::class, 'storeWhoWeAre'])->name('about.who-we-are.store');
 
-      //about us page
-//about us page
-    Route::get('banner', [AboutController::class, 'banner'])->name('about.banner');
-    Route::post('banner', [AboutController::class, 'storeBanner'])->name('about.banner.store');
-    Route::get('about', [AboutController::class, 'about'])->name('about.about');
-    Route::post('about', [AboutController::class, 'storeAbout'])->name('about.about.store');
-    Route::get('who-we-are', [AboutController::class, 'whoWeAre'])->name('about.who-we-are');
-    Route::post('who-we-are', [AboutController::class, 'storeWhoWeAre'])->name('about.who-we-are.store');
+        Route::get('regional-footprint', [AboutController::class, 'regionalFootprint'])->name('about.regional-footprint');
+        Route::post('regional-footprint', [AboutController::class, 'storeRegionalLocation'])->name('about.regional-footprint.store');
+        Route::post('regional-footprint/{location}/offices', [AboutController::class, 'storeRegionalOffice'])->name('about.regional-footprint.offices.store');
+        Route::delete('regional-footprint/{location}', [AboutController::class, 'destroyRegionalLocation'])->name('about.regional-footprint.destroy');
+        Route::delete('regional-footprint/offices/{office}', [AboutController::class, 'destroyRegionalOffice'])->name('about.regional-footprint.offices.destroy');
+
+        Route::get('operation', [AboutController::class, 'operation'])->name('about.operation');
+        Route::post('operation/videos', [AboutController::class, 'storeOperationVideo'])->name('about.operation.videos.store');
+        Route::delete('operation/videos/{video}', [AboutController::class, 'destroyOperationVideo'])->name('about.operation.videos.destroy');
     
 
     });
