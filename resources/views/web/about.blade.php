@@ -1,4 +1,6 @@
+@extends('web.layout.app')
 
+@section('content')
 <style>
   :root{
     --orange: #E8792D;
@@ -1659,3 +1661,4 @@ initOfficeCarousels();
 }
 });
 </script>
+@endsection
