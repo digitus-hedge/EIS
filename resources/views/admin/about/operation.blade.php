@@ -64,10 +64,6 @@
             <label>Video File (mp4, mov, or webm — max 50MB)</label>
             <input type="file" name="video" accept="video/*">
         </div>
-        <div class="op-checkbox-row">
-            <input type="checkbox" name="is_main" value="1" id="op-is-main">
-            <label for="op-is-main" style="font-weight:normal;margin:0;">Set as the main featured video (only one allowed — this will replace the current one)</label>
-        </div>
         <button type="submit" class="op-btn">Add Video</button>
     </form>
 
@@ -76,9 +72,6 @@
     <div class="op-video-grid">
         @forelse ($videos as $video)
             <div class="op-video-card">
-                @if ($video->is_main)
-                    <span class="op-main-badge">MAIN</span>
-                @endif
                 @if ($video->thumbnail)
                     <img src="{{ asset('storage/' . $video->thumbnail) }}" alt="{{ $video->title }}">
                 @endif

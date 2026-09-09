@@ -343,7 +343,7 @@ public function destroyRegionalOffice(RegionalOffice $office)
  */
 public function operation()
 {
-    $videos = OperationVideo::orderByDesc('is_main')->orderBy('id')->get();
+    $videos = OperationVideo::orderBy('id')->get();
 
     return view('admin.about.operation', compact('videos'));
 }
@@ -359,18 +359,10 @@ public function storeOperationVideo(Request $request)
         'title'       => 'required|string|max:255',
         'description' => 'nullable|string',
         'thumbnail'   => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
-        'video'       => 'nullable|mimes:mp4,mov,webm|max:51200', // 50MB
-        'is_main'     => 'nullable|boolean',
+        'video'       => 'nullable|mimes:mp4,mov,webm|max:10240',
     ]);
 
     try {
-        $isMain = $request->boolean('is_main');
-
-        // Only one main hero video allowed — demote any existing one
-        if ($isMain) {
-            OperationVideo::where('is_main', true)->update(['is_main' => false]);
-        }
-
         $thumbnailPath = null;
         if ($request->hasFile('thumbnail')) {
             $thumbnailPath = $this->processAndStoreImage($request->file('thumbnail'), 'operation/thumbnails');
@@ -386,7 +378,6 @@ public function storeOperationVideo(Request $request)
             'description' => $request->description,
             'thumbnail'   => $thumbnailPath,
             'video'       => $videoPath,
-            'is_main'     => $isMain,
         ]);
 
         gc_collect_cycles();

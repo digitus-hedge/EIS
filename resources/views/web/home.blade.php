@@ -491,8 +491,8 @@
 }
 
 .services-left{
-  flex:0 0 50%;
-  max-width:none;
+   flex:1 1 0;
+  min-width:0;
   position:sticky;
   top:40px;
   align-self:flex-start;
@@ -540,7 +540,8 @@
 }
 
 .services-right{
-  flex:0 0 50%;
+  flex:1 1 0;
+  min-width:0;
   max-width:50%;
 }
 
@@ -1174,8 +1175,8 @@
 /* ===== Photo side (50%) ===== */
 .presence-photo-wrap{
   position:relative;
-  flex:0 0 50%;
-  max-width:50%;
+  flex:1 1 0;
+  min-width:0;
 }
 
 
@@ -1252,9 +1253,8 @@
 
 /* ===== Content side (50%) ===== */
 .presence-content{
-  flex:0 0 50%;
-  max-width:50%;
-  margin-left:50px;
+  flex:1 1 0;
+  min-width:0;
 }
 
 .presence-eyebrow{
@@ -1485,7 +1485,6 @@
             <p class="why-panel-eyebrow">{{ strtoupper($item['label']) }}</p>
             <h3 class="why-panel-heading">{!! nl2br(e($item['heading'])) !!}</h3>
             <p class="why-panel-desc">{{ $item['desc'] }}</p>
-            <a href="{{ url('/services') }}" class="why-panel-link">LEARN MORE <span class="arrow">&#8594;</span></a>
           </div>
           <div
   class="why-panel-photo"

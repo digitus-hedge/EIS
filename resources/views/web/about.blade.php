@@ -618,7 +618,40 @@
   transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1), background 0.25s ease;
   z-index:2;
 }
+.operation-card-play{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%) scale(1);
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.95);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 8px 20px rgba(0,0,0,0.25);
+  transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1), background 0.2s ease;
+  z-index:2;
+}
 
+.operation-card-play::before{
+  content:"";
+  width:0;
+  height:0;
+  border-style:solid;
+  border-width:8px 0 8px 13px;
+  border-color:transparent transparent transparent var(--orange);
+  margin-left:4px;
+}
+
+.operation-card:hover .operation-card-play{
+  transform:translate(-50%, -50%) scale(1.12);
+  background:var(--orange);
+}
+.operation-card:hover .operation-card-play::before{
+  border-color:transparent transparent transparent var(--white);
+}
 .operation-play::before{
   content:"";
   width:0;
@@ -650,7 +683,44 @@
   animation: operationPulse 2.4s ease-out infinite;
   z-index:1;
 }
+.operation-video-overlay{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:flex-end;
+  padding:30px;
+  background:linear-gradient(to top, rgba(20,20,20,0.85) 0%, rgba(20,20,20,0.15) 55%, transparent 100%);
+  opacity:0;
+  transform:translateY(10px);
+  transition:opacity 0.35s ease, transform 0.35s ease;
+  z-index:3;
+  pointer-events:none;
+}
 
+.operation-video:hover .operation-video-overlay{
+  opacity:1;
+  transform:translateY(0);
+}
+
+.operation-video-title{
+  color:var(--white);
+  font-size:22px;
+  font-weight:700;
+  margin:0 0 8px;
+}
+
+.operation-video-desc{
+  color:rgba(255,255,255,0.9);
+  font-size:15px;
+  line-height:1.5;
+  margin:0;
+  max-width:600px;
+}
+.operation-video.is-playing .operation-play,
+.operation-video.is-playing .operation-play-ring,
+.operation-video.is-playing .operation-video-overlay{
+  display:none;
+}
 @keyframes operationPulse{
   0%{ transform:translate(-50%, -50%) scale(1); opacity:0.8; }
   100%{ transform:translate(-50%, -50%) scale(1.9); opacity:0; }
@@ -1172,70 +1242,59 @@
       <h2 class="operation-heading">Inside our inspection process</h2>
     </div>
 
-    <div class="operation-video reveal reveal-delay-1" id="operationVideo">
-      <img src="{{ asset('images/operation_main.jpeg') }}" alt="Inside our inspection process">
-      <div class="operation-play-ring"></div>
-      <div class="operation-play" aria-label="Play video"></div>
-    </div>
-
-    <div class="operation-carousel reveal reveal-delay-2">
-      <button type="button" class="operation-nav" id="operationPrev" aria-label="Previous">&#10094;</button>
-
-      <div class="operation-track-wrap">
-        <div class="operation-track" id="operationTrack">
-          @foreach ($operationClips as $clip)
-            <div class="operation-card">
-              <img src="{{ asset('images/' . $clip['image']) }}" alt="{{ $clip['title'] }}">
-              <div class="operation-card-overlay">
-                <div>
-                  <p class="operation-card-title">{{ $clip['title'] }}</p>
-                  <p class="operation-card-desc">{{ $clip['desc'] }}</p>
-                </div>
-              </div>
-            </div>
-          @endforeach
+    @if ($mainVideo)
+      <div class="operation-video reveal reveal-delay-1"
+           id="operationVideo"
+           data-video-url="{{ $mainVideo->video ? asset('storage/' . $mainVideo->video) : '' }}"
+           data-thumbnail-url="{{ $mainVideo->thumbnail ? asset('storage/' . $mainVideo->thumbnail) : '' }}"
+           data-title="{{ $mainVideo->title }}"
+           data-desc="{{ $mainVideo->description }}">
+        @if ($mainVideo->thumbnail)
+          <img src="{{ asset('storage/' . $mainVideo->thumbnail) }}" alt="{{ $mainVideo->title }}">
+        @endif
+        <div class="operation-play-ring"></div>
+        <div class="operation-play" aria-label="Play video"></div>
+        <div class="operation-video-overlay">
+          <div>
+            <p class="operation-video-title">{{ $mainVideo->title }}</p>
+            <p class="operation-video-desc">{{ $mainVideo->description }}</p>
+          </div>
         </div>
       </div>
+    @endif
 
-      <button type="button" class="operation-nav" id="operationNext" aria-label="Next">&#10095;</button>
-    </div>
+    @if ($operationVideos->count())
+      <div class="operation-carousel reveal reveal-delay-2">
+        <button type="button" class="operation-nav" id="operationPrev" aria-label="Previous">&#10094;</button>
+
+        <div class="operation-track-wrap">
+          <div class="operation-track" id="operationTrack">
+            @foreach ($operationVideos as $clip)
+              <div class="operation-card"
+            data-video-url="{{ $clip->video ? asset('storage/' . $clip->video) : '' }}"
+            data-thumbnail-url="{{ $clip->thumbnail ? asset('storage/' . $clip->thumbnail) : '' }}"
+            data-title="{{ $clip->title }}"
+            data-desc="{{ $clip->description }}">
+          @if ($clip->thumbnail)
+            <img src="{{ asset('storage/' . $clip->thumbnail) }}" alt="{{ $clip->title }}">
+          @endif
+          <div class="operation-card-play"></div>
+          <div class="operation-card-overlay">
+            <div>
+              <p class="operation-card-title">{{ $clip->title }}</p>
+              <p class="operation-card-desc">{{ $clip->description }}</p>
+            </div>
+          </div>
+        </div>
+            @endforeach
+          </div>
+        </div>
+
+        <button type="button" class="operation-nav" id="operationNext" aria-label="Next">&#10095;</button>
+      </div>
+    @endif
   </div>
 </section>
-
-@php
-  $capabilityItems = [
-      [
-          'number' => '01',
-          'label' => 'Oil & Gas Inspection',
-          'desc' => 'Specialized inspection services for critical equipment, tools, and components used throughout Oil & Gas operations. Our experienced inspection team applies proven inspection methods and industry practices to assess equipment condition, identify potential defects, wear, or damage, and support the safe and reliable performance of essential assets. From routine inspections to detailed equipment assessments, EIS provides practical solutions that help clients improve equipment integrity, operational safety, reliability, and service life.',
-      ],
-      [
-          'number' => '02',
-          'label' => 'Non-Destructive Testing',
-          'desc' => 'Modern non-destructive testing methods including magnetic particle, dye penetrant, and ultrasonic thickness testing, carried out by API and ASNT Level 2 qualified personnel to identify surface and subsurface defects without compromising equipment integrity.',
-      ],
-      [
-          'number' => '03',
-          'label' => 'Traceable Reporting',
-          'desc' => 'Every inspection is backed by clear, defensible documentation, giving clients a traceable record of findings, measurements, and recommendations that supports compliance and long-term asset history.',
-      ],
-      [
-          'number' => '04',
-          'label' => 'Repair Support',
-          'desc' => 'Equipped inspection sheds and repair facilities mean issues identified during inspection can often be addressed on the spot, reducing downtime and keeping operations moving.',
-      ],
-      [
-          'number' => '05',
-          'label' => 'Quality & Compliance',
-          'desc' => 'Inspections are carried out to established industry standards and procedures, ensuring consistent, defensible results that meet client and regulatory compliance requirements across every job.',
-      ],
-      [
-          'number' => '06',
-          'label' => 'Regional Support',
-          'desc' => 'With offices in Erbil, Iraq and Dubai, UAE, EIS provides responsive field, on-site, and shop-based support across key energy markets in the region.',
-      ],
-  ];
-@endphp
 
 <section class="capability">
   <div class="capability-inner">
@@ -1244,35 +1303,41 @@
       <h2 class="capability-heading">Technical capability with<br>a safety-first mindset.</h2>
     </div>
 
-    <div class="capability-body">
-      <ul class="capability-tabs" id="capabilityTabs">
-        @foreach ($capabilityItems as $index => $item)
-          <li>
-            <button type="button" class="capability-tab{{ $index === 0 ? ' active' : '' }}" data-capability-index="{{ $index }}">
-              {{ $item['number'] }} / {{ $item['label'] }} <span class="arrow">&#8594;</span>
-            </button>
-          </li>
-        @endforeach
-      </ul>
+   @if (!empty($capabilityItems))
+  <div class="capability-body">
+    <ul class="capability-tabs" id="capabilityTabs">
+      @foreach ($capabilityItems as $index => $item)
+        <li>
+          <button type="button" class="capability-tab{{ $index === 0 ? ' active' : '' }}" data-capability-index="{{ $index }}">
+            {{ sprintf('%02d', $index + 1) }} / {{ $item['subheading'] ?? '' }} <span class="arrow">&#8594;</span>
+          </button>
+        </li>
+      @endforeach
+    </ul>
 
-      <div class="capability-content-wrap" id="capabilityPanels">
-        @foreach ($capabilityItems as $index => $item)
-          <div class="capability-panel{{ $index === 0 ? ' is-active' : '' }}" data-capability-index="{{ $index }}">
-            <div class="capability-panel-text">
-              <p class="capability-panel-desc">{{ $item['desc'] }}</p>
-            </div>
-            <div class="capability-panel-photo">
-              <img src="{{ asset('images/capability/' . $item['number'] . '.jpeg') }}" alt="{{ $item['label'] }}">
-            </div>
+    <div class="capability-content-wrap" id="capabilityPanels">
+      @foreach ($capabilityItems as $index => $item)
+        <div class="capability-panel{{ $index === 0 ? ' is-active' : '' }}" data-capability-index="{{ $index }}">
+          <div class="capability-panel-text">
+            <p class="capability-panel-desc">{{ $item['description'] ?? '' }}</p>
           </div>
-        @endforeach
-      </div>
+          <div class="capability-panel-photo">
+            @if (!empty($item['image']))
+              <img src="{{ asset('storage/' . $item['image']) }}" alt="{{ $item['subheading'] ?? '' }}">
+            @endif
+          </div>
+        </div>
+      @endforeach
     </div>
+  </div>
+@endif
   </div>
 </section>
 <section class="cta-support">
   <div class="cta-support-inner">
-    <div class="cta-support-photo reveal reveal-left" role="img" aria-label="EIS inspectors reviewing plans on site"></div>
+    <div class="cta-support-photo reveal reveal-left"
+     style="background-image: linear-gradient(120deg, rgba(30,30,35,0.4), rgba(30,30,35,0.1) 55%, rgba(232,121,45,0.25)), url('{{ $about && $about->image ? asset('storage/' . $about->image) : asset('images/cta_support.jpeg') }}');"
+     role="img" aria-label="EIS inspectors reviewing plans on site"></div>
 
     <div class="cta-support-content reveal reveal-right reveal-delay-1">
       <p class="cta-support-eyebrow">Work With EIS</p>
@@ -1346,13 +1411,79 @@
     update();
   }
 
-  const operationVideo = document.getElementById('operationVideo');
-  if (operationVideo) {
-    operationVideo.addEventListener('click', function () {
-      // Hook up your actual video/modal logic here
-      console.log('Play video clicked');
-    });
-  }
+  function playInPlace(container) {
+  const videoUrl = container.getAttribute('data-video-url');
+  if (!videoUrl) return;
+
+  const videoEl = document.createElement('video');
+  videoEl.src = videoUrl;
+  videoEl.controls = true;
+  videoEl.autoplay = true;
+  videoEl.style.width = '100%';
+  videoEl.style.height = '100%';
+  videoEl.style.objectFit = 'cover';
+  videoEl.style.display = 'block';
+
+  container.innerHTML = '';
+  container.appendChild(videoEl);
+}
+
+const operationVideo = document.getElementById('operationVideo');
+
+function loadMainVideo(source) {
+  if (!operationVideo) return;
+
+  const videoUrl = source.getAttribute('data-video-url');
+  const thumbUrl = source.getAttribute('data-thumbnail-url');
+  const title = source.getAttribute('data-title') || '';
+  const desc = source.getAttribute('data-desc') || '';
+
+  const titleEl = operationVideo.querySelector('.operation-video-title');
+  const descEl = operationVideo.querySelector('.operation-video-desc');
+  if (titleEl) titleEl.textContent = title;
+  if (descEl) descEl.textContent = desc;
+  operationVideo.setAttribute('data-video-url', videoUrl || '');
+  operationVideo.setAttribute('data-thumbnail-url', thumbUrl || '');
+  operationVideo.setAttribute('data-title', title);
+  operationVideo.setAttribute('data-desc', desc);
+
+  if (!videoUrl) return;
+
+  const videoEl = document.createElement('video');
+  videoEl.src = videoUrl;
+  videoEl.controls = true;
+  videoEl.autoplay = true;
+  videoEl.style.position = 'absolute';
+  videoEl.style.inset = '0';
+  videoEl.style.width = '100%';
+  videoEl.style.height = '100%';
+  videoEl.style.objectFit = 'cover';
+  videoEl.style.zIndex = '1';
+
+  const existingVideo = operationVideo.querySelector('video');
+  if (existingVideo) existingVideo.remove();
+
+  operationVideo.prepend(videoEl);
+  operationVideo.classList.add('is-playing');   // NEW — hides the play button
+
+  videoEl.addEventListener('ended', function () {
+    operationVideo.classList.remove('is-playing');   // NEW — show play button again once it finishes
+  });
+
+  operationVideo.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+if (operationVideo) {
+  operationVideo.addEventListener('click', function () {
+    loadMainVideo(operationVideo);
+  });
+}
+
+document.querySelectorAll('.operation-card').forEach(function (card) {
+  card.addEventListener('click', function () {
+    loadMainVideo(card);
+  });
+});
 });
 
 const capabilityTabs = document.querySelectorAll('#capabilityTabs .capability-tab');
