@@ -182,8 +182,8 @@
 
     <div class="sidebar">
         <div class="sidebar-brand">
-            <img src="{{ asset('images/logo.webp') }}" alt="EGTS Logo" class="sidebar-logo">
-            <h2>EGTS Admin</h2>
+            <img src="{{ asset('images/logo.webp') }}" alt="EIS Logo" class="sidebar-logo">
+            <h2>EIS Admin</h2>
         </div>
 
         <ul>
