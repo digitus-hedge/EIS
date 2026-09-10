@@ -187,66 +187,75 @@
         </div>
 
         <ul>
-            <li>
-                <a href="{{ route('admin.dashboard') }}"
-                    class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                    Dashboard
-                </a>
+    <li>
+        <a href="{{ route('admin.dashboard') }}"
+            class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+            Dashboard
+        </a>
+    </li>
+
+    <li class="has-submenu {{ request()->routeIs('admin.home') || request()->routeIs('admin.home.*') ? 'open' : '' }}">
+        <a onclick="toggleSubmenu(this)">
+            Home
+            <i class="bi bi-chevron-right chevron"></i>
+        </a>
+        <ul class="submenu">
+            <li><a href="{{ route('admin.home.banner') }}"
+                    class="{{ request()->routeIs('admin.home.banner*') ? 'active' : '' }}">Banner Section</a>
             </li>
-
-            <li
-                class="has-submenu {{ request()->routeIs('admin.home') || request()->routeIs('admin.home.*') ? 'open' : '' }}">
-                <a onclick="toggleSubmenu(this)">
-                    Home
-                    <i class="bi bi-chevron-right chevron"></i>
-                </a>
-                <ul class="submenu">
-                    <li><a href="{{ route('admin.home.banner') }}"
-                            class="{{ request()->routeIs('admin.home.banner*') ? 'active' : '' }}">Banner Section</a>
-                    </li>
-                    <li><a href="{{ route('admin.home.about') }}"
-                            class="{{ request()->routeIs('admin.home.about*') ? 'active' : '' }}">About Section</a></li>
-                    <li><a href="{{ route('admin.home.stats') }}"
-                            class="{{ request()->routeIs('admin.home.stats*') ? 'active' : '' }}">Stats Section</a></li>
-                    <li><a href="{{ route('admin.home.services.section') }}"
-                            class="{{ request()->routeIs('admin.home.services.section*') ? 'active' : '' }}">Service
-                            Section</a></li>
-                    <li><a href="{{ route('admin.home.clients') }}"
-                            class="{{ request()->routeIs('admin.home.clients*') ? 'active' : '' }}">Client Section</a>
-                    </li>
-                    <li><a href="{{ route('admin.home.why-choose-us') }}"
-                            class="{{ request()->routeIs('admin.home.why-choose-us*') ? 'active' : '' }}">Why Choose
-                            Us</a>
-                    </li>
-                </ul>
-
-
-
-            <li class="has-submenu {{ request()->routeIs('admin.about') || request()->routeIs('admin.about.*') ? 'open' : '' }}">
-                <a onclick="toggleSubmenu(this)">
-                    About
-                    <i class="bi bi-chevron-right chevron"></i>
-                </a>
-                <ul class="submenu">
-                    <li><a href="{{ route('admin.about.banner') }}"
-                            class="{{ request()->routeIs('admin.about.banner*') ? 'active' : '' }}">Banner</a></li>
-                     <li><a href="{{ route('admin.about.about') }}"
-                            class="{{ request()->routeIs('admin.about.about*') ? 'active' : '' }}">About</a></li>
-                    
-                    <li><a href="{{ route('admin.about.who-we-are') }}"
-                            class="{{ request()->routeIs('admin.about.who-we-are*') ? 'active' : '' }}">Who We Are</a></li>
-                    <li><a href="{{ route('admin.about.regional-footprint') }}"
-                            class="{{ request()->routeIs('admin.about.regional-footprint*') ? 'active' : '' }}">Regional Footprint</a></li>
-                     <li><a href="{{ route('admin.about.operation') }}"
-                            class="{{ request()->routeIs('admin.about.operation*') ? 'active' : '' }}">Operations</a></li>
-                </ul>
-
-                    <li><a href="{{ route('admin.home.services') }}"
-                    class="{{ request()->routeIs('admin.home.services') || (request()->routeIs('admin.home.services.*') && !request()->routeIs('admin.home.services.behind-the-scenes*') && !request()->routeIs('admin.home.services.section*')) ? 'active' : '' }}">Master Service</a>
+            <li><a href="{{ route('admin.home.about') }}"
+                    class="{{ request()->routeIs('admin.home.about*') ? 'active' : '' }}">About Section</a></li>
+            <li><a href="{{ route('admin.home.stats') }}"
+                    class="{{ request()->routeIs('admin.home.stats*') ? 'active' : '' }}">Stats Section</a></li>
+            <li><a href="{{ route('admin.home.services.section') }}"
+                    class="{{ request()->routeIs('admin.home.services.section*') ? 'active' : '' }}">Service
+                    Section</a></li>
+            <li><a href="{{ route('admin.home.clients') }}"
+                    class="{{ request()->routeIs('admin.home.clients*') ? 'active' : '' }}">Client Section</a>
             </li>
-            
+            <li><a href="{{ route('admin.home.why-choose-us') }}"
+                    class="{{ request()->routeIs('admin.home.why-choose-us*') ? 'active' : '' }}">Why Choose
+                    Us</a>
             </li>
         </ul>
+    </li>
+
+    <li class="has-submenu {{ request()->routeIs('admin.about') || request()->routeIs('admin.about.*') ? 'open' : '' }}">
+        <a onclick="toggleSubmenu(this)">
+            About
+            <i class="bi bi-chevron-right chevron"></i>
+        </a>
+        <ul class="submenu">
+            <li><a href="{{ route('admin.about.banner') }}"
+                    class="{{ request()->routeIs('admin.about.banner*') ? 'active' : '' }}">Banner</a></li>
+            <li><a href="{{ route('admin.about.about') }}"
+                    class="{{ request()->routeIs('admin.about.about*') ? 'active' : '' }}">About</a></li>
+            <li><a href="{{ route('admin.about.who-we-are') }}"
+                    class="{{ request()->routeIs('admin.about.who-we-are*') ? 'active' : '' }}">Who We Are</a></li>
+            <li><a href="{{ route('admin.about.regional-footprint') }}"
+                    class="{{ request()->routeIs('admin.about.regional-footprint*') ? 'active' : '' }}">Regional Footprint</a></li>
+            <li><a href="{{ route('admin.about.operation') }}"
+                    class="{{ request()->routeIs('admin.about.operation*') ? 'active' : '' }}">Operations</a></li>
+        </ul>
+    </li>
+
+    <li class="has-submenu {{ request()->routeIs('admin.service') || request()->routeIs('admin.service.*') ? 'open' : '' }}">
+        <a onclick="toggleSubmenu(this)">
+            Service
+            <i class="bi bi-chevron-right chevron"></i>
+        </a>
+        <ul class="submenu">
+            <li><a href="{{ route('admin.service.banner') }}"
+                    class="{{ request()->routeIs('admin.service.banner*') ? 'active' : '' }}">Banner</a></li>
+            <li><a href="{{ route('admin.service.our-service') }}"
+                    class="{{ request()->routeIs('admin.service.our-service*') ? 'active' : '' }}">Our Services</a></li>
+            
+        </ul>
+        <li><a href="{{ route('admin.home.services') }}"
+                    class="{{ request()->routeIs('admin.home.services') || (request()->routeIs('admin.home.services.*') && !request()->routeIs('admin.home.services.behind-the-scenes*') && !request()->routeIs('admin.home.services.section*')) ? 'active' : '' }}">Master Service</a>
+            </li>
+    </li>
+</ul>
     </div>
 
     <div class="main">

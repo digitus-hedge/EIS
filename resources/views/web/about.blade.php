@@ -1,4 +1,6 @@
+@extends('web.layout.app')
 
+@section('content')
 <style>
   :root{
     --orange: #E8792D;
@@ -916,7 +918,7 @@
   border:none;
   padding:0;
   font-family:inherit;
-  font-size:16px;
+  font-size:20px;
   font-weight:600;
   letter-spacing:0.2px;
   color:#a3a3a3;
@@ -927,7 +929,7 @@
 
 .capability-tab .arrow{
   color:var(--orange);
-  font-size:16px;
+  font-size:20px;
   opacity:0.45;
   transition:opacity 0.2s ease, transform 0.2s ease;
 }
@@ -1659,3 +1661,4 @@ initOfficeCarousels();
 }
 });
 </script>
+@endsection

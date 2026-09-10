@@ -26,34 +26,28 @@
   box-shadow:0 4px 18px rgba(0,0,0,0.1);
 }
 
-/* Text colors: light by default (over hero), dark once scrolled */
-.topbar-left span,
-.topbar-right a,
+/* Nav text colors: light by default (over hero), dark once scrolled */
 .site-navbar .nav-links a,
 .site-navbar .nav-toggle{
   color:rgba(255,255,255,0.92);
   transition:color 0.3s ease;
 }
 
-.site-header.is-scrolled .topbar-left span,
-.site-header.is-scrolled .topbar-right a,
 .site-header.is-scrolled .site-navbar .nav-links a,
 .site-header.is-scrolled .site-navbar .nav-toggle{
   color:#1a1a1a;
 }
 
-.topbar-right a:hover{ color:var(--orange); }
-.site-header.is-scrolled .topbar-right a:hover{ color:var(--orange); }
-
-/* ===== Top info bar ===== */
+/* ===== Top info bar — always solid orange, independent of scroll state ===== */
 .topbar{
-  background:transparent;
+  position:relative;
+  background:linear-gradient(90deg, var(--orange) 0%, var(--orange-dark) 100%);
   font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:10px 60px;
-  border-bottom:1px solid rgba(255,255,255,0.15);
+  padding:9px 60px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.12);
 }
 
 .topbar *{ box-sizing:border-box; }
@@ -61,7 +55,7 @@
 .topbar-left{
   display:flex;
   align-items:center;
-  gap:28px;
+  gap:0;
   flex-wrap:wrap;
 }
 
@@ -69,42 +63,66 @@
   display:flex;
   align-items:center;
   gap:8px;
-  color:rgba(255,255,255,0.9);
-  font-size:13.5px;
+  color:#ffffff;
+  font-size:13px;
+  font-weight:500;
   white-space:nowrap;
+  padding:0 20px;
+  position:relative;
+}
+
+/* thin dividers between topbar items instead of a plain gap */
+.topbar-left span:not(:last-child)::after{
+  content:"";
+  position:absolute;
+  right:0;
+  top:50%;
+  transform:translateY(-50%);
+  width:1px;
+  height:14px;
+  background:rgba(255,255,255,0.35);
+}
+
+.topbar-left span:first-child{
+  padding-left:0;
 }
 
 .topbar-left i{
-  color:var(--orange);
-  font-size:14px;
+  color:#ffffff;
+  font-size:13px;
+  opacity:0.95;
 }
 
 .topbar-right{
   display:flex;
   align-items:center;
-  gap:16px;
+  gap:14px;
 }
 
 .topbar-right a{
-  color:rgba(255,255,255,0.9);
-  font-size:15px;
+  color:#ffffff;
+  font-size:14px;
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.15);
   display:flex;
   align-items:center;
   justify-content:center;
-  transition:color 0.2s ease, transform 0.2s ease;
+  transition:background 0.2s ease, transform 0.2s ease;
 }
 .topbar-right a:hover{
-  color:var(--orange);
+  background:rgba(255,255,255,0.3);
   transform:translateY(-2px);
 }
 
 @media (max-width: 1024px){
-  .topbar{ padding:10px 40px; }
+  .topbar{ padding:9px 40px; }
 }
 
 @media (max-width: 900px){
   .topbar{ padding:8px 24px; }
-  .topbar-left span:nth-child(1){ display:none; } /* hide address in the desktop topbar row on tablets */
+  .topbar-left span:first-child{ display:none; } /* hide address in the desktop topbar row on tablets */
 }
 
 @media (max-width: 600px){
@@ -125,11 +143,12 @@
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:22px 60px;
+  padding:20px 60px;
   flex-wrap:wrap;
 }
 
 .site-navbar .brand{
+  position:relative;
   display:flex;
   align-items:center;
   gap:14px;
@@ -137,51 +156,74 @@
 }
 
 .site-navbar .brand-logo{
-  height:54px;
+  height:52px;
   width:auto;
   max-width:60vw;
   display:block;
 }
 
+.brand-logo-scrolled{
+  position:absolute;
+  top:0;
+  left:0;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 0.3s ease;
+}
+
+.site-header.is-scrolled .brand-logo-top{
+  opacity:0;
+}
+
+.site-header.is-scrolled .brand-logo-scrolled{
+  opacity:1;
+  pointer-events:auto;
+}
+
 .site-navbar .nav-links{
   display:flex;
   align-items:center;
-  gap:44px;
+  gap:40px;
   list-style:none;
   margin:0;
   padding:0;
 }
 
 .site-navbar .nav-links a{
-  color:var(--white);
+  position:relative;
   text-decoration:none;
-  font-size:16px;
-  font-weight:500;
-  opacity:0.95;
-  transition:opacity 0.2s ease;
-  white-space:nowrap;
-}
-.site-navbar .nav-links a:hover,
-.site-navbar .nav-links a:focus-visible{
-  opacity:1;
-  text-decoration:underline;
-  text-underline-offset:6px;
-  text-decoration-color:var(--orange);
+  font-size:15.5px;
+  font-weight:600;
+  letter-spacing:0.2px;
+  padding:6px 0;
+  transition:color 0.2s ease;
 }
 
-.site-navbar .nav-toggle{ display:none; }
+.site-navbar .nav-links a::after{
+  content:"";
+  position:absolute;
+  left:0;
+  bottom:0;
+  width:0;
+  height:2px;
+  background:var(--orange);
+  transition:width 0.25s ease;
+}
+
+.site-navbar .nav-links a:hover::after,
+.site-navbar .nav-links a.active::after{
+  width:100%;
+}
 
 .site-navbar .nav-links a.active{
   color:var(--orange);
-  opacity:1;
-  text-decoration:underline;
-  text-underline-offset:6px;
-  text-decoration-color:var(--orange);
 }
 
 .site-header.is-scrolled .site-navbar .nav-links a.active{
   color:var(--orange);
 }
+
+.site-navbar .nav-toggle{ display:none; }
 
 /* ===== Mobile-only info block inside the hamburger menu ===== */
 .nav-mobile-info{
@@ -190,12 +232,12 @@
 
 /* ===== Tablet ===== */
 @media (max-width: 1024px){
-  .site-navbar .navbar{ padding:20px 40px; }
+  .site-navbar .navbar{ padding:18px 40px; }
 }
 
 /* ===== Small tablet / large phone — hamburger menu ===== */
 @media (max-width: 900px){
-  .site-navbar .navbar{ padding:18px 24px; }
+  .site-navbar .navbar{ padding:16px 24px; }
 
   .site-navbar .nav-links{
     position:absolute;
@@ -220,6 +262,7 @@
     padding:6px 0;
     border-bottom:1px solid #eee;
   }
+  .site-navbar .nav-links a::after{ display:none; }
   .site-navbar .nav-links a.active{
     color:var(--orange) !important;
   }
@@ -231,10 +274,16 @@
     display:block;
     background:none;
     border:none;
-    font-size:26px;
+    font-size:24px;
     cursor:pointer;
     line-height:1;
     padding:4px 8px;
+    border-radius:6px;
+    transition:background 0.2s ease;
+  }
+
+  .site-header.is-scrolled .site-navbar .nav-toggle{
+    color:#1a1a1a;
   }
 
   /* Contact + socials block, only visible inside the open mobile menu */
@@ -262,26 +311,31 @@
   .nav-mobile-socials{
     display:flex;
     align-items:center;
-    gap:18px;
+    gap:14px;
     margin-top:10px;
   }
   .nav-mobile-socials a{
-    color:#4a4a4a !important;
-    border-bottom:none !important;
-    font-size:18px;
-    padding:0 !important;
-    transition:color 0.2s ease, transform 0.2s ease;
+    color:#ffffff !important;
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    background:var(--orange);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:16px;
+    transition:background 0.2s ease, transform 0.2s ease;
   }
   .nav-mobile-socials a:hover{
-    color:var(--orange) !important;
+    background:var(--orange-dark) !important;
     transform:translateY(-2px);
   }
 }
 
 /* ===== Phones ===== */
 @media (max-width: 600px){
-  .site-navbar .navbar{ padding:16px 18px; }
-  .site-navbar .brand-logo{ height:40px; }
+  .site-navbar .navbar{ padding:14px 18px; }
+  .site-navbar .brand-logo{ height:38px; }
 
   .site-navbar .nav-links{
     top:calc(100% + 1px);
@@ -293,8 +347,8 @@
 <header class="site-header" id="siteHeader">
   <div class="topbar">
     <div class="topbar-left">
-      <span><i class="bi bi-geo-alt"></i> Gazna Road, Ankawa,Erbil, Iraq</span>
-      <span><i class="bi bi-telephone"></i>+964 662 575316</span>
+      <span><i class="bi bi-geo-alt"></i> Gazna Road, Ankawa, Erbil, Iraq</span>
+      <span><i class="bi bi-telephone"></i> +964 662 575316</span>
       <span><i class="bi bi-envelope"></i> info@eisltd.com</span>
     </div>
     <div class="topbar-right">
@@ -307,7 +361,8 @@
   <div class="site-navbar">
     <nav class="navbar">
       <div class="brand">
-        <img src="{{ asset('images/hero_logo.png') }}" alt="Energy Inspection Services Ltd" class="brand-logo">
+        <img src="{{ asset('images/logo.png') }}" alt="Energy Inspection Services Ltd" class="brand-logo brand-logo-top">
+        <img src="{{ asset('images/hero_logo.png') }}" alt="Energy Inspection Services Ltd" class="brand-logo brand-logo-scrolled">
       </div>
 
       <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">&#9776;</button>
@@ -315,7 +370,7 @@
       <ul class="nav-links" id="navLinks">
         <li><a href="{{ url('/') }}" class="{{ request()->is('/') ? 'active' : '' }}">Home</a></li>
         <li><a href="{{ url('/about') }}" class="{{ request()->is('about') ? 'active' : '' }}">About Us</a></li>
-        <li><a href="{{ url('/services') }}" class="{{ request()->is('services*') ? 'active' : '' }}">Services</a></li>
+         <li><a href="{{ url('/services') }}" class="{{ request()->is('services*') ? 'active' : '' }}">Services</a></li>
         <li><a href="{{ url('/contact') }}" class="{{ request()->is('contact') ? 'active' : '' }}">Contact</a></li>
 
         <li class="nav-mobile-info">

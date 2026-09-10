@@ -1320,7 +1320,7 @@
       <h2>Trusted expertise for critical energy assets.</h2>
       <p>Professional solutions focused on safety, reliability and operational continuity.</p>
     </div>
-    <a href="{{ url('/contact') }}" class="about-cta">
+    <a href="{{ url('#') }}" class="about-cta">
       Request Information <span class="arrow">&#8594;</span>
     </a>
   </div>
