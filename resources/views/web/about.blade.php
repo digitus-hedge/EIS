@@ -113,13 +113,14 @@
     z-index:2;
   }
 
-  .hero .hero-content{
+    .hero .hero-content{
     position:relative;
     z-index:5;
     flex:1;
     display:flex;
-    align-items:center;
-    padding:0 90px;
+    align-items:flex-end;
+    justify-content:flex-start;
+    padding:0 90px 90px;
   }
 
   .hero .hero-inner{ max-width:760px; }
@@ -192,13 +193,13 @@
   }
 
   /* ===== Tablet ===== */
-  @media (max-width: 1024px){
-    .hero .hero-content{ padding:0 50px; }
+   @media (max-width: 1024px){
+    .hero .hero-content{ padding:0 50px 70px; }
   }
 
   /* ===== Small tablet / large phone ===== */
-  @media (max-width: 900px){
-    .hero .hero-content{ padding:0 24px; }
+   @media (max-width: 900px){
+    .hero .hero-content{ padding:0 24px 56px; }
     .hero-dots{ left:24px; bottom:22px; }
   }
 
@@ -912,7 +913,7 @@
 
 .capability-tab{
   display:flex;
-  align-items:center;
+  align-items:flex-end;
   gap:10px;
   background:none;
   border:none;
@@ -927,10 +928,18 @@
   transition:color 0.2s ease;
 }
 
+.capability-tab .label-text{
+  flex:0 1 auto;
+  min-width:0;
+}
+
 .capability-tab .arrow{
+  flex-shrink:0;
   color:var(--orange);
-  font-size:20px;
-  opacity:0.45;
+  font-size:28px;
+  font-weight:700;
+  line-height:1;
+  opacity:0.65;
   transition:opacity 0.2s ease, transform 0.2s ease;
 }
 
@@ -947,6 +956,7 @@
   gap:60px;
   padding-left:70px;
   overflow:hidden;
+  min-height:400px;
 }
 
 .capability-panel{
@@ -1311,8 +1321,9 @@
       @foreach ($capabilityItems as $index => $item)
         <li>
           <button type="button" class="capability-tab{{ $index === 0 ? ' active' : '' }}" data-capability-index="{{ $index }}">
-            {{ sprintf('%02d', $index + 1) }} / {{ $item['subheading'] ?? '' }} <span class="arrow">&#8594;</span>
-          </button>
+  <span class="label-text">{{ sprintf('%02d', $index + 1) }} / {{ $item['subheading'] ?? '' }}</span>
+  <span class="arrow">&#8594;</span>
+</button>
         </li>
       @endforeach
     </ul>

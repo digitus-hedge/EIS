@@ -1,12 +1,12 @@
 @extends('admin.layout')
 
-@section('title', 'Service - Banner Section')
+@section('title', 'Service - Our Services Section')
 
 @section('content')
 <div class="banner-page">
 
     <div class="page-header">
-        <h4>{{ $servicePage->exists ? 'Edit Service Banner' : 'Add Service Banner' }}</h4>
+        <h4>{{ $servicePage->exists ? 'Edit Our Services Section' : 'Add Our Services Section' }}</h4>
     </div>
 
     {{-- Success / error message --}}
@@ -22,38 +22,31 @@
         </div>
     @endif
 
-    <form action="{{ route('admin.service.banner.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.service.our-service.store') }}" method="POST">
         @csrf
 
         <div class="form-group">
-            <label for="banner_title">Title</label>
-            <input type="text" name="banner_title" id="banner_title" class="form-control @error('banner_title') is-invalid @enderror"
-                value="{{ old('banner_title', $servicePage->banner_title ?? '') }}" placeholder="Enter banner title">
-            @error('banner_title')
+            <label for="our_service_title">Title</label>
+            <input type="text" name="our_service_title" id="our_service_title" class="form-control @error('our_service_title') is-invalid @enderror"
+                value="{{ old('our_service_title', $servicePage->our_service_title ?? '') }}" placeholder="Enter section title">
+            @error('our_service_title')
                 <span class="error-text">{{ $message }}</span>
             @enderror
         </div>
 
         <div class="form-group">
-            <label for="banner">Banner Image</label>
-            <input type="file" name="banner" id="banner" accept="image/*"
-                class="form-control @error('banner') is-invalid @enderror" onchange="previewImage(event)">
-            @error('banner')
+            <label for="our_service_description">Description</label>
+            <textarea name="our_service_description" id="our_service_description" rows="6"
+                class="form-control @error('our_service_description') is-invalid @enderror"
+                placeholder="Enter section description">{{ old('our_service_description', $servicePage->our_service_description ?? '') }}</textarea>
+            @error('our_service_description')
                 <span class="error-text">{{ $message }}</span>
             @enderror
-
-            <div class="image-preview-wrap">
-                @if ($servicePage->banner)
-                    <img id="imagePreview" src="{{ asset('storage/' . $servicePage->banner) }}" alt="Service Banner">
-                @else
-                    <img id="imagePreview" src="#" alt="Image Preview" style="display:none;">
-                @endif
-            </div>
         </div>
 
         <div class="form-actions">
             <button type="submit" class="btn-save">
-                {{ $servicePage->exists ? 'Update Banner' : 'Save Banner' }}
+                {{ $servicePage->exists ? 'Update Section' : 'Save Section' }}
             </button>
         </div>
     </form>
@@ -78,11 +71,16 @@
 
     .form-control {
         width: 100%;
-        max-width: 500px;
+        max-width: 700px;
         padding: 10px 12px;
         border: 1px solid #ccc;
         border-radius: 6px;
         font-size: 14px;
+        font-family: inherit;
+    }
+
+    textarea.form-control {
+        resize: vertical;
     }
 
     .form-control.is-invalid {
@@ -94,18 +92,6 @@
         font-size: 13px;
         display: block;
         margin-top: 4px;
-    }
-
-    .image-preview-wrap {
-        margin-top: 12px;
-    }
-
-    .image-preview-wrap img {
-        max-width: 300px;
-        max-height: 180px;
-        border-radius: 8px;
-        border: 1px solid #ddd;
-        object-fit: cover;
     }
 
     .form-actions {
@@ -144,15 +130,4 @@
         border: 1px solid #f5c6cb;
     }
 </style>
-
-<script>
-    function previewImage(event) {
-        const preview = document.getElementById('imagePreview');
-        const file = event.target.files[0];
-        if (file) {
-            preview.src = URL.createObjectURL(file);
-            preview.style.display = 'block';
-        }
-    }
-</script>
 @endsection

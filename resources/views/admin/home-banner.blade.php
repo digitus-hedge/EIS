@@ -39,20 +39,24 @@
             <div>
                 <label style="display:block; margin-bottom:5px; font-weight:600;">Image 1</label>
                 <input type="file" name="image_1" accept="image/*">
+                <p style="font-size:12px; color:#888; margin-top:4px; max-width:200px;">Will be cropped to 1200×600px (JPG, PNG, WEBP) · Max 10MB</p>
             </div>
             <div>
                 <label style="display:block; margin-bottom:5px; font-weight:600;">Image 2</label>
                 <input type="file" name="image_2" accept="image/*">
+                <p style="font-size:12px; color:#888; margin-top:4px; max-width:200px;">Will be cropped to 1200×600px (JPG, PNG, WEBP) · Max 10MB</p>
             </div>
             <div>
                 <label style="display:block; margin-bottom:5px; font-weight:600;">Image 3</label>
                 <input type="file" name="image_3" accept="image/*">
+                <p style="font-size:12px; color:#888; margin-top:4px; max-width:200px;">Will be cropped to 1200×600px (JPG, PNG, WEBP) · Max 10MB</p>
             </div>
         </div>
 
         <div style="margin-bottom:20px;">
             <label style="display:block; margin-bottom:5px; font-weight:600;">Video</label>
-            <input type="file" name="video" accept="video/*">
+            <input type="file" name="video" accept="video/mp4,video/quicktime,video/x-msvideo,video/x-ms-wmv,video/webm">
+            <p style="font-size:12px; color:#888; margin-top:4px; max-width:300px;">Formats: MP4, MOV, AVI, WMV, WEBM · Max 20MB</p>
         </div>
 
         <button type="submit"

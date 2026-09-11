@@ -196,9 +196,9 @@
   .about-heading{ margin-bottom:12px; }
 
   .about-text{
-    max-height:150px;
-    padding-left:20px;    /* reduced from 40px */
-  }
+  max-height:none;
+  padding-left:20px;
+}
   .about-text p{ font-size:16px; }
 }
 
@@ -216,7 +216,7 @@
 
   .about-heading{ font-size:clamp(18px, 6vw, 24px); margin-bottom:10px; }
 
-  .about-text{ gap:12px; max-height:130px; padding-left:0; }
+  .about-text{ gap:12px; max-height:none; padding-left:0; }
   .about-text p{ font-size:14.5px; }
 }
 
@@ -226,7 +226,7 @@
   .about-photo{ height:170px; }
   .about-content{ padding:18px 14px; }
   .about-heading{ font-size:18px; }
-  .about-text{ max-height:110px; }
+  .about-text{ max-height:none; }
   .about-text p{ font-size:14px; }
 }
 
@@ -1329,7 +1329,7 @@
     <div
       class="about-photo reveal reveal-left"
       role="img"
-      aria-label="{{ $about->title ?? 'EIS inspectors reviewing plans on site' }}"
+      aria-label="{{ $about->title ?? null }}"
       @if(!empty($about->image))
         style="background-image: linear-gradient(120deg, rgba(30,30,35,0.55), rgba(30,30,35,0.15) 55%, rgba(232,121,45,0.35)), url('{{ asset('storage/' . $about->image) }}');"
       @endif
@@ -1337,11 +1337,11 @@
 
     <div class="about-content reveal reveal-right">
       <p class="about-eyebrow">About EIS</p>
-      <h3 class="about-heading">{{ $about->title}}</h3>
+      <h3 class="about-heading">{{ $about->title ?? null }}</h3>
 
       <div class="about-text-wrap">
         <div class="about-text" id="aboutText">
-            {!! $about->description !!}
+            {!! $about->description ?? null !!}
         </div>
         <div class="about-text-fade" id="aboutTextFade"></div>
       </div>
@@ -1418,7 +1418,7 @@
 </section>
 
 @php
-   $trustedLogos = collect($clientSection->images);
+   $trustedLogos = collect(optional($clientSection)->images ?? []);
 @endphp
 
 <section class="trusted">

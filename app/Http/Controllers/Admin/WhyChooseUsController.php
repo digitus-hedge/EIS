@@ -24,8 +24,12 @@ class WhyChooseUsController extends Controller
             'items.*.title'          => 'required|string|max:255',
             'items.*.subheading'     => 'nullable|string|max:255',
             'items.*.description'    => 'required|string',
-            'items.*.image'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'items.*.image'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
             'items.*.existing_image' => 'nullable|string',
+        ], [
+            'items.*.image.max'   => 'The image must not exceed 10MB.',
+            'items.*.image.image' => 'The file must be a valid image.',
+            'items.*.image.mimes' => 'The image must be a JPG, PNG, or WEBP file.',
         ]);
 
         $why = WhyChooseUs::first() ?? new WhyChooseUs();

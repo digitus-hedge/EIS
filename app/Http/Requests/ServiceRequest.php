@@ -28,14 +28,14 @@ class ServiceRequest extends FormRequest
             'specifications.*.details'       => 'required|string|max:255',
             'specifications.*.compliance'    => 'required|string|max:100',
 
-            'image'        => 'nullable|image|mimes:jpeg,jpg,png,webp|max:2048',
-            'banner_image' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:2048',
+            'image'        => 'nullable|image|mimes:jpeg,jpg,png,webp|max:10240',
+            'banner_image' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:10240',
 
             'meta_title'       => 'nullable|string|max:60',
             'meta_description' => 'nullable|string|max:160',
 
             'gallery'          => [$isUpdate ? 'nullable' : 'required', 'array', 'max:6'],
-            'gallery.*'        => 'image|mimes:jpeg,jpg,png,webp|max:2048',
+            'gallery.*'        => 'image|mimes:jpeg,jpg,png,webp|max:10240',
 
             'remove_gallery'   => 'nullable|array',
             'remove_gallery.*' => 'string',

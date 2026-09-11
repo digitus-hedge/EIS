@@ -155,8 +155,8 @@ class ServiceController extends Controller
         $service->description = $data['description'];
         $service->process_description = $data['process_description'] ?? null;
 
-        $service->meta_title = $data['meta_title'] ?? null;
-        $service->meta_description = $data['meta_description'] ?? null;
+        // $service->meta_title = $data['meta_title'] ?? null;
+        // $service->meta_description = $data['meta_description'] ?? null;
 
         $service->technical_scope = collect($data['technical_scope'] ?? [])
             ->filter(fn($v) => trim((string) $v) !== '')

@@ -1,3 +1,6 @@
+@extends('web.layout.app')
+
+@section('content')
 <style>
 :root{
     --orange: #E8792D;
@@ -40,31 +43,6 @@
   .hero-slide.active{
     opacity:1;
     z-index:1;
-  }
-
-  .hero-dots{
-    position:absolute;
-    left:60px;
-    bottom:36px;
-    z-index:10;
-    display:flex;
-    gap:10px;
-  }
-
-  .hero-dot{
-    width:11px;
-    height:11px;
-    border-radius:50%;
-    background:rgba(255,255,255,0.45);
-    border:none;
-    padding:0;
-    cursor:pointer;
-    transition:background 0.2s ease, transform 0.2s ease;
-  }
-
-  .hero-dot.active{
-    background:var(--orange);
-    transform:scale(1.15);
   }
 
   .hero .rig-decor{
@@ -149,18 +127,14 @@
     transform:translateY(-2px);
   }
 
-  /* ===== Tablet ===== */
   @media (max-width: 1024px){
     .hero .hero-content{ padding:0 50px; }
   }
 
-  /* ===== Small tablet / large phone ===== */
   @media (max-width: 900px){
     .hero .hero-content{ padding:0 24px; }
-    .hero-dots{ left:24px; bottom:22px; }
   }
 
-  /* ===== Phones ===== */
   @media (max-width: 600px){
     .hero{ min-height:auto; }
     .hero .hero-content{
@@ -178,11 +152,8 @@
       width:100%;
       padding:15px 24px;
     }
-    .hero-dots{ left:20px; bottom:16px; }
-    .hero-dot{ width:9px; height:9px; }
   }
 
-  /* ===== Very small phones ===== */
   @media (max-width: 380px){
     .hero .hero-content{ padding:48px 16px 48px; }
     .hero .eyebrow{ font-size:14px; }
@@ -256,7 +227,6 @@
     max-width:640px;
   }
 
-  /* ===== scroll-reveal motion ===== */
   .reveal{
     opacity:0;
     transform:translateY(32px);
@@ -278,13 +248,11 @@
     }
   }
 
-  /* ===== Tablet ===== */
   @media (max-width: 1024px){
     .services-intro{ padding:64px 40px 70px; }
     .services-intro-inner{ gap:44px; }
   }
 
-  /* ===== Small tablet — stack columns, divider becomes horizontal ===== */
   @media (max-width: 900px){
     .services-intro{ padding:56px 24px 60px; }
     .services-intro-inner{
@@ -308,7 +276,6 @@
     .services-intro-desc{ max-width:none; }
   }
 
-  /* ===== Phones ===== */
   @media (max-width: 600px){
     .services-intro{ padding:46px 18px 50px; }
     .services-intro-eyebrow{ font-size:16px; margin-bottom:12px; }
@@ -317,7 +284,6 @@
     .services-intro-inner{ gap:22px; }
   }
 
-  /* ===== Very small phones ===== */
   @media (max-width: 380px){
     .services-intro{ padding:38px 14px 44px; }
     .services-intro-heading{ font-size:22px; }
@@ -381,7 +347,6 @@
   }
   .inspect-count strong{ color:#111111; font-weight:800; }
 
-  /* ===== Grid ===== */
   .inspect-grid{
     display:grid;
     grid-template-columns:repeat(4, 1fr);
@@ -452,24 +417,14 @@
     padding:14px 16px;
   }
 
-  /* ===== reveal motion ===== */
-  .reveal{
-    opacity:0;
-    transform:translateY(32px);
-    transition:opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1);
-    will-change:opacity, transform;
-  }
-  .reveal.in-view{ opacity:1; transform:translateY(0); }
   .reveal-delay-1{ transition-delay:0.08s; }
   .reveal-delay-2{ transition-delay:0.16s; }
   .reveal-delay-3{ transition-delay:0.24s; }
 
   @media (prefers-reduced-motion: reduce){
-    .reveal, .reveal.in-view{ opacity:1 !important; transform:none !important; transition:none !important; }
     .inspect-card, .inspect-card-photo{ transition:none !important; }
   }
 
-  /* ===== Pagination ===== */
   .inspect-pagination{
     display:flex;
     align-items:center;
@@ -530,7 +485,6 @@
     color:#ffffff;
   }
 
-  /* ===== Tablet ===== */
   @media (max-width: 1100px){
     .inspect-grid{ grid-template-columns:repeat(3, 1fr); }
   }
@@ -540,7 +494,6 @@
     .inspect-header{ gap:44px; margin-bottom:44px; }
   }
 
-  /* ===== Small tablet — stack header, 2-col grid ===== */
   @media (max-width: 900px){
     .inspect{ padding:56px 24px 70px; }
     .inspect-header{ flex-direction:column; gap:22px; }
@@ -553,7 +506,6 @@
     .inspect-grid{ grid-template-columns:repeat(2, 1fr); gap:22px; }
   }
 
-  /* ===== Phones ===== */
   @media (max-width: 560px){
     .inspect{ padding:44px 16px 56px; }
     .inspect-heading{ font-size:clamp(24px, 7vw, 30px); }
@@ -580,7 +532,6 @@
   gap:70px;
 }
 
-/* ===== Photo side (50%) ===== */
 .presence-photo-wrap{
   position:relative;
   flex:0 0 50%;
@@ -659,7 +610,6 @@
   margin-top:2px;
 }
 
-/* ===== Content side (50%) ===== */
 .presence-content{
   flex:0 0 50%;
   max-width:50%;
@@ -711,7 +661,6 @@
   .presence-inner{ flex-direction:column; gap:56px; }
   .presence-photo-wrap,
   .presence-content{ flex-basis:auto; max-width:none; width:100%; }
-  .presence-photo-wrap::before{ width:60%; height:60%; }
   .presence-badge{ right:12px; bottom:-20px; padding:14px 18px; }
 }
 
@@ -721,41 +670,24 @@
 }
 </style>
 
-@php
-  // Collect whichever banner images are populated into one array
-  $heroImages = collect([$banner->image_1 ?? null, $banner->image_2 ?? null, $banner->image_3 ?? null])
-      ->filter()
-      ->values();
-
-  // Fallback to a default static image if no banner images exist in DB
-  if ($heroImages->isEmpty()) {
-      $heroImages = collect(['images/hero_image.jpeg']);
-  }
-@endphp
-
 <section class="hero">
 @include('web.layout.navbar')
 
-  <div class="hero-slides">
-    @foreach ($heroImages as $index => $image)
+  @if ($servicePage && $servicePage->banner)
+    <div class="hero-slides">
       <img
-        src="{{ Str::startsWith($image, 'images/') ? asset($image) : asset('storage/' . $image) }}"
-        class="hero-slide @if($index === 0) active @endif"
-        alt="{{ $banner->title ?? 'Banner image' }}"
+        src="{{ asset('storage/' . $servicePage->banner) }}"
+        class="hero-slide active"
+        alt="{{ $servicePage->banner_title ?? 'Service banner' }}"
       >
-    @endforeach
-  </div>
-
-  @if ($heroImages->count() > 1)
-    <div class="hero-dots" id="heroDots">
-      @foreach ($heroImages as $index => $image)
-        <button
-          type="button"
-          class="hero-dot @if($index === 0) active @endif"
-          data-slide="{{ $index }}"
-          aria-label="Slide {{ $index + 1 }}"
-        ></button>
-      @endforeach
+    </div>
+  @else
+    <div class="hero-slides">
+      <img
+        src="{{ asset('images/hero_image.jpeg') }}"
+        class="hero-slide active"
+        alt="Service banner"
+      >
     </div>
   @endif
 
@@ -764,9 +696,8 @@
 
   <div class="hero-content">
     <div class="hero-inner">
-    <h6 class="lede">{{ $banner->description ?? 'API And DS-1/NS-1 Certified Inspection' }}</h6>
-      <h1>{{ $banner->title ?? 'Inspection Services for the Oil and' }}</h1>
-      <h1>{{ $banner->title ?? 'Inspection Services for the Oil and Gas Industry' }}</h1>
+      <p class="eyebrow">Quality. Safety. Reliability.</p>
+      <h1>{{ $servicePage->banner_title ?? 'Inspection Services for the Oil and Gas Industry' }}</h1>
     </div>
   </div>
 </section>
@@ -775,14 +706,14 @@
 
     <div class="services-intro-left reveal reveal-left">
       <p class="services-intro-eyebrow">Our Services</p>
-      <h1 class="services-intro-heading">Advanced Inspection for<br> Critical Equipment</h1>
+      <h1 class="services-intro-heading">{{ $servicePage->our_service_title ?? 'Advanced Inspection for Critical Equipment' }}</h1>
     </div>
 
     <div class="services-intro-divider" aria-hidden="true"></div>
 
     <div class="services-intro-right reveal reveal-right">
       <p class="services-intro-desc">
-        Energy Inspection Services provides reliable, standards-driven inspection and repair solutions for the Oil &amp; Gas industry, supporting clients in maintaining the safety, integrity, and performance of their critical equipment. From field and on-site inspections to fully equipped shop-based operations, our qualified and experienced professionals deliver comprehensive inspection services using modern non-destructive testing (NDT) technologies and established industry standards. With a strong focus on precision, safety, quality, and operational reliability, we help identify potential equipment issues, maintain compliance, and support our clients in achieving safer and more efficient Oil &amp; Gas operations.
+        {{ $servicePage->our_service_description ?? 'Energy Inspection Services provides reliable, standards-driven inspection and repair solutions for the Oil & Gas industry, supporting clients in maintaining the safety, integrity, and performance of their critical equipment. From field and on-site inspections to fully equipped shop-based operations, our qualified and experienced professionals deliver comprehensive inspection services using modern non-destructive testing (NDT) technologies and established industry standards. With a strong focus on precision, safety, quality, and operational reliability, we help identify potential equipment issues, maintain compliance, and support our clients in achieving safer and more efficient Oil & Gas operations.' }}
       </p>
     </div>
 
@@ -894,39 +825,6 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    const heroSlides = document.querySelectorAll('.hero-slide');
-    const heroDots = document.querySelectorAll('.hero-dot');
-    let heroIndex = 0;
-    let heroTimer;
-
-    function showHeroSlide(index) {
-      heroSlides.forEach(function (s) { s.classList.remove('active'); });
-      heroDots.forEach(function (d) { d.classList.remove('active'); });
-      heroSlides[index].classList.add('active');
-      if (heroDots[index]) heroDots[index].classList.add('active');
-      heroIndex = index;
-    }
-
-    function startHeroAutoplay() {
-      clearInterval(heroTimer);
-      heroTimer = setInterval(function () {
-        showHeroSlide((heroIndex + 1) % heroSlides.length);
-      }, 6000);
-    }
-
-    if (heroSlides.length > 1) {
-      heroDots.forEach(function (dot) {
-        dot.addEventListener('click', function () {
-          showHeroSlide(parseInt(dot.getAttribute('data-slide'), 10));
-          startHeroAutoplay();
-        });
-      });
-      startHeroAutoplay();
-    }
-  });
-
-  // ===== Scroll-reveal for ALL .reveal elements on this page =====
-  document.addEventListener('DOMContentLoaded', function () {
     const revealEls = document.querySelectorAll('.reveal');
     if ('IntersectionObserver' in window && revealEls.length) {
       const revealObserver = new IntersectionObserver(function (entries, obs) {
@@ -1004,3 +902,4 @@
     });
   });
 </script>
+@endsection

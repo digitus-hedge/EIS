@@ -21,12 +21,9 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/about', [AboutPageController::class, 'index'])->name('about');
 
-Route::get('/services', function () {
-    return view('web.services');
-})->name('services');
-
 Route::get('/services/{slug}', [ServiceDetailController::class, 'show']);
-
+Route::get('/services', [ServiceDetailController::class, 'index'])->name('services');
+ Route::get('/services/{slug}', [ServiceDetailController::class, 'show']);
 
 Route::prefix('admin')->name('admin.')->group(function () {
 

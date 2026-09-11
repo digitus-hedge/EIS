@@ -6,6 +6,7 @@
     display:flex;
     flex-direction:column;
     background:
+      radial-gradient(ellipse at 15% 85%, rgba(10,10,10,0.55), transparent 45%),
       radial-gradient(ellipse at 70% 25%, rgba(120,190,190,0.35), transparent 20%),
       linear-gradient(100deg, rgba(10,20,20,0.82) 0%, rgba(10,20,20,0.35) 42%, rgba(60,90,90,0.15) 60%, rgba(10,20,20,0.55) 100%);
     overflow:hidden;
@@ -74,47 +75,71 @@
     z-index:2;
   }
 
+  /* ===== Content block — anchored bottom-left on ALL screen sizes ===== */
   .hero .hero-content{
     position:relative;
     z-index:5;
     flex:1;
     display:flex;
-    align-items:center;
-    padding:0 90px;
+    align-items:flex-end;
+    justify-content:flex-start;
+    padding:0 90px 90px;
   }
 
-  .hero .hero-inner{ max-width:760px; }
+  .hero .hero-inner{
+    max-width:760px;
+    animation: heroFadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  @keyframes heroFadeUp{
+    from{ opacity:0; transform:translateY(28px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
 
   .hero .eyebrow{
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
     color:var(--cream);
-    font-size:19px;
-    font-weight:600;
-    margin-bottom:22px;
-    letter-spacing:0.2px;
+    font-size:15px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:1.6px;
+    margin-bottom:20px;
+  }
+
+  .hero .eyebrow::before{
+    content:"";
+    display:inline-block;
+    width:36px;
+    height:2px;
+    background:var(--orange);
+    border-radius:2px;
   }
 
   .hero h1{
     color:var(--white);
-    font-size:clamp(28px, 4.2vw, 60px);
+    font-size:clamp(28px, 4.2vw, 58px);
     line-height:1.12;
     font-weight:800;
     letter-spacing:-0.5px;
-    margin:0 0 26px;
-    text-shadow: 0 2px 24px rgba(0,0,0,0.35);
+    margin:0 0 22px;
+    text-shadow: 0 4px 28px rgba(0,0,0,0.45);
     word-break:break-word;
   }
 
   .hero .lede{
     color:rgba(255,255,255,0.92);
-    font-size:clamp(15px, 1.6vw, 19px);
-    line-height:1.55;
-    max-width:640px;
-    margin:0 0 36px;
+    font-size:clamp(15px, 1.5vw, 18px);
+    line-height:1.6;
+    max-width:600px;
+    margin:0 0 34px;
   }
 
   .hero .cta-row{
     display:flex;
-    gap:18px;
+    gap:16px;
     flex-wrap:wrap;
   }
 
@@ -122,12 +147,13 @@
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    padding:16px 30px;
+    gap:8px;
+    padding:16px 32px;
     border-radius:30px;
     font-size:16px;
     font-weight:700;
     text-decoration:none;
-    transition: transform 0.15s ease, background 0.2s ease, color 0.2s ease;
+    transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
     cursor:pointer;
     border:2px solid transparent;
     white-space:nowrap;
@@ -136,65 +162,70 @@
   .hero .btn-primary{
     background:var(--orange);
     color:var(--white);
+    box-shadow:0 10px 26px rgba(232,121,45,0.35);
   }
   .hero .btn-primary:hover{
     background:var(--orange-dark);
-    transform:translateY(-2px);
+    transform:translateY(-3px);
+    box-shadow:0 14px 32px rgba(232,121,45,0.45);
   }
 
   .hero .btn-secondary{
-    background:transparent;
+    background:rgba(255,255,255,0.06);
     border-color:rgba(255,255,255,0.75);
     color:var(--white);
+    backdrop-filter:blur(2px);
   }
   .hero .btn-secondary:hover{
-    background:rgba(255,255,255,0.12);
-    transform:translateY(-2px);
+    background:rgba(255,255,255,0.16);
+    transform:translateY(-3px);
+  }
+
+  .hero .btn-secondary .arrow{
+    transition:transform 0.2s ease;
+  }
+  .hero .btn-secondary:hover .arrow{
+    transform:translateX(3px);
   }
 
   /* ===== Tablet ===== */
   @media (max-width: 1024px){
-    .hero .hero-content{ padding:0 50px; }
+    .hero .hero-content{ padding:0 50px 70px; }
   }
 
   /* ===== Small tablet / large phone ===== */
   @media (max-width: 900px){
-    .hero .hero-content{ padding:0 24px; }
+    .hero .hero-content{ padding:0 24px 56px; }
     .hero-dots{ left:24px; bottom:22px; }
+
+    /* Buttons already live in the hamburger menu at this breakpoint — avoid showing them twice */
+    .hero .cta-row{ display:none; }
   }
 
   /* ===== Phones ===== */
   @media (max-width: 600px){
-    .hero{ min-height:auto; }
-    .hero .hero-content{
-      padding:60px 20px 60px;
-      align-items:flex-start;
+    .hero{
+      min-height:60vh;
+      min-height:60svh;
     }
-    .hero .eyebrow{ font-size:15px; margin-bottom:14px; }
-    .hero h1{ margin-bottom:18px; }
-    .hero .lede{ margin-bottom:26px; }
-    .hero .cta-row{
-      flex-direction:column;
-      width:100%;
-    }
-    .hero .btn{
-      width:100%;
-      padding:15px 24px;
-    }
+    .hero .hero-content{ padding:60px 20px 48px; }
+    .hero .eyebrow{ font-size:13px; margin-bottom:14px; }
+    .hero h1{ margin-bottom:16px; }
+    .hero .lede{ margin-bottom:0; }
     .hero-dots{ left:20px; bottom:16px; }
     .hero-dot{ width:9px; height:9px; }
   }
 
   /* ===== Very small phones ===== */
   @media (max-width: 380px){
-    .hero .hero-content{ padding:48px 16px 48px; }
-    .hero .eyebrow{ font-size:14px; }
-    .hero .btn{ font-size:14px; padding:14px 20px; }
+    .hero .hero-content{ padding:48px 16px 40px; }
+    .hero .eyebrow{ font-size:12px; }
   }
 
   @media (prefers-reduced-motion: reduce){
     .hero-slide{ transition:none; }
     .hero .btn{ transition:none; }
+    .hero .hero-inner{ animation:none; }
   }
 </style>
 
@@ -208,7 +239,7 @@
       $heroImages = collect([$banner->image_1 ?? null, $banner->image_2 ?? null, $banner->image_3 ?? null])
           ->filter()
           ->values();
-      // No static fallback image anymore — if empty, the section just shows the gradient background.
+      // No static fallback image — if empty, the section just shows the gradient background.
   }
 @endphp
 
@@ -256,12 +287,18 @@
 
   <div class="hero-content">
     <div class="hero-inner">
-      <p class="eyebrow">Engineering, Inspection, Energy</p>
-      <h1>{{ $banner->title ?? 'Inspection Services for the Oil and Gas Industry' }}</h1>
-      <p class="lede">{{ $banner->description ?? 'Established in Erbil, Iraq, EIS Ltd provides on-site, field and shop-based inspection services for the Oil and Gas Industries, supported by qualified personnel and modern non-destructive testing equipment.' }}</p>
+      @if (!empty($banner->title))
+        <p class="eyebrow">Engineering, Inspection, Energy</p>
+        <h1>{{ $banner->title }}</h1>
+      @endif
+
+      @if (!empty($banner->description))
+        <p class="lede">{{ $banner->description }}</p>
+      @endif
+
       <div class="cta-row">
         <a href="{{ url('/contact') }}" class="btn btn-primary">Contact Us Now</a>
-        <a href="{{ url('/services') }}" class="btn btn-secondary">Explore Services</a>
+        <a href="{{ url('/services') }}" class="btn btn-secondary">Explore Services <span class="arrow">&#8594;</span></a>
       </div>
     </div>
   </div>
