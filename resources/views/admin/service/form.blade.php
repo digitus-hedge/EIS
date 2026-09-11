@@ -3,676 +3,6 @@
 @section('content')
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-@if ($errors->any())
-<div class="alert alert-error">
-    <i class="bi bi-exclamation-circle"></i>
-    Please fill below fields before submitting
-</div>
-@endif
-
-@if (session('success'))
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        Swal.fire({
-            icon: 'success',
-            title: 'Saved!',
-            text: @json(session('success')),
-            confirmButtonColor: '#3b3b58',
-            timer: 2500,
-            timerProgressBar: true
-        });
-    });
-</script>
-@endif
-
-<div class="form-header">
-    <h4>
-        <i class="bi bi-{{ $service->exists ? 'pencil-square' : 'plus-circle' }}"></i>
-        {{ $service->exists ? 'Edit Service' : 'Add Service' }}
-    </h4>
-    <a href="{{ route('admin.home.services') }}" class="btn-back">
-        <i class="bi bi-arrow-left"></i> Back to list
-    </a>
-</div>
-
-<form action="{{ $service->exists ? route('admin.home.services.update', $service->id) : route('admin.home.services.store') }}"
-    method="POST" enctype="multipart/form-data" class="banner-form" id="serviceForm">
-    @csrf
-    @if ($service->exists)
-    @method('PUT')
-    @endif
-
-    <div class="container-fluid px-0">
-        <div class="row">
-
-            {{-- Title + Sort Order --}}
-            <div class="col-md-8">
-                <div class="form-card">
-                    <div class="form-group">
-                        <label><i class="bi bi-type"></i> Title</label>
-                        <input type="text" name="title" value="{{ old('title', $service->title) }}"
-                            class="{{ $errors->has('title') ? 'input-error' : '' }}"
-                            placeholder="e.g. API Threading Services">
-                        @error('title')
-                        <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-            </div>
-
-            {{-- Short Description --}}
-            <div class="col-md-12">
-                <div class="form-card">
-                    <div class="form-group">
-                        <label><i class="bi bi-card-text"></i> Short Description</label>
-                        <p class="hint-text">Shown on the homepage card and listing page under the title.</p>
-                        <textarea name="description" rows="3"
-                            class="{{ $errors->has('description') ? 'input-error' : '' }}"
-                            placeholder="e.g. API threading and machining solutions for critical oilfield connections.">{{ old('description', $service->description) }}</textarea>
-                        @error('description')
-                        <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-            </div>
-
-
-         <div class="col-md-12">
-    <div class="form-card">
-        <label class="section-label"><i class="bi bi-image"></i> Banner Image</label>
-        <!-- <p class="hint-text">Used on listing cards and the service detail page hero. Max <strong>2MB</strong>.</p> -->
-
-          <div class="upload-guidelines">
-                        <span class="guideline-item">
-                            <i class="bi bi-file-earmark-image"></i>
-                            Accepted: <strong>JPG, PNG, WEBP</strong>
-                        </span>
-                        <span class="guideline-divider"></span>
-                        <span class="guideline-item">
-                            <i class="bi bi-hdd"></i>
-                            Max size: <strong>10MB</strong> per image
-                        </span>
-                        <span class="guideline-divider"></span>
-                        <span class="guideline-item">
-                            <i class="bi bi-aspect-ratio"></i>
-                            Recommended: <strong>{{ $imageWidth ?? 1200 }} × {{ $imageHeight ?? 600 }}px</strong>
-                        </span>
-                    </div>
-
-
-        <div class="image-upload-box">
-            <div class="preview-wrap">
-                @if ($service->banner_image)
-                    <img src="{{ Storage::url($service->banner_image) }}" class="preview-img" id="preview-banner-image">
-                @else
-                    <div class="preview-placeholder" id="preview-banner-image">
-                        <i class="bi bi-image"></i>
-                    </div>
-                @endif
-            </div>
-            <label class="upload-btn {{ $errors->has('banner_image') ? 'upload-btn-error' : '' }}">
-                <i class="bi bi-upload"></i> Choose file
-                <input type="file" name="banner_image" accept="image/*"
-                       onchange="previewImage(this, 'preview-banner-image')" hidden>
-            </label>
-            @error('banner_image')
-                <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
-            @enderror
-        </div>
-    </div>
-</div>
-
-
-            {{-- Hero Image --}}
-            <div class="col-md-12">
-                <div class="form-card">
-                    <label class="section-label"><i class="bi bi-image"></i> Hero Image</label>
-                    <p class="hint-text">Used on listing cards and the service detail page hero</p>
-
-                             <div class="upload-guidelines">
-                        <span class="guideline-item">
-                            <i class="bi bi-file-earmark-image"></i>
-                            Accepted: <strong>JPG, PNG, WEBP</strong>
-                        </span>
-                        <span class="guideline-divider"></span>
-                        <span class="guideline-item">
-                            <i class="bi bi-hdd"></i>
-                            Max size: <strong>10MB</strong> per image
-                        </span>
-                        <span class="guideline-divider"></span>
-                        <span class="guideline-item">
-                            <i class="bi bi-aspect-ratio"></i>
-                            Recommended: <strong>{{ $imageWidth ?? 1100 }} × {{ $imageHeight ?? 340 }}px</strong>
-                        </span>
-                    </div>
-              
-
-                    <div class="image-upload-box">
-                        <div class="preview-wrap">
-                            @if ($service->image)
-                            <img src="{{ Storage::url($service->image) }}" class="preview-img" id="preview-image">
-                            @else
-                            <div class="preview-placeholder" id="preview-image">
-                                <i class="bi bi-image"></i>
-                            </div>
-                            @endif
-                        </div>
-                        <label class="upload-btn {{ $errors->has('image') ? 'upload-btn-error' : '' }}">
-                            <i class="bi bi-upload"></i> Choose file
-                            <input type="file" name="image" accept="image/*"
-                                onchange="previewImage(this, 'preview-image')" hidden>
-                        </label>
-                        @error('image')
-                        <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-            </div>
-
-            {{-- Process Description --}}
-          <div class="col-md-12">
-    <div class="form-card">
-        <div class="form-group">
-            <label class="section-label"><i class="bi bi-file-text"></i> Process Description</label>
-            <p class="hint-text">Detail page — "Process Description" column under Service Overview.</p>
-            <textarea name="process_description" rows="5"
-                class="{{ $errors->has('process_description') ? 'input-error' : '' }}"
-                placeholder="Describe the step-by-step process...">{{ old('process_description', $service->process_description) }}</textarea>
-            @error('process_description')
-                <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
-            @enderror
-        </div>
-    </div>
-</div>
-
-
-
-           {{-- Specifications Table (dynamic rows) --}}
-{{-- Inspection Process (dynamic rows: heading + description + image) --}}
-<div class="col-md-12">
-    <div class="form-card">
-        <div class="form-group">
-            <label class="section-label"><i class="bi bi-clipboard-check"></i> Inspection Process</label>
-            <p class="hint-text">Detail page — step-by-step inspection process with heading, description, and image per step.</p>
-
-            <div id="inspectionRows"></div>
-            <button type="button" id="addInspectionBtn" class="btn-add-row">
-                <i class="bi bi-plus-circle"></i> Add Row
-            </button>
-
-            @error('inspection_process')
-                <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
-            @enderror
-            @if ($errors->has('inspection_process.*.heading') || $errors->has('inspection_process.*.description') || $errors->has('inspection_process.*.image'))
-                <span class="field-error">
-                    <i class="bi bi-exclamation-circle"></i> Please fill in all required fields for each inspection step.
-                </span>
-            @endif
-        </div>
-    </div>
-</div>
-
-            {{-- Technical Scope (dynamic list) --}}
-          {{-- Technical Scope (dynamic list) --}}
-<div class="col-md-12">
-    <div class="form-card">
-        <div class="form-group">
-            <label class="section-label"><i class="bi bi-list-check"></i> Technical Scope &amp; Capabilities</label>
-            <p class="hint-text">Detail page — bullet list next to Process Description.</p>
-
-            <div id="scopeRows"></div>
-            <button type="button" id="addScopeBtn" class="btn-add-row">
-                <i class="bi bi-plus-circle"></i> Add Point
-            </button>
-
-            @error('technical_scope')
-                <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
-            @enderror
-            @error('technical_scope.*')
-                <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
-            @enderror
-        </div>
-    </div>
-</div>
-
-
-            {{-- Specifications Table (dynamic rows) --}}
-           {{-- Specifications Table (dynamic rows) --}}
-<div class="col-md-12">
-    <div class="form-card">
-        <div class="form-group">
-            <label class="section-label"><i class="bi bi-table"></i> Technical Specifications &amp; Features</label>
-            <p class="hint-text">Detail page — Specification / Details / Compliance table.</p>
-
-            <div class="specs-table-header">
-                <span>Specification</span>
-                <span>Details</span>
-                <span>Compliance</span>
-                <span></span>
-            </div>
-            <div id="specRows"></div>
-            <button type="button" id="addSpecBtn" class="btn-add-row">
-                <i class="bi bi-plus-circle"></i> Add Row
-            </button>
-
-            @error('specifications')
-                <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
-            @enderror
-            @if ($errors->has('specifications.*.specification') || $errors->has('specifications.*.details') || $errors->has('specifications.*.compliance'))
-                <span class="field-error">
-                    <i class="bi bi-exclamation-circle"></i> Please fill in all Specification, Details, and Compliance fields for each row.
-                </span>
-            @endif
-        </div>
-    </div>
-</div>
-
-
-
-            {{-- Meta Title --}}
-<div class="col-md-8">
-    <div class="form-card">
-        <div class="form-group">
-            <label><i class="bi bi-tag"></i> Meta Title</label>
-            <input type="text" name="meta_title" value="{{ old('meta_title', $service->meta_title) }}"
-                   class="{{ $errors->has('meta_title') ? 'input-error' : '' }}"
-                   placeholder="SEO title for search engines">
-            @error('meta_title')
-                <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
-            @enderror
-        </div>
-    </div>
-</div>
-
-{{-- Meta Description --}}
-<div class="col-md-12">
-    <div class="form-card">
-        <div class="form-group">
-            <label><i class="bi bi-card-text"></i> Meta Description</label>
-            <textarea name="meta_description" rows="3"
-                      class="{{ $errors->has('meta_description') ? 'input-error' : '' }}"
-                      placeholder="SEO description shown in search results">{{ old('meta_description', $service->meta_description) }}</textarea>
-            @error('meta_description')
-                <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
-            @enderror
-        </div>
-    </div>
-</div>
-
-
-
-            {{-- Gallery --}}
-            <div class="col-md-12">
-                <div class="form-card">
-
-                    <label class="section-label"><i class="bi bi-images"></i> Gallery (up to 6 images)</label>
-                    <!-- <p class="hint-text">Detail page — Service Images gallery. Maximum 6 images total.</p> -->
-
-                         <div class="upload-guidelines">
-                        <span class="guideline-item">
-                            <i class="bi bi-file-earmark-image"></i>
-                            Accepted: <strong>JPG, PNG, WEBP</strong>
-                        </span>
-                        <span class="guideline-divider"></span>
-                        <span class="guideline-item">
-                            <i class="bi bi-hdd"></i>
-                            Max size: <strong>10MB</strong> per image
-                        </span>
-                        <span class="guideline-divider"></span>
-                        <span class="guideline-item">
-                            <i class="bi bi-aspect-ratio"></i>
-                            Recommended: <strong>{{ $imageWidth ?? 220 }} × {{ $imageHeight ?? 140 }}px</strong>
-                        </span>
-                    </div>
-
-                    {{-- Existing images already saved --}}
-                    <div class="gallery-existing" id="existingGallery">
-                        @foreach ($service->gallery ?? [] as $img)
-                        <div class="gallery-thumb" data-existing="1">
-                            <img src="{{ Storage::url($img) }}">
-                            <label class="gallery-remove">
-                                <input type="checkbox" name="remove_gallery[]" value="{{ $img }}" onchange="updateGalleryCount()">
-                                <i class="bi bi-trash3"></i> Remove
-                            </label>
-                        </div>
-                        @endforeach
-                    </div>
-
-                    {{-- New images selected but not yet uploaded (live preview) --}}
-                    <div class="gallery-new" id="newGalleryPreview"></div>
-
-                    <label class="upload-btn" id="galleryUploadBtn">
-                        <i class="bi bi-upload"></i> Add gallery images
-                        <input type="file" name="gallery[]" id="galleryInput" accept="image/*" multiple hidden>
-                    </label>
-                    <span class="file-name" id="galleryFileCount"></span>
-                    <p class="hint-text" id="galleryLimitMsg" style="color:#e74c3c; display:none;">
-                        You can upload a maximum of 6 images in total.
-                    </p>
-
-                    @error('gallery')
-                    <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
-                    @enderror
-                    @error('gallery.*')
-                    <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
-                    @enderror
-                </div>
-            </div>
-
-            <div class="col-md-12">
-                <div class="form-actions">
-                    <a href="{{ route('admin.home.services') }}" class="btn-cancel">Cancel</a>
-                    <button type="submit" class="btn-submit">
-                        <i class="bi bi-check-lg"></i>
-                        {{ $service->exists ? 'Update' : 'Save' }}
-                    </button>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</form>
-
-<template id="scopeRowTemplate">
-    <div class="scope-row">
-        <input type="text" name="technical_scope[]" placeholder="e.g. Thread types: Buttress, LTC, STC">
-        <button type="button" class="btn-remove-row"><i class="bi bi-trash3"></i></button>
-    </div>
-</template>
-
-<template id="specRowTemplate">
-    <div class="specs-row">
-        <input type="text" name="specifications[__INDEX__][specification]" placeholder="e.g. Thread Form">
-        <input type="text" name="specifications[__INDEX__][details]" placeholder="e.g. Buttress thread form">
-        <input type="text" name="specifications[__INDEX__][compliance]" placeholder="e.g. API 5B">
-        <button type="button" class="btn-remove-row"><i class="bi bi-trash3"></i></button>
-    </div>
-</template>
-
-
-<template id="inspectionRowTemplate">
-    <div class="inspection-row">
-        <div class="inspection-row-fields">
-            <div class="form-group">
-                <label>Heading</label>
-                <input type="text" name="inspection_process[__INDEX__][heading]" placeholder="e.g. Visual Inspection">
-            </div>
-            <div class="form-group">
-                <label>Description</label>
-                <textarea name="inspection_process[__INDEX__][description]" rows="3" placeholder="Describe this inspection step..."></textarea>
-            </div>
-            <div class="form-group">
-                <label>Image</label>
-                <div class="image-upload-box">
-                    <div class="preview-wrap">
-                        <div class="preview-placeholder inspection-preview">
-                            <i class="bi bi-image"></i>
-                        </div>
-                    </div>
-                    <label class="upload-btn">
-                        <i class="bi bi-upload"></i> Choose image
-                        <input type="file" name="inspection_process[__INDEX__][image]" accept="image/*" hidden
-                               onchange="previewInspectionImage(this)">
-                    </label>
-                    {{-- keeps the previously saved image path if admin doesn't re-upload on edit --}}
-                    <input type="hidden" name="inspection_process[__INDEX__][existing_image]" class="existing-image-input" value="">
-                </div>
-            </div>
-        </div>
-        <button type="button" class="btn-remove-row inspection-remove"><i class="bi bi-trash3"></i></button>
-    </div>
-</template>
-
-@php
-    $inspectionForJs = collect(old('inspection_process', $service->inspection_process ?? []))
-        ->map(function ($row) {
-            if (!empty($row['image'])) {
-                $row['image_url'] = Storage::url($row['image']); // e.g. /storage/services/xxx.webp
-            }
-            return $row;
-        });
-@endphp
-<script>
-    // ===== Technical Scope (simple list) =====
-    const existingScope = @json(old('technical_scope', $service->technical_scope ?? []));
-    const scopeContainer = document.getElementById('scopeRows');
-    const scopeTemplate = document.getElementById('scopeRowTemplate');
-
-    function addScopeRow(value = '') {
-        const clone = scopeTemplate.content.cloneNode(true);
-        const row = clone.querySelector('.scope-row');
-        row.querySelector('input').value = value;
-        row.querySelector('.btn-remove-row').addEventListener('click', () => row.remove());
-        scopeContainer.appendChild(row);
-    }
-
-    document.getElementById('addScopeBtn').addEventListener('click', () => addScopeRow());
-
-    if (existingScope.length > 0) {
-        existingScope.forEach(v => addScopeRow(v));
-    } else {
-        addScopeRow();
-    }
-
-    // ===== Specifications (table rows) =====
-    const existingSpecs = @json(old('specifications', $service->specifications ?? []));
-    const specContainer = document.getElementById('specRows');
-    const specTemplate = document.getElementById('specRowTemplate');
-    let specIndex = 0;
-
-    function addSpecRow(data = {}) {
-        const clone = specTemplate.content.cloneNode(true);
-        const row = clone.querySelector('.specs-row');
-
-        row.querySelectorAll('input').forEach(input => {
-            input.name = input.name.replace('__INDEX__', specIndex);
-        });
-
-        row.querySelector('input[name$="[specification]"]').value = data.specification ?? '';
-        row.querySelector('input[name$="[details]"]').value = data.details ?? '';
-        row.querySelector('input[name$="[compliance]"]').value = data.compliance ?? '';
-
-        row.querySelector('.btn-remove-row').addEventListener('click', () => row.remove());
-
-        specContainer.appendChild(row);
-        specIndex++;
-    }
-
-    document.getElementById('addSpecBtn').addEventListener('click', () => addSpecRow());
-
-    if (existingSpecs.length > 0) {
-        existingSpecs.forEach(row => addSpecRow(row));
-    } else {
-        addSpecRow();
-    }
-
-
-    const MAX_GALLERY_IMAGES = 6;
-const galleryInput = document.getElementById('galleryInput');
-const newGalleryPreview = document.getElementById('newGalleryPreview');
-const galleryFileCount = document.getElementById('galleryFileCount');
-const galleryLimitMsg = document.getElementById('galleryLimitMsg');
-
-let selectedFiles = []; // holds File objects the user picked (persists across multiple selections)
-
-function countExistingRemaining() {
-    // existing images minus ones checked for removal
-    const existingThumbs = document.querySelectorAll('#existingGallery .gallery-thumb');
-    let remaining = 0;
-    existingThumbs.forEach(thumb => {
-        const checkbox = thumb.querySelector('input[type="checkbox"]');
-        if (!checkbox.checked) remaining++;
-    });
-    return remaining;
-}
-
-function updateGalleryCount() {
-    const remainingExisting = countExistingRemaining();
-    const totalCount = remainingExisting + selectedFiles.length;
-
-    galleryFileCount.textContent = totalCount > 0
-        ? `${totalCount} / ${MAX_GALLERY_IMAGES} image(s) selected`
-        : '';
-
-    galleryLimitMsg.style.display = totalCount > MAX_GALLERY_IMAGES ? 'block' : 'none';
-
-    // disable the upload button once limit is reached
-    document.getElementById('galleryUploadBtn').style.opacity = totalCount >= MAX_GALLERY_IMAGES ? '0.5' : '1';
-    document.getElementById('galleryUploadBtn').style.pointerEvents = totalCount >= MAX_GALLERY_IMAGES ? 'none' : 'auto';
-}
-
-function renderNewPreviews() {
-    newGalleryPreview.innerHTML = '';
-
-    selectedFiles.forEach((file, index) => {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const wrap = document.createElement('div');
-            wrap.className = 'gallery-thumb gallery-thumb-new';
-
-            const img = document.createElement('img');
-            img.src = e.target.result;
-
-            const removeLabel = document.createElement('label');
-            removeLabel.className = 'gallery-remove';
-            removeLabel.innerHTML = `<i class="bi bi-x-circle"></i> Cancel`;
-            removeLabel.style.cursor = 'pointer';
-            removeLabel.addEventListener('click', () => {
-                selectedFiles.splice(index, 1);
-                syncFileInput();
-                renderNewPreviews();
-                updateGalleryCount();
-            });
-
-            wrap.appendChild(img);
-            wrap.appendChild(removeLabel);
-            newGalleryPreview.appendChild(wrap);
-        };
-        reader.readAsDataURL(file);
-    });
-}
-
-// Rebuilds the actual <input type="file"> FileList from selectedFiles array
-function syncFileInput() {
-    const dataTransfer = new DataTransfer();
-    selectedFiles.forEach(file => dataTransfer.items.add(file));
-    galleryInput.files = dataTransfer.files;
-}
-
-galleryInput.addEventListener('change', function () {
-    const remainingExisting = countExistingRemaining();
-    const newlyPicked = Array.from(galleryInput.files);
-
-    // combine with already-selected files (in case user opens the picker multiple times)
-    let combined = selectedFiles.concat(newlyPicked);
-
-    const allowedNewCount = MAX_GALLERY_IMAGES - remainingExisting;
-
-    if (combined.length > allowedNewCount) {
-        combined = combined.slice(0, Math.max(allowedNewCount, 0));
-        galleryLimitMsg.style.display = 'block';
-    } else {
-        galleryLimitMsg.style.display = 'none';
-    }
-
-    selectedFiles = combined;
-    syncFileInput();
-    renderNewPreviews();
-    updateGalleryCount();
-});
-
-// Recalculate whenever an existing-image "remove" checkbox is toggled
-document.addEventListener('DOMContentLoaded', updateGalleryCount);
-
-
-    // ===== Image preview =====
-    function previewImage(input, previewId) {
-        const preview = document.getElementById(previewId);
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                if (preview.tagName === 'IMG') {
-                    preview.src = e.target.result;
-                } else {
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.className = 'preview-img';
-                    img.id = previewId;
-                    preview.replaceWith(img);
-                }
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
-
-    // ===== Inspection Process (heading + description + image rows) =====
-    const existingInspection = @json($inspectionForJs);
-
-const inspectionContainer = document.getElementById('inspectionRows');
-const inspectionTemplate = document.getElementById('inspectionRowTemplate');
-let inspectionIndex = 0;
-
-function addInspectionRow(data = {}) {
-    const clone = inspectionTemplate.content.cloneNode(true);
-    const row = clone.querySelector('.inspection-row');
-
-    // Replace __INDEX__ placeholders in all field names
-    row.querySelectorAll('input, textarea').forEach(field => {
-        field.name = field.name.replace('__INDEX__', inspectionIndex);
-    });
-
-    row.querySelector('input[name$="[heading]"]').value = data.heading ?? '';
-    row.querySelector('textarea[name$="[description]"]').value = data.description ?? '';
-
-    // If editing and this step already has a saved image, show it + store its path
-    if (data.image) {
-        const previewWrap = row.querySelector('.preview-wrap');
-        const img = document.createElement('img');
-        img.src = data.image_url ?? data.image; // pass full URL if available
-        img.className = 'preview-img inspection-preview';
-        previewWrap.querySelector('.inspection-preview').replaceWith(img);
-
-        row.querySelector('.existing-image-input').value = data.image;
-    }
-
-    row.querySelector('.inspection-remove').addEventListener('click', () => row.remove());
-
-    inspectionContainer.appendChild(row);
-    inspectionIndex++;
-}
-
-document.getElementById('addInspectionBtn').addEventListener('click', () => addInspectionRow());
-
-if (existingInspection.length > 0) {
-    existingInspection.forEach(row => addInspectionRow(row));
-} else {
-    addInspectionRow();
-}
-
-// Live preview for a newly selected inspection step image
-function previewInspectionImage(input) {
-    const box = input.closest('.image-upload-box');
-    const preview = box.querySelector('.preview-wrap > *');
-
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            if (preview.tagName === 'IMG') {
-                preview.src = e.target.result;
-            } else {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.className = 'preview-img inspection-preview';
-                preview.replaceWith(img);
-            }
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
-}
-</script>
-
 <style>
     .alert {
         padding: 12px 16px;
@@ -687,6 +17,10 @@ function previewInspectionImage(input) {
     .alert-error {
         background: #fdecea;
         color: #c0392b;
+    }
+
+    #totalSizeError {
+        align-items: flex-start;
     }
 
     .form-header {
@@ -817,38 +151,9 @@ function previewInspectionImage(input) {
     .file-name {
         font-size: 13px;
         color: #666;
-        margin-left: 10px;
-    }
-
-    .scope-row {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 10px;
-    }
-
-    .scope-row input {
-        flex: 1;
-    }
-
-    .specs-table-header {
-        display: grid;
-        grid-template-columns: 1fr 1.5fr 1fr 40px;
-        gap: 12px;
-        font-size: 12px;
-        font-weight: 700;
-        text-transform: uppercase;
-        color: #888;
-        padding: 0 4px 10px;
-        border-bottom: 1px solid #eee;
-        margin-bottom: 12px;
-    }
-
-    .specs-row {
-        display: grid;
-        grid-template-columns: 1fr 1.5fr 1fr 40px;
-        gap: 12px;
-        margin-bottom: 10px;
-        align-items: center;
+        margin-left: 0;
+        margin-top: 4px;
+        display: block;
     }
 
     .btn-remove-row {
@@ -885,35 +190,6 @@ function previewInspectionImage(input) {
 
     .btn-add-row:hover {
         background: #e9ecf2;
-    }
-
-    .gallery-existing {
-        display: flex;
-        gap: 14px;
-        flex-wrap: wrap;
-        margin-bottom: 16px;
-    }
-
-    .gallery-thumb {
-        width: 120px;
-    }
-
-    .gallery-thumb img {
-        width: 100%;
-        height: 90px;
-        object-fit: cover;
-        border-radius: 6px;
-        border: 1px solid #eee;
-        margin-bottom: 6px;
-    }
-
-    .gallery-remove {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        font-size: 12px;
-        color: #c0392b;
-        cursor: pointer;
     }
 
     .form-actions {
@@ -989,131 +265,131 @@ function previewInspectionImage(input) {
         border-color: #3b3b58;
     }
 
-    .gallery-new { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
-.gallery-thumb-new { border: 1px dashed #3b3b58; }
-
-
-.inspection-row {
-    display: flex;
-    gap: 14px;
-    align-items: stretch;
-    background: #fafbfc;
-    border: 1px solid #eee;
-    border-radius: 8px;
-    padding: 18px;
-    margin-bottom: 14px;
-    position: relative;
-}
-
-.inspection-row-fields {
-    flex: 1;
-    display: grid;
-    grid-template-columns: 1fr 1fr 220px;
-    gap: 16px;
-    align-items: start;
-}
-
-.inspection-row-fields .form-group {
-    display: flex;
-    flex-direction: column;
-}
-
-.inspection-row-fields .form-group label {
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 7px;
-    color: #333;
-}
-
-.inspection-row-fields input[type="text"],
-.inspection-row-fields textarea {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 14px;
-    font-family: inherit;
-    resize: vertical;
-}
-
-.inspection-row-fields textarea {
-    min-height: 110px;
-}
-
-/* ===== Compact image upload box just for inspection rows ===== */
-.inspection-row .image-upload-box {
-    width: 100%;
-    max-width: 220px;
-}
-
-.inspection-row .preview-wrap {
-    width: 100%;
-}
-
-.inspection-row .preview-img,
-.inspection-row .preview-placeholder {
-    width: 100%;
-    height: 110px;           /* matches textarea height instead of 300px */
-    margin-bottom: 8px;
-}
-
-.inspection-row .preview-placeholder {
-    font-size: 22px;
-}
-
-.inspection-row .upload-btn {
-    width: 100%;
-    justify-content: center;
-    font-size: 12.5px;
-    padding: 8px 10px;
-}
-
-/* ===== Remove button aligned to top-right of the row, not floating oddly ===== */
-.inspection-row .btn-remove-row {
-    position: absolute;
-    top: 40px;
-    right: 14px;
-    width: 34px;
-    height: 34px;
-    flex-shrink: 0;
-
-     /* centering fix */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    line-height: 1;
-}
-
-.inspection-row .btn-remove-row i {
-    display: block;
-    font-size: 15px;
-    line-height: 1;
-}
-
-/* add right padding to row so trash icon doesn't overlap the image column */
-.inspection-row {
-    padding-right: 56px;
-}
-
-@media (max-width: 900px) {
-    .inspection-row-fields {
-        grid-template-columns: 1fr;
-    }
-    .inspection-row .image-upload-box {
-        max-width: 100%;
-    }
     .inspection-row {
-        padding-right: 18px;
+        display: flex;
+        gap: 14px;
+        align-items: stretch;
+        background: #fafbfc;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        padding: 18px;
+        margin-bottom: 14px;
+        position: relative;
     }
+
+    .inspection-row-fields {
+        flex: 1;
+        display: grid;
+        grid-template-columns: 1fr 200px 220px; /* was: 1fr 220px */
+        gap: 16px;
+        align-items: start;
+    }
+
+    .feature-row-fields {
+        grid-template-columns: 140px 1fr 1fr;
+    }
+
+    .inspection-row-fields .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .inspection-row-fields .form-group label {
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 7px;
+        color: #333;
+    }
+
+    .inspection-row-fields input[type="text"],
+    .inspection-row-fields textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        font-family: inherit;
+        resize: vertical;
+    }
+
+    .inspection-row-fields textarea {
+        min-height: 110px;
+    }
+
+    .inspection-row .image-upload-box {
+        width: 100%;
+        max-width: 220px;
+    }
+
+    .inspection-row .preview-wrap {
+        width: 100%;
+    }
+
+    .inspection-row .preview-img,
+    .inspection-row .preview-placeholder {
+        width: 100%;
+        height: 110px;
+        margin-bottom: 8px;
+    }
+
+    .feature-row-fields .preview-img,
+    .feature-row-fields .preview-placeholder {
+        height: 90px;
+    }
+
+    .inspection-row .preview-placeholder {
+        font-size: 22px;
+    }
+
+    .inspection-row .upload-btn {
+        width: 100%;
+        justify-content: center;
+        font-size: 12.5px;
+        padding: 8px 10px;
+    }
+
     .inspection-row .btn-remove-row {
-        position: static;
-        margin-top: 12px;
+        position: absolute;
+        top: 18px;
+        right: 14px;
+        width: 34px;
+        height: 34px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        line-height: 1;
     }
-}
 
+    .inspection-row .btn-remove-row i {
+        display: block;
+        font-size: 15px;
+        line-height: 1;
+    }
 
-  .upload-guidelines {
+    .inspection-row {
+        padding-right: 56px;
+    }
+
+    @media (max-width: 900px) {
+       .inspection-row-fields,
+        .feature-row-fields {
+            grid-template-columns: 1fr;
+        }
+        .inspection-row .image-upload-box {
+            max-width: 100%;
+        }
+        .inspection-row {
+            padding-right: 18px;
+        }
+        .inspection-row .btn-remove-row {
+            position: static;
+            margin-top: 12px;
+        }
+    }
+
+    .upload-guidelines {
         display: flex;
         align-items: center;
         flex-wrap: wrap;
@@ -1163,7 +439,709 @@ function previewInspectionImage(input) {
             display: none;
         }
     }
-
 </style>
+@if ($errors->any())
+<div class="alert alert-error">
+    <i class="bi bi-exclamation-circle"></i>
+    Please fill below fields before submitting
+</div>
+@endif
+
+@if (session('error'))
+<div class="alert alert-error">
+    <i class="bi bi-exclamation-circle"></i>
+    {{ session('error') }}
+</div>
+@endif
+
+<div class="alert alert-error" id="totalSizeError" style="display:none;">
+    <i class="bi bi-exclamation-circle"></i>
+    <span id="totalSizeErrorText"></span>
+</div>
+
+@if (session('success'))
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            icon: 'success',
+            title: 'Saved!',
+            text: @json(session('success')),
+            confirmButtonColor: '#3b3b58',
+            timer: 2500,
+            timerProgressBar: true
+        });
+    });
+</script>
+@endif
+
+<div class="form-header">
+    <h4>
+        <i class="bi bi-{{ $service->exists ? 'pencil-square' : 'plus-circle' }}"></i>
+        {{ $service->exists ? 'Edit Service' : 'Add Service' }}
+    </h4>
+    <a href="{{ route('admin.home.services') }}" class="btn-back">
+        <i class="bi bi-arrow-left"></i> Back to list
+    </a>
+</div>
+
+<form action="{{ $service->exists ? route('admin.home.services.update', $service->id) : route('admin.home.services.store') }}"
+    method="POST" enctype="multipart/form-data" class="banner-form" id="serviceForm">
+    @csrf
+    @if ($service->exists)
+    @method('PUT')
+    @endif
+
+    <div class="container-fluid px-0">
+        <div class="row">
+
+            {{-- ================= BANNER SECTION ================= --}}
+            <div class="col-md-8">
+                <div class="form-card">
+                    <div class="form-group">
+                        <label><i class="bi bi-type"></i> Banner Title</label>
+                        <input type="text" name="banner_title" value="{{ old('banner_title', $service->banner_title) }}"
+                            class="{{ $errors->has('banner_title') ? 'input-error' : '' }}"
+                            placeholder="e.g. API Threading Services">
+                        @error('banner_title')
+                        <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="form-card">
+                    <div class="form-group">
+                        <label><i class="bi bi-card-text"></i> Banner Description</label>
+                        <p class="hint-text">Shown on the homepage banner and listing page under the title.</p>
+                        <textarea name="banner_description" rows="3"
+                            class="{{ $errors->has('banner_description') ? 'input-error' : '' }}"
+                            placeholder="e.g. API threading and machining solutions for critical oilfield connections.">{{ old('banner_description', $service->banner_description) }}</textarea>
+                        @error('banner_description')
+                        <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="form-card">
+                    <label class="section-label"><i class="bi bi-image"></i> Banner Image</label>
+
+                    <div class="upload-guidelines">
+                        <span class="guideline-item">
+                            <i class="bi bi-file-earmark-image"></i>
+                            Accepted: <strong>JPG, PNG, WEBP</strong>
+                        </span>
+                        <span class="guideline-divider"></span>
+                        <span class="guideline-item">
+                            <i class="bi bi-hdd"></i>
+                            Max size: <strong>10MB</strong>
+                        </span>
+                        <span class="guideline-divider"></span>
+                        <span class="guideline-item">
+                            <i class="bi bi-aspect-ratio"></i>
+                            Recommended: <strong>1200 × 600px</strong>
+                        </span>
+                    </div>
+
+                    <div class="image-upload-box">
+                        <div class="preview-wrap">
+                            @if ($service->banner_image)
+                                <img src="{{ Storage::url($service->banner_image) }}" class="preview-img" id="preview-banner-image">
+                            @else
+                                <div class="preview-placeholder" id="preview-banner-image">
+                                    <i class="bi bi-image"></i>
+                                </div>
+                            @endif
+                        </div>
+                        <label class="upload-btn {{ $errors->has('banner_image') ? 'upload-btn-error' : '' }}">
+                            <i class="bi bi-upload"></i> Choose file
+                            <input type="file" name="banner_image" accept="image/*"
+                                   onchange="handleImageChange(this, 'preview-banner-image', MAX_IMAGE_BYTES, 'Banner image')" hidden>
+                        </label>
+                        @error('banner_image')
+                            <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+
+            {{-- ================= OVERVIEW SECTION ================= --}}
+            <div class="col-md-8">
+                <div class="form-card">
+                    <div class="form-group">
+                        <label><i class="bi bi-type"></i> Overview Title</label>
+                        <input type="text" name="overview_title" value="{{ old('overview_title', $service->overview_title) }}"
+                            class="{{ $errors->has('overview_title') ? 'input-error' : '' }}"
+                            placeholder="e.g. Service Overview">
+                        @error('overview_title')
+                        <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="form-card">
+                    <div class="form-group">
+                        <label><i class="bi bi-card-text"></i> Overview Description</label>
+                        <textarea name="overview_description" rows="4"
+                            class="{{ $errors->has('overview_description') ? 'input-error' : '' }}"
+                            placeholder="Describe the service overview...">{{ old('overview_description', $service->overview_description) }}</textarea>
+                        @error('overview_description')
+                        <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="form-card">
+                    <label class="section-label"><i class="bi bi-image"></i> Overview Image</label>
+
+                    <div class="upload-guidelines">
+                        <span class="guideline-item">
+                            <i class="bi bi-file-earmark-image"></i>
+                            Accepted: <strong>JPG, PNG, WEBP</strong>
+                        </span>
+                        <span class="guideline-divider"></span>
+                        <span class="guideline-item">
+                            <i class="bi bi-hdd"></i>
+                            Max size: <strong>10MB</strong>
+                        </span>
+                        <span class="guideline-divider"></span>
+                        <span class="guideline-item">
+                            <i class="bi bi-aspect-ratio"></i>
+                            Recommended: <strong>1100 × 340px</strong>
+                        </span>
+                    </div>
+
+                    <div class="image-upload-box">
+                        <div class="preview-wrap">
+                            @if ($service->overview_image)
+                                <img src="{{ Storage::url($service->overview_image) }}" class="preview-img" id="preview-overview-image">
+                            @else
+                                <div class="preview-placeholder" id="preview-overview-image">
+                                    <i class="bi bi-image"></i>
+                                </div>
+                            @endif
+                        </div>
+                        <label class="upload-btn {{ $errors->has('overview_image') ? 'upload-btn-error' : '' }}">
+                            <i class="bi bi-upload"></i> Choose file
+                            <input type="file" name="overview_image" accept="image/*"
+                                   onchange="handleImageChange(this, 'preview-overview-image', MAX_IMAGE_BYTES, 'Overview image')" hidden>
+                        </label>
+                        @error('overview_image')
+                        <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+
+            {{-- ================= PROCESS SECTION (dynamic: description + video, unlimited) ================= --}}
+            <div class="col-md-12">
+                <div class="form-card">
+                    <div class="form-group">
+                        <label class="section-label"><i class="bi bi-camera-reels"></i> Process</label>
+                        <p class="hint-text">Detail page — step-by-step process, each with a description and a video. Add as many as needed.</p>
+
+                        <div id="processRows"></div>
+                        <button type="button" id="addProcessBtn" class="btn-add-row">
+                            <i class="bi bi-plus-circle"></i> Add Row
+                        </button>
+
+                        @error('process')
+                            <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                        @enderror
+                        @if ($errors->has('process.*.description') || $errors->has('process.*.video'))
+                            <span class="field-error">
+                                <i class="bi bi-exclamation-circle"></i> Please check the description/video for each process step.
+                            </span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            {{-- ================= FEATURES SECTION (dynamic: icon + title + description, max 4) ================= --}}
+            <div class="col-md-8">
+                <div class="form-card">
+                    <div class="form-group">
+                        <label><i class="bi bi-type"></i> Features Heading</label>
+                        <input type="text" name="features_heading" value="{{ old('features_heading', $service->features_heading) }}"
+                            class="{{ $errors->has('features_heading') ? 'input-error' : '' }}"
+                            placeholder="e.g. Why Choose Us">
+                        @error('features_heading')
+                        <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="form-card">
+                    <div class="form-group">
+                        <label class="section-label"><i class="bi bi-grid-3x3-gap"></i> Features (max 4)</label>
+                        <p class="hint-text">Each feature has an icon, a title, and a short description. Maximum 4 features.</p>
+
+                        <div id="featureRows"></div>
+                        <button type="button" id="addFeatureBtn" class="btn-add-row">
+                            <i class="bi bi-plus-circle"></i> Add Feature
+                        </button>
+                        <p class="hint-text" id="featureLimitMsg" style="color:#e74c3c; display:none;">
+                            You can add a maximum of 4 features.
+                        </p>
+
+                        @error('features')
+                            <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                        @enderror
+                        @if ($errors->has('features.*.title') || $errors->has('features.*.description') || $errors->has('features.*.icon'))
+                            <span class="field-error">
+                                <i class="bi bi-exclamation-circle"></i> Please check the icon/title/description for each feature.
+                            </span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="form-actions">
+                    <a href="{{ route('admin.home.services') }}" class="btn-cancel">Cancel</a>
+                    <button type="submit" class="btn-submit">
+                        <i class="bi bi-check-lg"></i>
+                        {{ $service->exists ? 'Update' : 'Save' }}
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</form>
+
+{{-- ===== Templates ===== --}}
+
+<template id="processRowTemplate">
+    <div class="inspection-row">
+        <div class="inspection-row-fields">
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="process[__INDEX__][description]" rows="3" placeholder="Describe this process step..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Thumbnail</label>
+                <div class="image-upload-box">
+                    <div class="preview-wrap">
+                        <div class="preview-placeholder process-thumb-preview">
+                            <i class="bi bi-image"></i>
+                        </div>
+                    </div>
+                    <label class="upload-btn">
+                        <i class="bi bi-upload"></i> Choose image
+                        <input type="file" name="process[__INDEX__][thumbnail]" accept="image/*" hidden
+                               onchange="previewProcessThumbnail(this)">
+                    </label>
+                    <input type="hidden" name="process[__INDEX__][existing_thumbnail]" class="existing-thumbnail-input" value="">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Video</label>
+                <div class="image-upload-box">
+                    <div class="preview-wrap">
+                        <div class="preview-placeholder process-preview">
+                            <i class="bi bi-camera-video"></i>
+                        </div>
+                    </div>
+                    <label class="upload-btn">
+                        <i class="bi bi-upload"></i> Choose video
+                        <input type="file" name="process[__INDEX__][video]" accept="video/*" hidden
+                               onchange="previewProcessVideo(this)">
+                    </label>
+                    <span class="file-name process-filename"></span>
+                    <input type="hidden" name="process[__INDEX__][existing_video]" class="existing-video-input" value="">
+                </div>
+            </div>
+        </div>
+        <button type="button" class="btn-remove-row inspection-remove"><i class="bi bi-trash3"></i></button>
+    </div>
+</template>
+
+<template id="featureRowTemplate">
+    <div class="inspection-row">
+        <div class="inspection-row-fields feature-row-fields">
+            <div class="form-group">
+                <label>Icon</label>
+                <div class="image-upload-box">
+                    <div class="preview-wrap">
+                        <div class="preview-placeholder feature-preview">
+                            <i class="bi bi-image"></i>
+                        </div>
+                    </div>
+                    <label class="upload-btn">
+                        <i class="bi bi-upload"></i> Choose icon
+                        <input type="file" name="features[__INDEX__][icon]" accept="image/*" hidden
+                               onchange="previewFeatureIcon(this)">
+                    </label>
+                    <input type="hidden" name="features[__INDEX__][existing_icon]" class="existing-icon-input" value="">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Title</label>
+                <input type="text" name="features[__INDEX__][title]" placeholder="e.g. Certified Personnel">
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="features[__INDEX__][description]" rows="3" placeholder="Short description..."></textarea>
+            </div>
+        </div>
+        <button type="button" class="btn-remove-row inspection-remove"><i class="bi bi-trash3"></i></button>
+    </div>
+</template>
+
+@php
+    $processForJs = collect(old('process', $service->process ?? []))
+    ->values()
+    ->map(function ($row, $i) use ($errors) {
+        $row = is_array($row) ? $row : [];
+
+        if (!empty($row['video'])) {
+            $row['video_url'] = Storage::url($row['video']);
+        }
+
+        if (!empty($row['thumbnail'])) {
+            $row['thumbnail_url'] = Storage::url($row['thumbnail']);
+        }
+
+        $row['errors'] = [
+            'description' => $errors->first("process.$i.description"),
+            'video' => $errors->first("process.$i.video"),
+        ];
+
+        return $row;
+    })
+    ->values()
+    ->toArray();
+
+    $featuresForJs = collect(old('features', $service->features ?? []))
+        ->values()
+        ->map(function ($row, $i) use ($errors) {
+            $row = is_array($row) ? $row : [];
+
+            if (!empty($row['icon'])) {
+                $row['icon_url'] = Storage::url($row['icon']);
+            }
+
+            $row['errors'] = [
+                'icon' => $errors->first("features.$i.icon"),
+                'title' => $errors->first("features.$i.title"),
+                'description' => $errors->first("features.$i.description"),
+            ];
+
+            return $row;
+        })
+        ->values()
+        ->toArray();
+@endphp
+<script>
+    // ===== Size limits (must match ServiceRequest validation rules) =====
+    const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10MB - banner/overview images
+    const MAX_ICON_BYTES  = 5 * 1024 * 1024;  // 5MB  - feature icons
+    const MAX_VIDEO_BYTES = 20 * 1024 * 1024; // 20MB - process videos
+    const MAX_TOTAL_BYTES = 95 * 1024 * 1024; // keep under php.ini post_max_size (100M) with a buffer
+
+    function formatBytes(bytes) {
+        return (bytes / (1024 * 1024)).toFixed(1) + 'MB';
+    }
+
+    // ===== Generic field-error helpers =====
+    // Client-side checks add .field-error.client-error spans so they can be
+    // cleared/replaced independently without touching server-rendered ones.
+    function setFieldError(anchor, message, isClientError = true) {
+        if (!anchor) return;
+        clearFieldError(anchor);
+        if (!message) return;
+        anchor.classList.add('input-error');
+        const span = document.createElement('span');
+        span.className = 'field-error' + (isClientError ? ' client-error' : '');
+        span.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+        anchor.insertAdjacentElement('afterend', span);
+    }
+
+    function clearFieldError(anchor) {
+        if (!anchor) return;
+        anchor.classList.remove('input-error');
+        const next = anchor.nextElementSibling;
+        if (next && next.classList.contains('field-error') && next.classList.contains('client-error')) {
+            next.remove();
+        }
+    }
+
+    // Validates a single file input against a max size. Anchor is the element
+    // the error message should appear under (usually the visible upload-btn
+    // label, since the actual <input type="file"> is hidden).
+    function validateFileSize(input, maxBytes, label, anchor) {
+        if (input.files && input.files[0] && input.files[0].size > maxBytes) {
+            setFieldError(
+                anchor,
+                `${label} must be smaller than ${formatBytes(maxBytes)} (selected file is ${formatBytes(input.files[0].size)}).`
+            );
+            input.value = ''; 
+            return false;
+        }
+        clearFieldError(anchor);
+        return true;
+    }
+
+    // ===== Generic image preview (banner / overview) with size validation =====
+    function handleImageChange(input, previewId, maxBytes, label) {
+        const anchor = input.closest('label.upload-btn');
+        if (!validateFileSize(input, maxBytes, label, anchor)) {
+            return;
+        }
+        previewImage(input, previewId);
+    }
+
+    function previewImage(input, previewId) {
+        const preview = document.getElementById(previewId);
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if (preview.tagName === 'IMG') {
+                    preview.src = e.target.result;
+                } else {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'preview-img';
+                    img.id = previewId;
+                    preview.replaceWith(img);
+                }
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    // ===== Process rows (description + video, unlimited) =====
+    const existingProcess = @json($processForJs);
+    const processContainer = document.getElementById('processRows');
+    const processTemplate = document.getElementById('processRowTemplate');
+    let processIndex = 0;
+
+    function addProcessRow(data = {}) {
+    const clone = processTemplate.content.cloneNode(true);
+    const row = clone.querySelector('.inspection-row');
+
+    row.querySelectorAll('input, textarea').forEach(field => {
+        field.name = field.name.replace('__INDEX__', processIndex);
+    });
+
+    const descField = row.querySelector('textarea[name$="[description]"]');
+    descField.value = data.description ?? '';
+
+    if (data.thumbnail) {
+        const previewWrap = row.querySelectorAll('.preview-wrap')[0];
+        const img = document.createElement('img');
+        img.src = data.thumbnail_url ?? data.thumbnail;
+        img.className = 'preview-img process-thumb-preview';
+        previewWrap.querySelector('.process-thumb-preview').replaceWith(img);
+        row.querySelector('.existing-thumbnail-input').value = data.thumbnail;
+    }
+
+    if (data.video) {
+        const filenameSpan = row.querySelector('.process-filename');
+        filenameSpan.textContent = data.video.split('/').pop();
+        row.querySelector('.existing-video-input').value = data.video;
+    }
+
+        // Show server-side validation errors returned for this row, if any
+        if (data.errors) {
+            if (data.errors.description) {
+                setFieldError(descField, data.errors.description, false);
+            }
+            if (data.errors.video) {
+                const videoAnchor = row.querySelector('label.upload-btn');
+                setFieldError(videoAnchor, data.errors.video, false);
+            }
+        }
+
+        row.querySelector('.inspection-remove').addEventListener('click', () => row.remove());
+
+        processContainer.appendChild(row);
+        processIndex++;
+    }
+
+    document.getElementById('addProcessBtn').addEventListener('click', () => addProcessRow());
+
+    if (existingProcess.length > 0) {
+        existingProcess.forEach(row => addProcessRow(row));
+    } else {
+        addProcessRow();
+    }
+
+    function previewProcessVideo(input) {
+        const anchor = input.closest('label.upload-btn');
+        if (!validateFileSize(input, MAX_VIDEO_BYTES, 'Process video', anchor)) {
+            const box = input.closest('.image-upload-box');
+            box.querySelector('.process-filename').textContent = '';
+            return;
+        }
+        const box = input.closest('.image-upload-box');
+        const filenameSpan = box.querySelector('.process-filename');
+        if (input.files && input.files[0]) {
+            filenameSpan.textContent = input.files[0].name;
+        }
+    }
+
+    // ===== Feature rows (icon + title + description, max 4) =====
+    const MAX_FEATURES = 4;
+    const existingFeatures = @json($featuresForJs);
+    const featureContainer = document.getElementById('featureRows');
+    const featureTemplate = document.getElementById('featureRowTemplate');
+    const addFeatureBtn = document.getElementById('addFeatureBtn');
+    const featureLimitMsg = document.getElementById('featureLimitMsg');
+    let featureIndex = 0;
+
+    function updateFeatureButtonState() {
+        const count = featureContainer.querySelectorAll('.inspection-row').length;
+        const atLimit = count >= MAX_FEATURES;
+        addFeatureBtn.style.opacity = atLimit ? '0.5' : '1';
+        addFeatureBtn.style.pointerEvents = atLimit ? 'none' : 'auto';
+        featureLimitMsg.style.display = atLimit ? 'block' : 'none';
+    }
+
+    function addFeatureRow(data = {}) {
+        if (featureContainer.querySelectorAll('.inspection-row').length >= MAX_FEATURES) {
+            updateFeatureButtonState();
+            return;
+        }
+
+        const clone = featureTemplate.content.cloneNode(true);
+        const row = clone.querySelector('.inspection-row');
+
+        row.querySelectorAll('input, textarea').forEach(field => {
+            field.name = field.name.replace('__INDEX__', featureIndex);
+        });
+
+        const titleField = row.querySelector('input[name$="[title]"]');
+        const descField = row.querySelector('textarea[name$="[description]"]');
+        titleField.value = data.title ?? '';
+        descField.value = data.description ?? '';
+
+        if (data.icon) {
+            const previewWrap = row.querySelector('.preview-wrap');
+            const img = document.createElement('img');
+            img.src = data.icon_url ?? data.icon;
+            img.className = 'preview-img feature-preview';
+            previewWrap.querySelector('.feature-preview').replaceWith(img);
+            row.querySelector('.existing-icon-input').value = data.icon;
+        }
+
+        // Show server-side validation errors returned for this row, if any
+        if (data.errors) {
+            if (data.errors.title) {
+                setFieldError(titleField, data.errors.title, false);
+            }
+            if (data.errors.description) {
+                setFieldError(descField, data.errors.description, false);
+            }
+            if (data.errors.icon) {
+                const iconAnchor = row.querySelector('label.upload-btn');
+                setFieldError(iconAnchor, data.errors.icon, false);
+            }
+        }
+
+        row.querySelector('.inspection-remove').addEventListener('click', () => {
+            row.remove();
+            updateFeatureButtonState();
+        });
+
+        featureContainer.appendChild(row);
+        featureIndex++;
+        updateFeatureButtonState();
+    }
+
+    addFeatureBtn.addEventListener('click', () => addFeatureRow());
+
+    if (existingFeatures.length > 0) {
+        existingFeatures.slice(0, MAX_FEATURES).forEach(row => addFeatureRow(row));
+    } else {
+        addFeatureRow();
+    }
+
+    function previewFeatureIcon(input) {
+        const anchor = input.closest('label.upload-btn');
+        if (!validateFileSize(input, MAX_ICON_BYTES, 'Feature icon', anchor)) {
+            return;
+        }
+
+        const box = input.closest('.image-upload-box');
+        const preview = box.querySelector('.preview-wrap > *');
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                if (preview.tagName === 'IMG') {
+                    preview.src = e.target.result;
+                } else {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'preview-img feature-preview';
+                    preview.replaceWith(img);
+                }
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    // ===== Final guard: block submission if total file size would exceed post_max_size =====
+    document.getElementById('serviceForm').addEventListener('submit', function (e) {
+        let totalBytes = 0;
+
+        this.querySelectorAll('input[type="file"]').forEach(input => {
+            if (input.files && input.files[0]) {
+                totalBytes += input.files[0].size;
+            }
+        });
+
+        const totalErrorBox = document.getElementById('totalSizeError');
+        const totalErrorText = document.getElementById('totalSizeErrorText');
+
+        if (totalBytes > MAX_TOTAL_BYTES) {
+            e.preventDefault();
+            totalErrorText.textContent =
+                `Total upload size (${formatBytes(totalBytes)}) exceeds the ${formatBytes(MAX_TOTAL_BYTES)} limit for this form. ` +
+                `Please remove or replace some images/videos before saving.`;
+            totalErrorBox.style.display = 'flex';
+            totalErrorBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+            totalErrorBox.style.display = 'none';
+        }
+    });
+
+    function previewProcessThumbnail(input) {
+    const anchor = input.closest('label.upload-btn');
+    if (!validateFileSize(input, MAX_IMAGE_BYTES, 'Process thumbnail', anchor)) {
+        return;
+    }
+
+    const box = input.closest('.image-upload-box');
+    const preview = box.querySelector('.preview-wrap > *');
+
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            if (preview.tagName === 'IMG') {
+                preview.src = e.target.result;
+            } else {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.className = 'preview-img process-thumb-preview';
+                preview.replaceWith(img);
+            }
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
 
 @endsection

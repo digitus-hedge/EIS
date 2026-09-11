@@ -409,13 +409,22 @@
 
   .inspect-card-tag{
     display:inline-block;
-    background:#f0f0f0;
-    color:#333333;
+    background:var(--orange);
+    color:#ffffff;
     font-size:13.5px;
-    font-weight:600;
+    font-weight:700;
     border-radius:12px;
     padding:14px 16px;
-  }
+    text-decoration:none;
+    text-align:center;
+    transition:background 0.2s ease, transform 0.15s ease;
+}
+
+.inspect-card-tag:hover{
+    background:var(--orange-dark);
+    transform:translateY(-2px);
+    color:#ffffff;
+}
 
   .reveal-delay-1{ transition-delay:0.08s; }
   .reveal-delay-2{ transition-delay:0.16s; }
@@ -721,25 +730,9 @@
 </section>
 
 @php
-  $services = [
-    ['title' => 'Premium thread inspection', 'image' => 'images/services/premium-thread.jpg', 'description' => 'Full thread inspection across our premium connection range, run by inspectors qualified to a minimum of ASNT Level 2 across five NDT methods.', 'spec_tag' => 'ASNT Level 2 · EMI / MPI / Die-Pen / Eddy Current'],
-    ['title' => 'Drill pipe inspection', 'image' => 'images/services/drill-pipe.jpg', 'description' => 'High-speed transverse flaw detection using three Techscope EZW-11 units with Hall-effect wall monitoring, calibrated on site for each pipe size.', 'spec_tag' => 'Techscope EZW-11 · 2 3/8"–6 5/8"'],
-    ['title' => 'Ultrasonic flaw detection', 'image' => 'images/services/ultrasonic-flaw.jpg', 'description' => 'Digital ultrasonic inspection of drill pipe end areas using multi-probe shear wave heads for accurate, repeatable flaw detection.', 'spec_tag' => 'GE Krautkramer USN-60 · shear wave'],
-    ['title' => 'Magnetic particle inspection', 'image' => 'images/services/magnetic-particle.jpg', 'description' => 'MPI of BHA assemblies, drilling tools and equipment, with dedicated magnetising and de-magnetising coils to keep field strength within spec.', 'spec_tag' => '7 black-light MPI units'],
-    ['title' => 'Dye penetrant inspection', 'image' => 'images/services/dye-penetrant.jpg', 'description' => 'Die-penetrant testing for non-carbon steel components and equipment where magnetic methods can\'t be used.', 'spec_tag' => 'Non-ferrous & non-carbon steel'],
-    ['title' => 'Tubing & casing inspection', 'image' => 'images/services/tubing-casing.jpg', 'description' => 'Full-length EMI inspection of tubing to 5" OD, alongside coupling and end-area electromagnetic inspection.', 'spec_tag' => 'Full length · up to 5" OD'],
-    ['title' => 'Full length drifting', 'image' => 'images/services/full-length-drifting.jpg', 'description' => 'Full-length drifting of tubulars to all sizes and weights, using Teflon or steel drifts as specified by the operator.', 'spec_tag' => 'Teflon & steel drifts, all sizes'],
-    ['title' => 'Wall thickness verification', 'image' => 'images/services/wall-thickness.jpg', 'description' => 'Point and full-body wall thickness checks to confirm tubulars remain within minimum service limits before returning to stock.', 'spec_tag' => 'Ultrasonic wall gauging'],
-    ['title' => 'Hardbanding inspection', 'image' => 'images/services/hardbanding.jpg', 'description' => 'Visual and dimensional inspection of hardbanding condition on tool joints to confirm coverage and wear limits are within spec.', 'spec_tag' => 'Visual & dimensional'],
-    ['title' => 'Slip & tong die inspection', 'image' => 'images/services/slip-tong.jpg', 'description' => 'Condition and dimensional checks on slip and tong dies to ensure grip integrity and prevent pipe damage during handling.', 'spec_tag' => 'Dimensional gauging'],
-    ['title' => 'Visual & dimensional inspection', 'image' => 'images/services/visual-dimensional.jpg', 'description' => 'General visual and dimensional inspection of drilling and downhole equipment against OEM and API tolerances.', 'spec_tag' => 'API tolerance verification'],
-    ['title' => 'BOP & pressure equipment inspection', 'image' => 'images/services/bop-pressure.jpg', 'description' => 'Inspection support for BOP components and pressure-control equipment to confirm condition ahead of recertification.', 'spec_tag' => 'Pressure equipment support'],
-  ];
-
   $servicesPerPage = 8;
-  $servicesTotal = count($services);
+  $servicesTotal = $services->count();
 @endphp
-
 <section class="inspect">
 
   <div class="inspect-header">
@@ -766,20 +759,18 @@
       >
         <div
           class="inspect-card-photo"
-          style="background-image:url('{{ asset($service['image']) }}')"
+          style="background-image:url('{{ $service->banner_image ? asset('storage/' . $service->banner_image) : asset('images/services/default.jpg') }}')"
           role="img"
-          aria-label="{{ $service['title'] }}"
+          aria-label="{{ $service->banner_title }}"
         ></div>
         <div class="inspect-card-body">
-          <h3 class="inspect-card-title">{{ $service['title'] }}</h3>
-          <p class="inspect-card-desc">{{ $service['description'] }}</p>
-          @if(!empty($service['spec_tag']))
-            <span class="inspect-card-tag">{{ $service['spec_tag'] }}</span>
-          @endif
+          <h3 class="inspect-card-title">{{ $service->banner_title }}</h3>
+          <p class="inspect-card-desc">{{ Str::limit($service->banner_description, 120) }}</p>
+          <a href="{{ route('service.details', $service->slug) }}" class="inspect-card-tag">View details</a>
         </div>
       </div>
     @endforeach
-  </div>
+</div>
 
   @php $totalPages = (int) ceil($servicesTotal / $servicesPerPage); @endphp
 

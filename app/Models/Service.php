@@ -3,28 +3,24 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Service extends Model
 {
-    use SoftDeletes;
-
     protected $fillable = [
-        'title',
+        'banner_title',
         'slug',
-        'description',
-        'process_description',
-        'technical_scope',
-        'specifications',
-        'image',
-        'gallery',
-        'inspection_process'
+        'banner_description',
+        'banner_image',
+        'overview_title',
+        'overview_description',
+        'overview_image',
+        'process',
+        'features_heading',
+        'features',
     ];
 
     protected $casts = [
-        'technical_scope' => 'array',
-        'specifications'  => 'array',
-        'gallery'         => 'array',
-        'inspection_process' => 'array',
+        'process'  => 'array',
+        'features' => 'array',
     ];
 }

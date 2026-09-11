@@ -1,3 +1,7 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500;1,600&display=swap" rel="stylesheet">
+
 <style>
   .hero{
     position:relative;
@@ -96,27 +100,48 @@
     to{ opacity:1; transform:translateY(0); }
   }
 
-  .hero .eyebrow{
-    position:relative;
-    display:inline-flex;
-    align-items:center;
-    gap:10px;
-    color:var(--cream);
-    font-size:15px;
-    font-weight:700;
-    text-transform:uppercase;
-    letter-spacing:1.6px;
-    margin-bottom:20px;
-  }
+ .hero .welcome-greeting{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:18px;
+  animation: welcomeFadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+}
 
-  .hero .eyebrow::before{
-    content:"";
-    display:inline-block;
-    width:36px;
-    height:2px;
-    background:var(--orange);
-    border-radius:2px;
-  }
+.hero .welcome-greeting::before{
+  content:"";
+  display:inline-block;
+  width:34px;
+  height:1px;
+  background:linear-gradient(to right, transparent, var(--orange));
+}
+
+.hero .welcome-greeting::after{
+  content:"";
+  display:inline-block;
+  width:34px;
+  height:1px;
+  background:linear-gradient(to left, transparent, var(--orange));
+}
+
+.hero .welcome-text{
+  font-family: 'Cormorant Garamond', 'Segoe UI', serif;
+  font-style:italic;
+  font-weight:600;
+  font-size:clamp(20px, 2.2vw, 28px);
+  letter-spacing:0.5px;
+  background:linear-gradient(90deg, #ffffff 0%, var(--cream) 55%, var(--orange) 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  white-space:nowrap;
+}
+
+@keyframes welcomeFadeIn{
+  from{ opacity:0; transform:translateY(10px); letter-spacing:2px; }
+  to{ opacity:1; transform:translateY(0); letter-spacing:0.5px; }
+}
 
   .hero h1{
     color:var(--white);
@@ -209,7 +234,9 @@
       min-height:60svh;
     }
     .hero .hero-content{ padding:60px 20px 48px; }
-    .hero .eyebrow{ font-size:13px; margin-bottom:14px; }
+    .hero .welcome-greeting{ gap:10px; margin-bottom:14px; }
+  .hero .welcome-greeting::before,
+  .hero .welcome-greeting::after{ width:22px; }
     .hero h1{ margin-bottom:16px; }
     .hero .lede{ margin-bottom:0; }
     .hero-dots{ left:20px; bottom:16px; }
@@ -226,6 +253,7 @@
     .hero-slide{ transition:none; }
     .hero .btn{ transition:none; }
     .hero .hero-inner{ animation:none; }
+    .hero .welcome-greeting{ animation:none; }
   }
 </style>
 
@@ -287,10 +315,12 @@
 
   <div class="hero-content">
     <div class="hero-inner">
-      @if (!empty($banner->title))
-        <p class="eyebrow">Engineering, Inspection, Energy</p>
-        <h1>{{ $banner->title }}</h1>
-      @endif
+     @if (!empty($banner->title))
+      <p class="welcome-greeting">
+        <span class="welcome-text">Welcome to EIS</span>
+      </p>
+      <h1>{{ $banner->title }}</h1>
+    @endif
 
       @if (!empty($banner->description))
         <p class="lede">{{ $banner->description }}</p>

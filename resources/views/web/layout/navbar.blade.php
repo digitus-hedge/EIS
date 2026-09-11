@@ -156,7 +156,7 @@
 }
 
 .site-navbar .brand-logo{
-  height:60px;
+  height:90px;
   width:auto;
   max-width:60vw;
   display:block;
