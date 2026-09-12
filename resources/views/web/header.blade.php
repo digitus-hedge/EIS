@@ -317,7 +317,7 @@
     <div class="hero-inner">
      @if (!empty($banner->title))
       <p class="welcome-greeting">
-        <span class="welcome-text">Welcome to EIS</span>
+        <span class="welcome-text"></span>
       </p>
       <h1>{{ $banner->title }}</h1>
     @endif

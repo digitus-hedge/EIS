@@ -1372,8 +1372,10 @@
 
 <section class="stats">
   <div class="stats-inner">
-    <p class="stats-eyebrow reveal">Our Track Record</p>
-    <h2 class="stats-heading reveal">Numbers That Speak For Themselves</h2>
+    <p class="stats-eyebrow reveal">OUR CORE STRENGTH</p>
+    <h2 class="stats-heading reveal">Standards You Can Stand On</h2>
+    
+
 
     <div class="stats-row-wrap">
       <div class="stats-row" id="statsRow">
@@ -1539,7 +1541,11 @@
     <div class="presence-content reveal reveal-right">
       <p class="presence-eyebrow">Regional Presence</p>
       <h1 class="presence-heading">Erbil</h1>
-      <p class="presence-desc">EIS Ltd has offices in Erbil, Iraq. providing access to oilfield services, machine shops, port facilities, storage and logistics operations.</p>
+      <p class="presence-desc">
+        {{-- EIS Ltd has offices in Erbil, Iraq. providing access to oilfield services, machine shops, port facilities, storage and logistics operations. --}}
+      {{-- EIS Ltd has offices in Erbil, Iraq, providing access to oilfield services, machine shops, port facilities, storage, and logistics operations. Our Erbil base supports clients across the Kurdistan region with equipment inspection, certification, and maintenance services, backed by a team of qualified inspectors and technicians. From lifting equipment to pressure testing, we help operators keep projects running safely and on schedule, with fast turnaround and direct access to regional supply chains. --}}
+    
+    EIS Ltd has offices in Erbil, Iraq, providing access to oilfield services, machine shops, port facilities, storage, and logistics operations. Our Erbil base supports clients across the Kurdistan region with equipment inspection, certification, and maintenance services, delivered by qualified inspectors and technicians with fast turnaround and direct access to regional supply chains.</p>
       <a href="{{ url('/contact') }}" class="presence-cta">Contact EIS</a>
     </div>
 
