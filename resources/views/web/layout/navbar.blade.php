@@ -143,7 +143,7 @@
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:20px 60px;
+  padding:15px 60px;
   flex-wrap:wrap;
 }
 
@@ -156,7 +156,7 @@
 }
 
 .site-navbar .brand-logo{
-  height:52px;
+  height:60px;
   width:auto;
   max-width:60vw;
   display:block;
