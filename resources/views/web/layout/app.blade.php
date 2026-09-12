@@ -15,12 +15,17 @@
     <!-- Fonts (optional, remove if not used) -->
     {{-- <link rel="preconnect" href="https://fonts.googleapis.com"> --}}
 
-    <style>
-    html, body{
-      max-width:100%;
-      overflow-x:hidden;
-    }
-    </style>
+ <style>
+html, body{
+  max-width:100%;
+  margin:0;
+  padding:0;
+  overflow-x:hidden;
+}
+*, *::before, *::after{
+  box-sizing:border-box;
+}
+</style>
 
     <!-- Styles -->
     @stack('styles')

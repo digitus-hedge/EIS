@@ -236,6 +236,8 @@
                     class="{{ request()->routeIs('admin.about.regional-footprint*') ? 'active' : '' }}">Regional Footprint</a></li>
             <li><a href="{{ route('admin.about.operation') }}"
                     class="{{ request()->routeIs('admin.about.operation*') ? 'active' : '' }}">Operations</a></li>
+             <li><a href="{{ route('admin.about.certificates') }}"
+                class="{{ request()->routeIs('admin.about.certificates*') ? 'active' : '' }}">Certificates</a></li>
         </ul>
     </li>
 
@@ -254,6 +256,17 @@
         <li><a href="{{ route('admin.home.services') }}"
                     class="{{ request()->routeIs('admin.home.services') || (request()->routeIs('admin.home.services.*') && !request()->routeIs('admin.home.services.behind-the-scenes*') && !request()->routeIs('admin.home.services.section*')) ? 'active' : '' }}">Master Service</a>
             </li>
+    </li>
+
+    <li class="has-submenu {{ request()->routeIs('admin.contact') || request()->routeIs('admin.contact.*') ? 'open' : '' }}">
+    <a onclick="toggleSubmenu(this)">
+        Contact
+        <i class="bi bi-chevron-right chevron"></i>
+    </a>
+    <ul class="submenu">
+        <li><a href="{{ route('admin.contact.edit') }}"
+                class="{{ request()->routeIs('admin.contact.form') ? 'active' : '' }}">Contact Page</a></li>
+    </ul>
     </li>
 </ul>
     </div>

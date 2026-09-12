@@ -15,17 +15,22 @@ use App\Http\Controllers\Admin\AboutController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AboutPageController;
 use App\Http\Controllers\Admin\ServicePageController;
-
+use App\Http\Controllers\Admin\ContactController;
+use App\Http\Controllers\ContactPageController;
+use App\Http\Controllers\Admin\CertificateController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/about', [AboutPageController::class, 'index'])->name('about');
 
-Route::get('/services', function () {
-    return view('web.services');
-})->name('services');
-
 Route::get('/services/{slug}', [ServiceDetailController::class, 'show']);
+Route::get('/services', [ServiceDetailController::class, 'index'])->name('services');
+Route::get('/services/{slug}', [ServiceDetailController::class, 'show']);
+
+Route::get('/services', [ServiceDetailController::class, 'index'])->name('services');
+Route::get('/service/{slug}', [ServiceDetailController::class, 'show'])->name('service.details');
+
+Route::get('/contact', [ContactPageController::class, 'index'])->name('contact');
 
 
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -94,6 +99,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('service/our-service', [ServicePageController::class, 'ourService'])->name('service.our-service');
         Route::post('service/our-service', [ServicePageController::class, 'storeOurService'])->name('service.our-service.store');
     
+        Route::get('/contact', [ContactController::class, 'edit'])->name('contact.edit');
+        Route::put('/contact', [ContactController::class, 'update'])->name('contact.update');
+
+        Route::get('about/certificates', [CertificateController::class, 'index'])->name('about.certificates');
+        Route::post('about/certificates', [CertificateController::class, 'store'])->name('about.certificates.store');
+        Route::delete('about/certificates/{certificate}', [CertificateController::class, 'destroy'])->name('about.certificates.destroy');
 
     });
 

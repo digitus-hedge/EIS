@@ -6,7 +6,7 @@ use App\Models\AboutUs;
 use App\Models\RegionalLocation;
 use App\Models\OperationVideo;
 use App\Models\WhyChooseUs;
-
+  use App\Models\Certificate;
 class AboutPageController extends Controller
 {
     public function index()
@@ -22,9 +22,10 @@ class AboutPageController extends Controller
 
         $whyChooseUs = WhyChooseUs::first();
         $capabilityItems = collect($whyChooseUs->items ?? [])->values();
-
+        $certificates = Certificate::orderBy('id')->get();
         return view('web.about', compact(
-            'about', 'locations', 'mainVideo', 'operationVideos', 'capabilityItems'
+            'about', 'locations', 'mainVideo', 'operationVideos', 'capabilityItems', 'certificates'
         ));
     }
+    
 }

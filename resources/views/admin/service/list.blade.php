@@ -49,9 +49,9 @@
     <table class="styled-table">
         <thead>
             <tr>
-                <th>Image</th>
-                <th>Title</th>
-                <th>Description</th>
+                <th>Banner Image</th>
+                <th>Banner Title</th>
+                <th>Banner Description</th>
                 <th class="text-right">Actions</th>
             </tr>
         </thead>
@@ -59,14 +59,14 @@
             @forelse ($services as $service)
             <tr>
                 <td>
-                    @if ($service->image)
-                    <img src="{{ Storage::url($service->image) }}" class="thumb">
+                    @if ($service->banner_image)
+                    <img src="{{ Storage::url($service->banner_image) }}" class="thumb">
                     @else
                     <span class="no-media"><i class="bi bi-image"></i></span>
                     @endif
                 </td>
-                <td class="title-cell">{{ $service->title }}</td>
-                <td class="desc-cell">{{ Str::limit($service->description, 70) ?: '—' }}</td>
+                <td class="title-cell">{{ $service->banner_title }}</td>
+                <td class="desc-cell">{{ Str::limit($service->banner_description, 70) ?: '—' }}</td>
                 <td class="text-right">
                     <div class="action-icons">
                         <a href="{{ route('admin.home.services.edit', $service->id) }}" class="icon-btn icon-edit" title="Edit">
@@ -78,7 +78,7 @@
                             @method('DELETE')
                             <button type="button" class="icon-btn icon-delete btn-delete-trigger"
                                 data-form-id="delete-form-{{ $service->id }}"
-                                data-name="{{ $service->title }}" title="Delete">
+                                data-name="{{ $service->banner_title }}" title="Delete">
                                 <i class="bi bi-trash3"></i>
                             </button>
                         </form>
@@ -87,7 +87,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="6" class="empty-row">
+                <td colspan="4" class="empty-row">
                     <i class="bi bi-inbox"></i>
                     <p>No entries found.</p>
                 </td>

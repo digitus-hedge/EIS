@@ -105,8 +105,14 @@
   }
 
   .footer-col{ flex:1; min-width:200px; }
-  .footer-col.about-col{ flex:0 0 30%; }
-  .footer-col.contact-col{ flex:0 0 22%; }
+.footer-col.about-col{ flex:0 0 30%; }
+.footer-col.contact-col{ flex:0 0 22%; }
+
+@media (min-width: 901px){
+  .footer-col,
+  .footer-col.about-col,
+  .footer-col.contact-col{ text-align:left; }
+}
 
   .footer-col h3{
     font-size:16px;
@@ -193,7 +199,40 @@
     background:#000000;
     transform:translateY(-2px);
   }
+  .footer-legal{
+  border-top:1px solid rgba(255,255,255,0.25);
+  padding:16px 60px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  flex-wrap:wrap;
+}
 
+.footer-legal p{
+  font-size:13px;
+  color:rgba(255,255,255,0.85);
+  margin:0;
+}
+
+.footer-legal-links{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  list-style:none;
+  margin:0;
+  padding:0;
+}
+
+.footer-legal-links a{
+  color:rgba(255,255,255,0.85);
+  text-decoration:none;
+  font-size:13px;
+}
+.footer-legal-links a:hover{
+  color:#ffffff;
+  text-decoration:underline;
+}
   /* ===== Tablet ===== */
   @media (max-width: 1024px){
     .footer-top{ padding:20px 40px; }
@@ -201,58 +240,89 @@
     .footer-nav{ gap:22px; }
   }
 
-  /* ===== Small tablet ===== */
+  /* ===== Small tablet / phones — stacked, centered, tidy ===== */
   @media (max-width: 900px){
     .footer-top{
-      padding:20px 24px;
+      flex-direction:column;
+      padding:26px 24px;
       justify-content:center;
       text-align:center;
+      gap:18px;
     }
-    .footer-nav{ justify-content:center; gap:16px 24px; }
+
+    .footer-brand{ justify-content:center; }
+
+    .footer-nav{
+      justify-content:center;
+      gap:14px 22px;
+    }
+
+    .footer-social{ justify-content:center; }
+
     .footer-bottom{
       flex-direction:column;
-      gap:32px;
-      padding:36px 24px 90px;
+      align-items:center;
+      text-align:center;
+      gap:30px;
+      padding:38px 24px 100px;
     }
+
+    .footer-col,
     .footer-col.about-col,
-    .footer-col.contact-col{ flex-basis:auto; }
-    .footer-to-top{ right:24px; bottom:24px; }
+    .footer-col.contact-col{
+      flex:none;
+      width:100%;
+      max-width:420px;
+      min-width:0;
+    }
+
+    .footer-desc{ margin-left:auto; margin-right:auto; }
+
+    .footer-contact-block{ text-align:center; }
+
+    .footer-to-top{
+      right:auto;
+      left:50%;
+      bottom:24px;
+      transform:translateX(-50%);
+    }
+    .footer-to-top:hover{
+      transform:translateX(-50%) translateY(-2px);
+    }
+    .footer-legal{
+  flex-direction:column;
+  text-align:center;
+  padding:16px 24px;
+  gap:10px;
+}
   }
 
   /* ===== Phones ===== */
-    @media (max-width: 600px){
-    .footer-brand{
-      flex-direction:column;
-      text-align:center;
-      gap:8px;
-    }
+  @media (max-width: 600px){
     .footer-brand-logo{ height:40px; }
-    /* remove .footer-brand-text .name{ font-size:17px; } */
 
     .footer-nav{
       flex-direction:column;
       gap:12px;
     }
-    .footer-social{ margin-top:4px; }
-    .footer-bottom{ padding:32px 20px 84px; gap:28px; }
-    .footer-desc{ max-width:100%; }
-    .footer-to-top{
-      right:20px;
-      bottom:20px;
-      width:40px;
-      height:40px;
-    }
-  }
 
+    .footer-social{ margin-top:4px; }
+
+    .footer-bottom{ padding:34px 20px 96px; gap:26px; }
+
+    .footer-col h3{ font-size:15.5px; }
+    .footer-desc{ max-width:100%; font-size:15px; }
+  }
 
   /* ===== Very small phones ===== */
   @media (max-width: 380px){
-    .footer-top{ padding:18px 16px; }
-    .footer-bottom{ padding:28px 16px 80px; }
+    .footer-top{ padding:20px 16px; }
+    .footer-bottom{ padding:28px 16px 88px; }
     .footer-col h3{ font-size:15px; }
     .footer-desc,
     .footer-col p.footer-line,
     .footer-link{ font-size:14.5px; }
+    .footer-to-top{ width:40px; height:40px; bottom:20px; }
   }
 </style>
 
@@ -284,7 +354,6 @@
     <div class="footer-col about-col">
       <h3>EIS ENERGY INSPECTION SERVICES LTD</h3>
       <p class="tagline-line">Inspection services for the Oil &amp; Gas Industries.</p>
-      <p class="footer-copyright">&copy;{{ date('Y') }} Energy Inspection Services Ltd</p>
     </div>
 
     <div class="footer-col">
@@ -306,5 +375,12 @@
     </div>
 
     <a href="#top" class="footer-to-top" aria-label="Back to top">&#8593;</a>
+  </div>
+    <div class="footer-legal">
+    <p>&copy;{{ date('Y') }} Energy Inspection Services Ltd. All rights reserved.</p>
+    <ul class="footer-legal-links">
+      <li><a href="{{ url('/privacy') }}">Privacy Policy</a></li>
+      <li><a href="{{ url('/terms') }}">Terms of Service</a></li>
+    </ul>
   </div>
 </footer>

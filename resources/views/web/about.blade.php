@@ -113,13 +113,14 @@
     z-index:2;
   }
 
-  .hero .hero-content{
+    .hero .hero-content{
     position:relative;
     z-index:5;
     flex:1;
     display:flex;
-    align-items:center;
-    padding:0 90px;
+    align-items:flex-end;
+    justify-content:flex-start;
+    padding:0 90px 30px;
   }
 
   .hero .hero-inner{ max-width:760px; }
@@ -192,13 +193,13 @@
   }
 
   /* ===== Tablet ===== */
-  @media (max-width: 1024px){
-    .hero .hero-content{ padding:0 50px; }
+   @media (max-width: 1024px){
+    .hero .hero-content{ padding:0 50px 70px; }
   }
 
   /* ===== Small tablet / large phone ===== */
-  @media (max-width: 900px){
-    .hero .hero-content{ padding:0 24px; }
+   @media (max-width: 900px){
+    .hero .hero-content{ padding:0 24px 56px; }
     .hero-dots{ left:24px; bottom:22px; }
   }
 
@@ -240,7 +241,7 @@
     position:relative;
     background:#ffffff;
     font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-    padding:90px 60px 100px;
+    padding:90px 60px 30px;
   }
 
   .about-intro *{ box-sizing:border-box; }
@@ -310,7 +311,7 @@
   position:relative;
   background:#ffffff;
   font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  padding:60px 60px 100px;
+  padding:60px 60px 30px;
 }
 
 .who-we-are *{ box-sizing:border-box; }
@@ -385,7 +386,7 @@
   position:relative;
   background:#ffffff;
   font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  padding:60px 60px 100px;
+  padding:60px 60px 60px;
 }
 .footprint *{ box-sizing:border-box; }
 .footprint-inner{ margin:0 auto; }
@@ -549,7 +550,7 @@
   position:relative;
   background:#ffffff;
   font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  padding:20px 60px 100px;
+  padding:20px 60px 30px;
 }
 
 .operation *{ box-sizing:border-box; }
@@ -850,182 +851,109 @@
   .operation-play-ring{ animation:none; }
   .operation-video img, .operation-card img{ transition:none; }
 }
-
-.capability{
+.certifications{
   position:relative;
   background:#ffffff;
   font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  padding:60px 60px 100px;
+  padding:60px 60px 30px;
 }
 
-.capability *{ box-sizing:border-box; }
+.certifications *{ box-sizing:border-box; }
 
-.capability-inner{
-  margin:0 auto;
-}
+.certifications-inner{ max-width:1300px; margin:0 auto; }
 
-.capability-top{ margin-bottom:60px; }
+.certifications-top{ margin-bottom:48px; }
 
-.capability-eyebrow{
+.certifications-eyebrow{
   color:var(--orange);
   font-weight:700;
   font-size:19px;
   margin:0 0 14px;
 }
 
-.capability-heading{
-  font-size:clamp(30px, 3.6vw, 46px);
+.certifications-heading{
+  font-size:clamp(28px, 3.6vw, 46px);
   line-height:1.2;
   font-weight:400;
   color:#111111;
   margin:0;
 }
 
-.capability-body{
-  position:relative;
-  display:flex;
-  align-items:flex-start;
-  gap:50px;
+.certifications-grid{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:28px;
 }
 
-.capability-body::before{
-  content:"";
-  position:absolute;
-  top:0;
-  bottom:0;
-  left:22%;
-  width:1px;
-  background:#e6e6e6;
-  pointer-events:none;
-}
-
-/* Tabs list — plain style (no colored box) */
-.capability-tabs{
-  list-style:none;
-  margin:0;
-  padding:0;
-  flex:0 0 22%;
+.cert-item{
   display:flex;
   flex-direction:column;
-  gap:22px;
-}
-
-.capability-tab{
-  display:flex;
   align-items:center;
-  gap:10px;
-  background:none;
-  border:none;
-  padding:0;
-  font-family:inherit;
-  font-size:20px;
-  font-weight:600;
-  letter-spacing:0.2px;
-  color:#a3a3a3;
-  cursor:pointer;
-  text-align:left;
-  transition:color 0.2s ease;
+  text-align:center;
 }
 
-.capability-tab .arrow{
-  color:var(--orange);
-  font-size:20px;
-  opacity:0.45;
-  transition:opacity 0.2s ease, transform 0.2s ease;
-}
-
-.capability-tab:hover{ color:#555555; }
-.capability-tab.active{ color:#111111; }
-.capability-tab.active .arrow{ opacity:1; transform:translateX(3px); }
-
-/* Content area: text + photo, sliding together */
-.capability-content-wrap{
-  position:relative;
-  flex:1;
-  display:flex;
-  align-items:flex-start;
-  gap:60px;
-  padding-left:70px;
-  overflow:hidden;
-}
-
-.capability-panel{
-  display:none;
-  align-items:flex-start;
-  gap:60px;
+.cert-photo{
   width:100%;
-}
-
-.capability-panel.is-active{ display:flex; }
-
-.capability-panel.is-leaving{
-  display:flex;
-  position:absolute;
-  top:0; left:70px;
-  width:calc(100% - 70px);
-  animation: capabilitySlideOutLeft 0.45s ease forwards;
-}
-
-.capability-panel.is-entering{
-  animation: capabilitySlideInRight 0.45s ease forwards;
-}
-
-@keyframes capabilitySlideOutLeft{
-  from{ transform:translateX(0); opacity:1; }
-  to{ transform:translateX(-40px); opacity:0; }
-}
-@keyframes capabilitySlideInRight{
-  from{ transform:translateX(40px); opacity:0; }
-  to{ transform:translateX(0); opacity:1; }
-}
-
-.capability-panel-text{
-  flex:1;
-  min-width:0;
-}
-
-.capability-panel-desc{
-  font-size:17px;
-  line-height:1.65;
-  color:#333333;
-  margin:0;
-}
-
-.capability-panel-photo{
-  flex:0 0 42%;
-  max-width:480px;
-  aspect-ratio: 5 / 3.4;
+  aspect-ratio: 3 / 4;
   border-radius:14px;
   overflow:hidden;
-  box-shadow:0 20px 44px rgba(0,0,0,0.14);
-  background: linear-gradient(165deg, #d9a441 0%, #b97a2e 35%, #5c4326 65%, #2a2016 100%);
+  background:#f4f4f4;
+  box-shadow:0 12px 28px rgba(0,0,0,0.1);
+  transition:transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s ease;
+  margin-bottom:16px;
 }
 
-.capability-panel-photo img{
-  display:block;
+.cert-photo:hover{
+  transform:translateY(-6px);
+  box-shadow:0 22px 44px rgba(0,0,0,0.16);
+}
+
+.cert-photo img{
   width:100%;
   height:100%;
   object-fit:cover;
+  display:block;
 }
 
-@media (max-width: 1100px){
-  .capability-body{ flex-direction:column; gap:36px; }
-  .capability-body::before{ display:none; }
-  .capability-tabs{
-    flex-basis:auto;
-    flex-direction:row;
-    flex-wrap:wrap;
-    gap:16px 28px;
-  }
-  .capability-content-wrap{ padding-left:0; overflow:visible; }
-  .capability-panel{ flex-direction:column; gap:30px; }
-  .capability-panel-photo{ max-width:none; width:100%; flex-basis:auto; }
+.cert-title{
+  font-size:15px;
+  font-weight:600;
+  color:#111111;
+  margin:0;
+  line-height:1.4;
+  word-break:break-word;
+}
+
+/* ===== Responsive breakpoints ===== */
+@media (max-width: 1200px){
+  .certifications-grid{ grid-template-columns:repeat(3, 1fr); gap:24px; }
 }
 
 @media (max-width: 900px){
-  .capability{ padding:64px 24px 70px; }
+  .certifications{ padding:56px 24px 64px; }
+  .certifications-grid{ grid-template-columns:repeat(2, 1fr); gap:20px; }
 }
 
+@media (max-width: 600px){
+  .certifications{ padding:48px 20px 56px; }
+  .certifications-heading{ font-size:clamp(22px, 6.5vw, 30px); }
+  .certifications-top{ margin-bottom:36px; }
+}
+
+@media (max-width: 480px){
+  .certifications{ padding:40px 16px 48px; }
+  .certifications-grid{ grid-template-columns:repeat(2, 1fr); gap:14px; }
+  .cert-title{ font-size:13px; }
+}
+
+@media (max-width: 360px){
+  .certifications-grid{ grid-template-columns:1fr; }
+  .cert-photo{ aspect-ratio:4/3; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .cert-photo{ transition:none; }
+}
 .cta-support{
   position:relative;
   background:#ffffff;
@@ -1108,6 +1036,94 @@
   .cta-support{ padding:56px 24px 64px; }
   .cta-support-inner{ flex-direction:column; gap:36px; }
   .cta-support-photo{ flex-basis:auto; width:100%; max-width:none; }
+}
+.certifications{
+  position:relative;
+  background:#ffffff;
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  padding:60px 60px 100px;
+}
+
+.certifications *{ box-sizing:border-box; }
+
+.certifications-inner{ margin:0 auto; }
+
+.certifications-top{ margin-bottom:48px; }
+
+.certifications-eyebrow{
+  color:var(--orange);
+  font-weight:700;
+  font-size:19px;
+  margin:0 0 14px;
+}
+
+.certifications-heading{
+  font-size:clamp(30px, 3.6vw, 46px);
+  line-height:1.2;
+  font-weight:400;
+  color:#111111;
+  margin:0;
+}
+
+.certifications-grid{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:28px;
+}
+
+.cert-item{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+}
+
+.cert-photo{
+  width:100%;
+  aspect-ratio: 3 / 4;
+  border-radius:14px;
+  overflow:hidden;
+  background:#f4f4f4;
+  box-shadow:0 12px 28px rgba(0,0,0,0.1);
+  transition:transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s ease;
+  margin-bottom:16px;
+}
+
+.cert-photo:hover{
+  transform:translateY(-6px);
+  box-shadow:0 22px 44px rgba(0,0,0,0.16);
+}
+
+.cert-photo img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.cert-title{
+  font-size:15px;
+  font-weight:600;
+  color:#111111;
+  margin:0;
+}
+
+@media (max-width: 1100px){
+  .certifications-grid{ grid-template-columns:repeat(3, 1fr); }
+}
+
+@media (max-width: 900px){
+  .certifications{ padding:56px 24px 64px; }
+  .certifications-grid{ grid-template-columns:repeat(2, 1fr); gap:22px; }
+}
+
+@media (max-width: 600px){
+  .certifications-heading{ font-size:clamp(24px, 6.5vw, 30px); }
+}
+
+@media (max-width: 480px){
+  .certifications{ padding:44px 16px 56px; }
+  .certifications-grid{ grid-template-columns:1fr 1fr; gap:16px; }
 }
 </style>
 <section class="hero">
@@ -1217,26 +1233,6 @@
   </div>
 </section>
 
-@php
-  $operationClips = [
-      [
-          'image' => 'operation1.jpeg',
-          'title' => 'Smart Monitoring',
-          'desc' => 'Digital tracking and real-time data supporting every inspection.',
-      ],
-      [
-          'image' => 'operation2.jpeg',
-          'title' => 'Offshore Platforms',
-          'desc' => 'Field inspections carried out on live offshore installations.',
-      ],
-      [
-          'image' => 'operation3.jpeg',
-          'title' => 'Field Technicians',
-          'desc' => 'Qualified inspectors working directly on client sites.',
-      ],
-  ];
-@endphp
-
 <section class="operation">
   <div class="operation-inner">
     <div class="operation-top reveal reveal-left">
@@ -1298,43 +1294,27 @@
   </div>
 </section>
 
-<section class="capability">
-  <div class="capability-inner">
-    <div class="capability-top reveal reveal-left">
-      <p class="capability-eyebrow">Why Choose Us</p>
-      <h2 class="capability-heading">Technical capability with<br>a safety-first mindset.</h2>
+@if ($certificates->count())
+<section class="certifications">
+  <div class="certifications-inner">
+    <div class="certifications-top reveal reveal-left">
+      <p class="certifications-eyebrow">Accreditations</p>
+      <h2 class="certifications-heading">EIS Accredited Certifications</h2>
     </div>
 
-   @if (!empty($capabilityItems))
-  <div class="capability-body">
-    <ul class="capability-tabs" id="capabilityTabs">
-      @foreach ($capabilityItems as $index => $item)
-        <li>
-          <button type="button" class="capability-tab{{ $index === 0 ? ' active' : '' }}" data-capability-index="{{ $index }}">
-            {{ sprintf('%02d', $index + 1) }} / {{ $item['subheading'] ?? '' }} <span class="arrow">&#8594;</span>
-          </button>
-        </li>
-      @endforeach
-    </ul>
-
-    <div class="capability-content-wrap" id="capabilityPanels">
-      @foreach ($capabilityItems as $index => $item)
-        <div class="capability-panel{{ $index === 0 ? ' is-active' : '' }}" data-capability-index="{{ $index }}">
-          <div class="capability-panel-text">
-            <p class="capability-panel-desc">{{ $item['description'] ?? '' }}</p>
+    <div class="certifications-grid">
+      @foreach ($certificates as $index => $certificate)
+        <div class="cert-item reveal reveal-delay-{{ min($index, 3) }}">
+          <div class="cert-photo">
+            <img src="{{ Storage::url($certificate->image) }}" alt="{{ $certificate->title }}" loading="lazy">
           </div>
-          <div class="capability-panel-photo">
-            @if (!empty($item['image']))
-              <img src="{{ asset('storage/' . $item['image']) }}" alt="{{ $item['subheading'] ?? '' }}">
-            @endif
-          </div>
+          <p class="cert-title">{{ $certificate->title }}</p>
         </div>
       @endforeach
     </div>
   </div>
-@endif
-  </div>
 </section>
+@endif
 <section class="cta-support">
   <div class="cta-support-inner">
     <div class="cta-support-photo reveal reveal-left"
@@ -1488,34 +1468,7 @@ document.querySelectorAll('.operation-card').forEach(function (card) {
 });
 });
 
-const capabilityTabs = document.querySelectorAll('#capabilityTabs .capability-tab');
-let capabilityAnimating = false;
 
-capabilityTabs.forEach(function (tab) {
-  tab.addEventListener('click', function () {
-    if (capabilityAnimating) return;
-    const index = tab.getAttribute('data-capability-index');
-    const currentPanel = document.querySelector('#capabilityPanels .capability-panel.is-active');
-    const nextPanel = document.querySelector('#capabilityPanels .capability-panel[data-capability-index="' + index + '"]');
-    if (!nextPanel || nextPanel === currentPanel) return;
-
-    capabilityAnimating = true;
-    capabilityTabs.forEach(function (t) { t.classList.remove('active'); });
-    tab.classList.add('active');
-
-    if (currentPanel) {
-      currentPanel.classList.remove('is-active');
-      currentPanel.classList.add('is-leaving');
-    }
-    nextPanel.classList.add('is-active', 'is-entering');
-
-    setTimeout(function () {
-      if (currentPanel) currentPanel.classList.remove('is-leaving');
-      nextPanel.classList.remove('is-entering');
-      capabilityAnimating = false;
-    }, 450);
-  });
-});
 </script>
 @php
   $footprintMapData = $locations->map(function ($loc) {

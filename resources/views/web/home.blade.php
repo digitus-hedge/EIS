@@ -196,9 +196,9 @@
   .about-heading{ margin-bottom:12px; }
 
   .about-text{
-    max-height:150px;
-    padding-left:20px;    /* reduced from 40px */
-  }
+  max-height:none;
+  padding-left:20px;
+}
   .about-text p{ font-size:16px; }
 }
 
@@ -216,7 +216,7 @@
 
   .about-heading{ font-size:clamp(18px, 6vw, 24px); margin-bottom:10px; }
 
-  .about-text{ gap:12px; max-height:130px; padding-left:0; }
+  .about-text{ gap:12px; max-height:none; padding-left:0; }
   .about-text p{ font-size:14.5px; }
 }
 
@@ -226,7 +226,7 @@
   .about-photo{ height:170px; }
   .about-content{ padding:18px 14px; }
   .about-heading{ font-size:18px; }
-  .about-text{ max-height:110px; }
+  .about-text{ max-height:none; }
   .about-text p{ font-size:14px; }
 }
 
@@ -484,20 +484,6 @@
 
 .services *{ box-sizing:border-box; }
 
-.services-inner{
-  display:flex;
-  align-items:flex-start;
-  gap:70px;
-}
-
-.services-left{
-   flex:1 1 0;
-  min-width:0;
-  position:sticky;
-  top:40px;
-  align-self:flex-start;
-}
-
 .services-eyebrow{
   color:#E8792D;
   font-weight:700;
@@ -534,15 +520,39 @@
   background-repeat:no-repeat;
   transition:box-shadow 0.4s ease;
 }
+.services-inner{
+  display:flex;
+  align-items:flex-start;
+  gap:70px;
+}
 
-.services-photo:hover{
-  box-shadow:0 20px 44px rgba(0,0,0,0.18);
+.services-left{
+  flex:1 1 0;
+  min-width:0;
+  position:sticky;
+  top:40px;
+  align-self:flex-start;
+  max-height:calc(100vh - 80px);
 }
 
 .services-right{
   flex:1 1 0;
   min-width:0;
   max-width:50%;
+  max-height:calc(100vh - 80px);
+  overflow-y:auto;
+  overflow-x:hidden;
+  scrollbar-width:none;
+  -ms-overflow-style:none;
+}
+
+.services-right::-webkit-scrollbar{
+  display:none;
+  width:0;
+  height:0;
+}
+.services-photo:hover{
+  box-shadow:0 20px 44px rgba(0,0,0,0.18);
 }
 
 .services-grid{
@@ -575,7 +585,7 @@
 .service-photo{
   width:80%;
   aspect-ratio: 16 / 9;
-  max-height:150px;
+  height:170px;
   border-radius:24px;
   overflow:hidden;
   margin-bottom:18px;
@@ -671,10 +681,15 @@
     flex-basis:auto;
   }
   .services-right{
-    width:100%;
-    max-width:100%;
-    flex-basis:auto;
-  }
+  flex:1 1 0;
+  min-width:0;
+  max-width:50%;
+  max-height:calc(100vh - 80px);
+  overflow-y:auto;
+  overflow-x:hidden;
+  scrollbar-width:none;      /* Firefox */
+  -ms-overflow-style:none;   /* old Edge/IE */
+}
   .services-heading{
     word-break:break-word;
     overflow-wrap:break-word;
@@ -683,7 +698,13 @@
     word-break:break-word;
     overflow-wrap:break-word;
   }
-  .services-grid{ grid-template-columns:repeat(2, 1fr); gap:28px 20px; }
+.services-grid{
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:36px 28px;
+  width:100%;
+  max-width:100%;
+}
 }
 
 /* ===== Phones — single card auto-sliding carousel ===== */
@@ -1329,19 +1350,19 @@
     <div
       class="about-photo reveal reveal-left"
       role="img"
-      aria-label="{{ $about->title ?? 'EIS inspectors reviewing plans on site' }}"
+      aria-label="{{ $about->title ?? null }}"
       @if(!empty($about->image))
-        style="background-image: linear-gradient(120deg, rgba(30,30,35,0.55), rgba(30,30,35,0.15) 55%, rgba(232,121,45,0.35)), url('{{ asset('storage/' . $about->image) }}');"
+        style="background-image: url('{{ asset('storage/' . $about->image) }}');"
       @endif
     ></div>
 
     <div class="about-content reveal reveal-right">
       <p class="about-eyebrow">About EIS</p>
-      <h3 class="about-heading">{{ $about->title}}</h3>
+      <h3 class="about-heading">{{ $about->title ?? null }}</h3>
 
       <div class="about-text-wrap">
         <div class="about-text" id="aboutText">
-            {!! $about->description !!}
+            {!! $about->description ?? null !!}
         </div>
         <div class="about-text-fade" id="aboutTextFade"></div>
       </div>
@@ -1351,8 +1372,10 @@
 
 <section class="stats">
   <div class="stats-inner">
-    <p class="stats-eyebrow reveal">Our Track Record</p>
-    <h2 class="stats-heading reveal">Numbers That Speak For Themselves</h2>
+    <p class="stats-eyebrow reveal">OUR CORE STRENGTH</p>
+    <h2 class="stats-heading reveal">Standards You Can Stand On</h2>
+    
+
 
     <div class="stats-row-wrap">
       <div class="stats-row" id="statsRow">
@@ -1392,33 +1415,33 @@
 
     <div class="services-right">
       @if(($services ?? collect())->isNotEmpty())
-        <div class="services-grid" id="servicesGrid">
-          @foreach ($services as $service)
-            <div class="service-card">
-              <div
-                class="service-photo"
-                style="background-image:url('{{ !empty($service->image) ? asset('storage/' . $service->image) : '' }}')"
-                role="img"
-                aria-label="{{ $service->title }}"
-              ></div>
-              <h3 class="service-title">{{ $service->title }}</h3>
-              <p class="service-desc">{{ $service->description }}</p>
-              <a href="{{ url('/services/' . $service->slug) }}" class="service-link">READ MORE <span class="arrow">&#8594;</span></a>
-            </div>
-          @endforeach
-        </div>
+  <div class="services-grid" id="servicesGrid">
+    @foreach ($services as $service)
+      <div class="service-card">
+        <div
+          class="service-photo"
+          style="background-image:url('{{ $service->banner_image ? Storage::url($service->banner_image) : asset('images/hero_image.jpeg') }}')"
+          role="img"
+          aria-label="{{ $service->banner_title }}"
+        ></div>
+        <h3 class="service-title">{{ $service->banner_title }}</h3>
+        <p class="service-desc">{{ $service->banner_description }}</p>
+        <a href="{{ route('service.details', $service->slug) }}" class="service-link">READ MORE <span class="arrow">&#8594;</span></a>
+      </div>
+    @endforeach
+  </div>
 
-        <div class="services-dots" id="servicesDots"></div>
-      @else
-        <p class="services-empty">No services published yet.</p>
-      @endif
+  <div class="services-dots" id="servicesDots"></div>
+@else
+  <p class="services-empty">No services published yet.</p>
+@endif
     </div>
 
   </div>
 </section>
 
 @php
-   $trustedLogos = collect($clientSection->images);
+   $trustedLogos = collect(optional($clientSection)->images ?? []);
 @endphp
 
 <section class="trusted">
@@ -1517,8 +1540,12 @@
 
     <div class="presence-content reveal reveal-right">
       <p class="presence-eyebrow">Regional Presence</p>
-      <h1 class="presence-heading">Erbil &amp; Dubai</h1>
-      <p class="presence-desc">EIS Ltd has offices in Erbil, Iraq and the Jebel Ali Free Zone in Dubai, providing access to oilfield services, machine shops, port facilities, storage and logistics operations.</p>
+      <h1 class="presence-heading">Erbil</h1>
+      <p class="presence-desc">
+        {{-- EIS Ltd has offices in Erbil, Iraq. providing access to oilfield services, machine shops, port facilities, storage and logistics operations. --}}
+      {{-- EIS Ltd has offices in Erbil, Iraq, providing access to oilfield services, machine shops, port facilities, storage, and logistics operations. Our Erbil base supports clients across the Kurdistan region with equipment inspection, certification, and maintenance services, backed by a team of qualified inspectors and technicians. From lifting equipment to pressure testing, we help operators keep projects running safely and on schedule, with fast turnaround and direct access to regional supply chains. --}}
+    
+    EIS Ltd has offices in Erbil, Iraq, providing access to oilfield services, machine shops, port facilities, storage, and logistics operations. Our Erbil base supports clients across the Kurdistan region with equipment inspection, certification, and maintenance services, delivered by qualified inspectors and technicians with fast turnaround and direct access to regional supply chains.</p>
       <a href="{{ url('/contact') }}" class="presence-cta">Contact EIS</a>
     </div>
 
@@ -1723,6 +1750,32 @@
     revealEls.forEach(function (el) { el.classList.add('in-view'); });
     document.querySelectorAll('[data-count-to]').forEach(animateCount);
   }
+
+
+  (function () {
+    const left = document.querySelector('.services-left');
+    const right = document.querySelector('.services-right');
+
+    if (!left || !right) return;
+
+    let isSyncing = false;
+
+    left.addEventListener('wheel', function (e) {
+        if (window.innerWidth <= 900) return;
+
+        e.preventDefault();
+
+        if (isSyncing) return;
+
+        isSyncing = true;
+
+        right.scrollTop += e.deltaY;
+
+        requestAnimationFrame(function () {
+            isSyncing = false;
+        });
+    }, { passive: false });
+})();
 
   (function () {
   const row = document.getElementById('servicesGrid');

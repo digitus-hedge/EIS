@@ -103,8 +103,7 @@
 
                                     <div class="item-col item-col-image">
                                         <label>Image</label>
-                                        <p class="hint-text">Max <strong>2MB</strong> — JPG, PNG, WEBP</p>
-
+                                            <p class="hint-text">Max <strong>10MB</strong> — JPG, PNG, WEBP</p>
                                         <div class="image-upload-box">
                                             <div class="preview-wrap">
                                                 @if (!empty($item['image']))
@@ -195,7 +194,7 @@
                 </div>
                 <div class="item-col item-col-image">
                     <label>Image</label>
-                    <p class="hint-text">Max <strong>2MB</strong> — JPG, PNG, WEBP</p>
+                   <p class="hint-text">Max <strong>10MB</strong> — JPG, PNG, WEBP</p>
                     <div class="image-upload-box">
                         <div class="preview-wrap">
                             <div class="preview-placeholder" id="preview-item-${index}">

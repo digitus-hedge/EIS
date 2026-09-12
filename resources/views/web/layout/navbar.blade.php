@@ -11,9 +11,9 @@
 
     background: linear-gradient(
         to bottom,
-        rgba(10, 20, 20, 0.75) 0%,
-        rgba(10, 20, 20, 0.65) 50%,
-        rgba(10, 20, 20, 0.50) 100%
+        rgba(10, 20, 20, 0.30) 0%,
+        rgba(10, 20, 20, 0.45) 55%,
+        rgba(10, 20, 20, 0) 100%
     );
 }
 
@@ -46,7 +46,7 @@
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:9px 60px;
+  padding:3px 60px;
   box-shadow:0 2px 8px rgba(0,0,0,0.12);
 }
 
@@ -117,11 +117,11 @@
 }
 
 @media (max-width: 1024px){
-  .topbar{ padding:9px 40px; }
+  .topbar{ padding:7px 40px; }
 }
 
 @media (max-width: 900px){
-  .topbar{ padding:8px 24px; }
+  .topbar{ padding:6px 24px; }
   .topbar-left span:first-child{ display:none; } /* hide address in the desktop topbar row on tablets */
 }
 
@@ -143,7 +143,7 @@
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:15px 60px;
+  padding:8px 60px;
   flex-wrap:wrap;
 }
 
@@ -156,7 +156,7 @@
 }
 
 .site-navbar .brand-logo{
-  height:60px;
+  height:90px;
   width:auto;
   max-width:60vw;
   display:block;
@@ -195,7 +195,7 @@
   font-size:15.5px;
   font-weight:600;
   letter-spacing:0.2px;
-  padding:6px 0;
+  padding:4px 0;
   transition:color 0.2s ease;
 }
 
@@ -230,14 +230,19 @@
   display:none;
 }
 
+/* ===== Mobile-only CTA buttons inside the hamburger menu ===== */
+.nav-mobile-cta{
+  display:none;
+}
+
 /* ===== Tablet ===== */
 @media (max-width: 1024px){
-  .site-navbar .navbar{ padding:18px 40px; }
+  .site-navbar .navbar{ padding:11px 40px; }
 }
 
 /* ===== Small tablet / large phone — hamburger menu ===== */
 @media (max-width: 900px){
-  .site-navbar .navbar{ padding:16px 24px; }
+  .site-navbar .navbar{ padding:10px 24px; }
 
   .site-navbar .nav-links{
     position:absolute;
@@ -330,12 +335,54 @@
     background:var(--orange-dark) !important;
     transform:translateY(-2px);
   }
+
+  /* Contact Us / Explore Services buttons — mobile hamburger menu only */
+  .nav-mobile-cta{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    margin-top:18px;
+    padding-top:18px;
+    border-top:1px solid #eee;
+  }
+
+  .nav-mobile-cta a{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:100%;
+    padding:13px 20px;
+    border-radius:30px;
+    font-size:15px;
+    font-weight:700;
+    text-decoration:none;
+    border:2px solid transparent;
+    transition:transform 0.15s ease, background 0.2s ease, color 0.2s ease;
+  }
+
+  .nav-mobile-cta a.btn-primary{
+    background:var(--orange) !important;
+    color:#ffffff !important;
+    border-color:var(--orange);
+  }
+  .nav-mobile-cta a.btn-primary:hover{
+    background:var(--orange-dark) !important;
+  }
+
+  .nav-mobile-cta a.btn-secondary{
+    background:transparent !important;
+    color:#1a1a1a !important;
+    border-color:#dcdcdc;
+  }
+  .nav-mobile-cta a.btn-secondary:hover{
+    background:#f5f5f5 !important;
+  }
 }
 
 /* ===== Phones ===== */
 @media (max-width: 600px){
-  .site-navbar .navbar{ padding:14px 18px; }
-  .site-navbar .brand-logo{ height:38px; }
+  .site-navbar .navbar{ padding:10px 18px; }
+  .site-navbar .brand-logo{ height:36px; }
 
   .site-navbar .nav-links{
     top:calc(100% + 1px);
@@ -372,6 +419,11 @@
         <li><a href="{{ url('/about') }}" class="{{ request()->is('about') ? 'active' : '' }}">About Us</a></li>
          <li><a href="{{ url('/services') }}" class="{{ request()->is('services*') ? 'active' : '' }}">Services</a></li>
         <li><a href="{{ url('/contact') }}" class="{{ request()->is('contact') ? 'active' : '' }}">Contact</a></li>
+
+        <li class="nav-mobile-cta">
+          <a href="{{ url('/contact') }}" class="btn-primary">Contact Us Now</a>
+          <a href="{{ url('/services') }}" class="btn-secondary">Explore Services</a>
+        </li>
 
         <li class="nav-mobile-info">
           <div class="nav-mobile-info-item">

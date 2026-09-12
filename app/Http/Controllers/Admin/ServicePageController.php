@@ -24,7 +24,7 @@ class ServicePageController extends Controller
     {
         $servicePage = ServicePage::first() ?? new ServicePage();
 
-        return view('admin.service.banner', compact('servicePage'));
+        return view('admin.servicePage.banner', compact('servicePage'));
     }
 
     /**
@@ -37,7 +37,7 @@ class ServicePageController extends Controller
 
         $request->validate([
             'banner_title' => 'required|string|max:255',
-            'banner'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'banner'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
         ]);
 
         try {
@@ -77,7 +77,7 @@ class ServicePageController extends Controller
     {
         $servicePage = ServicePage::first() ?? new ServicePage();
 
-        return view('admin.service.our-service', compact('servicePage'));
+        return view('admin.servicePage.our-service', compact('servicePage'));
     }
 
     /**
