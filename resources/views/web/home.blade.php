@@ -1352,7 +1352,7 @@
       role="img"
       aria-label="{{ $about->title ?? null }}"
       @if(!empty($about->image))
-        style="background-image: linear-gradient(120deg, rgba(30,30,35,0.55), rgba(30,30,35,0.15) 55%, rgba(232,121,45,0.35)), url('{{ asset('storage/' . $about->image) }}');"
+        style="background-image: url('{{ asset('storage/' . $about->image) }}');"
       @endif
     ></div>
 
