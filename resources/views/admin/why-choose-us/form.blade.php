@@ -5,145 +5,177 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 @if ($errors->any())
-    <div class="alert alert-error">
-        <i class="bi bi-exclamation-circle"></i>
-        <div>
-            Please fill below fields before submitting:
-            <ul style="margin: 6px 0 0 18px;">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    </div>
+<div class="notice caution" style="margin-bottom:20px;">
+    <i class="bi bi-exclamation-triangle" style="font-size:15px;flex-shrink:0;margin-top:1px;"></i>
+    <p>Please fix the highlighted fields below before submitting.</p>
+</div>
 @endif
 
 @if (session('success'))
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            Swal.fire({
-                icon: 'success',
-                title: 'Saved!',
-                text: @json(session('success')),
-                confirmButtonColor: '#3b3b58',
-                timer: 2500,
-                timerProgressBar: true
-            });
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        Swal.fire({
+            icon: 'success',
+            title: 'Saved!',
+            text: @json(session('success')),
+            confirmButtonColor: '#EF7B2E',
+            timer: 2500,
+            timerProgressBar: true
         });
-    </script>
+    });
+</script>
 @endif
 
-<div class="form-header">
-    <h4>
-        <i class="bi bi-star"></i>
-        Why Choose Us Section
-    </h4>
-</div>
+<div class="wrap">
+    <div class="crumbs">
+        <span onclick="window.location='{{ route('admin.dashboard') }}'">Home</span>
+        <span>&rsaquo;</span>
+        <b>Why Choose Us Section</b>
+    </div>
 
-<form action="{{ route('admin.home.why-choose-us.store') }}" method="POST" enctype="multipart/form-data" class="banner-form" id="whyForm">
-    @csrf
+    <div class="header">
+        <div>
+            <h1>Why Choose Us Section</h1>
+            <p>The heading, description, and up to 6 feature items shown in the "Why Choose Us" section on your homepage.</p>
+        </div>
+    </div>
 
-    <div class="container-fluid px-0">
-        <div class="row">
+    <form action="{{ route('admin.home.why-choose-us.store') }}" method="POST" enctype="multipart/form-data" id="whyForm">
+        @csrf
 
-            <div class="col-md-12">
-                <div class="form-card">
-                    <div class="form-group">
-                        <label><i class="bi bi-type-h1"></i> Main Heading</label>
-                        <input type="text" name="heading" value="{{ old('heading', $why->heading) }}"
-                               class="{{ $errors->has('heading') ? 'input-error' : '' }}"
-                               placeholder="e.g. Inspection Expertise You Can Rely On">
-                        @error('heading')
-                            <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
-                        @enderror
-                    </div>
-                    <div class="form-group" style="margin-top:16px;">
-                        <label><i class="bi bi-card-text"></i> Main Description</label>
-                        <textarea name="description" rows="3" placeholder="Specialized oil and gas inspection services backed by...">{{ old('description', $why->description) }}</textarea>
-                        @error('description')
-                            <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
+        <div class="card">
+            <div class="section-title">
+                <h2><span class="icon"><i class="bi bi-type-h1"></i></span> Main Heading<span class="req">*</span></h2>
+            </div>
+            <div class="field">
+                <input type="text" name="heading" value="{{ old('heading', $why->heading) }}"
+                       class="{{ $errors->has('heading') ? 'input-error' : '' }}"
+                       placeholder="e.g. Inspection Expertise You Can Rely On">
+                @error('heading')
+                    <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                @enderror
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="section-title">
+                <h2><span class="icon"><i class="bi bi-card-text"></i></span> Main Description<span class="req">*</span></h2>
+            </div>
+            <div class="field">
+                <textarea name="description" rows="3"
+                          class="{{ $errors->has('description') ? 'input-error' : '' }}"
+                          placeholder="Specialized oil and gas inspection services backed by...">{{ old('description', $why->description) }}</textarea>
+                @error('description')
+                    <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                @enderror
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="section-title">
+                <h2><span class="icon"><i class="bi bi-list-check"></i></span> Items (max 6)<span class="req">*</span></h2>
+                <button type="button" class="btn-add-item" id="addItemBtn">
+                    <i class="bi bi-plus-lg"></i> Add Item
+                </button>
             </div>
 
-            <div class="col-md-12">
-                <div class="form-card">
-                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
-                        <label class="section-label" style="margin:0;"><i class="bi bi-list-check"></i> Items (max 6)</label>
-                        <button type="button" class="btn-add-item" id="addItemBtn">
-                            <i class="bi bi-plus-lg"></i> Add Item
-                        </button>
-                    </div>
+            @error('items')
+                <span class="field-error" style="margin-bottom:14px;"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+            @enderror
 
-                    <div id="itemsWrap">
-                        @php $existingItems = old('items', $why->items ?? []); @endphp
-                        @foreach ($existingItems as $index => $item)
-                            <div class="item-row" data-index="{{ $index }}">
-                                <div class="item-row-header">
-                                    <span class="item-number">{{ $index + 1 }}</span>
-                                    <button type="button" class="btn-remove-item"><i class="bi bi-trash"></i> Remove</button>
+            <div id="itemsWrap">
+                @php $existingItems = old('items', $why->items ?? []); @endphp
+                @foreach ($existingItems as $index => $item)
+                    <div class="item-row" data-index="{{ $index }}">
+                        <div class="item-row-header">
+                            <span class="item-number">{{ $index + 1 }}</span>
+                            <button type="button" class="btn-remove-item"><i class="bi bi-trash"></i> Remove</button>
+                        </div>
+
+                        <div class="item-row-body">
+                            <div class="item-col">
+                                <div class="field">
+                                    <div class="field-top"><label class="field-label">Title</label></div>
+                                    <input type="text" name="items[{{ $index }}][title]"
+                                           value="{{ $item['title'] ?? '' }}"
+                                           class="{{ $errors->has('items.'.$index.'.title') ? 'input-error' : '' }}"
+                                           placeholder="e.g. Qualification">
+                                    @error('items.'.$index.'.title')
+                                        <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                                    @enderror
                                 </div>
-
-                                <div class="item-row-body">
-                                    <div class="item-col">
-                                        <div class="form-group">
-                                            <label>Title</label>
-                                            <input type="text" name="items[{{ $index }}][title]" value="{{ $item['title'] ?? '' }}" placeholder="e.g. Qualification">
-                                        </div>
-                                        <div class="form-group" style="margin-top:12px;">
-                                            <label>Subheading</label>
-                                            <input type="text" name="items[{{ $index }}][subheading]" value="{{ $item['subheading'] ?? '' }}" placeholder="e.g. Qualified & Certified Personnel">
-                                        </div>
-                                        <div class="form-group" style="margin-top:12px;">
-                                            <label>Description</label>
-                                            <textarea name="items[{{ $index }}][description]" rows="4" placeholder="Describe this point...">{{ $item['description'] ?? '' }}</textarea>
-                                        </div>
-                                    </div>
-
-                                    <div class="item-col item-col-image">
-                                        <label>Image</label>
-                                            <p class="hint-text">Max <strong>10MB</strong> — JPG, PNG, WEBP</p>
-                                        <div class="image-upload-box">
-                                            <div class="preview-wrap">
-                                                @if (!empty($item['image']))
-                                                    <img src="{{ Storage::url($item['image']) }}" class="preview-img" id="preview-item-{{ $index }}">
-                                                @else
-                                                    <div class="preview-placeholder" id="preview-item-{{ $index }}">
-                                                        <i class="bi bi-image"></i>
-                                                    </div>
-                                                @endif
-                                            </div>
-                                            <label class="upload-btn">
-                                                <i class="bi bi-upload"></i> Choose file
-                                                <input type="file" name="items[{{ $index }}][image]" accept="image/*"
-                                                       onchange="previewImage(this, 'preview-item-{{ $index }}')" hidden>
-                                            </label>
-                                            <input type="hidden" name="items[{{ $index }}][existing_image]" value="{{ $item['image'] ?? '' }}">
-                                        </div>
-                                    </div>
+                                <div class="field" style="margin-top:14px;">
+                                    <div class="field-top"><label class="field-label">Subheading</label></div>
+                                    <input type="text" name="items[{{ $index }}][subheading]"
+                                           value="{{ $item['subheading'] ?? '' }}"
+                                           class="{{ $errors->has('items.'.$index.'.subheading') ? 'input-error' : '' }}"
+                                           placeholder="e.g. Qualified & Certified Personnel">
+                                    @error('items.'.$index.'.subheading')
+                                        <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="field" style="margin-top:14px; margin-bottom:0;">
+                                    <div class="field-top"><label class="field-label">Description</label></div>
+                                    <textarea name="items[{{ $index }}][description]" rows="4"
+                                              class="{{ $errors->has('items.'.$index.'.description') ? 'input-error' : '' }}"
+                                              placeholder="Describe this point...">{{ $item['description'] ?? '' }}</textarea>
+                                    @error('items.'.$index.'.description')
+                                        <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                                    @enderror
                                 </div>
                             </div>
-                        @endforeach
-                    </div>
 
-                    <p class="hint-text" id="itemsLimitHint" style="display:none;">Maximum of 6 items reached.</p>
-                </div>
+                            <div class="item-col item-col-image">
+                                <div class="field-top"><label class="field-label">Image</label></div>
+
+                                <div class="notice caution">
+                                    <i class="bi bi-exclamation-triangle" style="margin-top:1px;"></i>
+                                    <p>JPG, PNG, WEBP &middot; up to 10MB.</p>
+                                </div>
+
+                                <div class="image-upload-box">
+                                    <div class="preview-wrap">
+                                        @if (!empty($item['image']))
+                                            <img src="{{ Storage::url($item['image']) }}" class="preview-img" id="preview-item-{{ $index }}">
+                                        @else
+                                            <div class="preview-placeholder" id="preview-item-{{ $index }}">
+                                                <i class="bi bi-image"></i>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <label class="upload-btn {{ $errors->has('items.'.$index.'.image') ? 'upload-btn-error' : '' }}">
+                                        <i class="bi bi-upload"></i> Choose file
+                                        <input type="file" name="items[{{ $index }}][image]" accept="image/*"
+                                               onchange="previewImage(this, 'preview-item-{{ $index }}')" hidden>
+                                    </label>
+                                    <input type="hidden" name="items[{{ $index }}][existing_image]" value="{{ $item['image'] ?? '' }}">
+                                    @error('items.'.$index.'.image')
+                                        <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
             </div>
 
-            <div class="col-md-12">
-                <div class="form-actions">
+            <p class="field-hint" id="itemsLimitHint" style="display:none;">Maximum of 6 items reached.</p>
+        </div>
+
+        <div class="savebar">
+            <div class="savebar-inner">
+                <span class="savebar-status">All changes save to the live homepage</span>
+                <div class="btn-group">
                     <a href="{{ route('admin.dashboard') }}" class="btn-cancel">Cancel</a>
-                    <button type="submit" class="btn-submit">
+                    <button type="submit" class="btn-save">
                         <i class="bi bi-check-lg"></i>
                         Save
                     </button>
                 </div>
             </div>
-
         </div>
-    </div>
-</form>
+    </form>
+</div>
 
 <script>
     const MAX_ITEMS = 6;
@@ -179,22 +211,25 @@
             </div>
             <div class="item-row-body">
                 <div class="item-col">
-                    <div class="form-group">
-                        <label>Title</label>
+                    <div class="field">
+                        <div class="field-top"><label class="field-label">Title</label></div>
                         <input type="text" name="items[${index}][title]" placeholder="e.g. Qualification">
                     </div>
-                    <div class="form-group" style="margin-top:12px;">
-                        <label>Subheading</label>
+                    <div class="field" style="margin-top:14px;">
+                        <div class="field-top"><label class="field-label">Subheading</label></div>
                         <input type="text" name="items[${index}][subheading]" placeholder="e.g. Qualified & Certified Personnel">
                     </div>
-                    <div class="form-group" style="margin-top:12px;">
-                        <label>Description</label>
+                    <div class="field" style="margin-top:14px; margin-bottom:0;">
+                        <div class="field-top"><label class="field-label">Description</label></div>
                         <textarea name="items[${index}][description]" rows="4" placeholder="Describe this point..."></textarea>
                     </div>
                 </div>
                 <div class="item-col item-col-image">
-                    <label>Image</label>
-                   <p class="hint-text">Max <strong>10MB</strong> — JPG, PNG, WEBP</p>
+                    <div class="field-top"><label class="field-label">Image</label></div>
+                    <div class="notice caution">
+                        <i class="bi bi-exclamation-triangle" style="margin-top:1px;"></i>
+                        <p>JPG, PNG, WEBP &middot; up to 10MB.</p>
+                    </div>
                     <div class="image-upload-box">
                         <div class="preview-wrap">
                             <div class="preview-placeholder" id="preview-item-${index}">
@@ -251,7 +286,7 @@
             if (!btn) return;
             const row = btn.closest('.item-row');
             if (document.querySelectorAll('#itemsWrap .item-row').length <= 1) {
-                Swal.fire({ icon: 'warning', title: 'At least one item is required', confirmButtonColor: '#3b3b58' });
+                Swal.fire({ icon: 'warning', title: 'At least one item is required', confirmButtonColor: '#EF7B2E' });
                 return;
             }
             row.remove();
@@ -259,48 +294,133 @@
             updateAddButtonState();
         });
     });
+
+     document.addEventListener('DOMContentLoaded', function () {
+    // ===== Scroll to the first validation error on page load =====
+    const firstErrorField = document.querySelector('.input-error, .upload-btn-error');
+    const firstErrorMsg = document.querySelector('.field-error');
+
+    if (firstErrorField) {
+        firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Give a brief highlight so the eye lands exactly on the right field
+        firstErrorField.classList.add('error-flash');
+        setTimeout(() => firstErrorField.classList.remove('error-flash'), 1500);
+    } else if (firstErrorMsg) {
+        // Fallback: some errors (like the "at least 1 image" group error) don't
+        // sit on an input directly — scroll to the message itself instead.
+        firstErrorMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+});
 </script>
 
 <style>
-    .alert { padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; font-size: 14px; display:flex; align-items:center; gap:8px; }
-    .alert-error { background: #fdecea; color: #c0392b; }
-    .form-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; }
-    .form-header h4 { display: flex; align-items: center; gap: 8px; color: #1e1e2d; }
-    .banner-form { width: 100%; }
-    .form-card { background: #fff; padding: 22px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 18px; }
-    .form-group label { display: block; margin-bottom: 7px; font-weight: 600; font-size: 13px; color: #333; }
-    .form-group input[type="text"], .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; outline: none; font-family: inherit; resize: vertical; }
-    .form-group input:focus, .form-group textarea:focus { border-color: #3b3b58; }
-    .section-label { display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 15px; color: #1e1e2d; margin-bottom: 14px; }
-    .hint-text { font-size: 12px; color: #888; margin: 4px 0 10px; }
-    .input-error { border-color: #e74c3c !important; background: #fff8f8; }
-    .field-error { display: flex; align-items: center; gap: 5px; color: #e74c3c; font-size: 12.5px; margin-top: 6px; }
+    .crumbs{ display:flex; align-items:center; gap:8px; font-size:13px; color: var(--faint,#9AA1B2); margin-bottom:10px; }
+    .crumbs b{ color: var(--ink,#171B2C); font-weight:600; }
+    .crumbs span:first-child{ cursor:pointer; transition:color .15s; }
+    .crumbs span:first-child:hover{ color: var(--orange,#EF7B2E); }
 
-    .btn-add-item { display:inline-flex; align-items:center; gap:6px; background:#3b3b58; color:#fff; border:none; padding:9px 16px; border-radius:6px; font-size:13.5px; font-weight:600; cursor:pointer; }
-    .btn-add-item:hover { background:#2b2b42; }
+    .header{ display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:32px; gap:16px; flex-wrap:wrap; }
+    .header h1{ font-size:25px; font-weight:700; letter-spacing:-0.02em; margin:0; color: var(--ink,#171B2C); }
+    .header p{ font-size:13.5px; color: var(--muted,#667085); margin:7px 0 0; max-width:560px; line-height:1.55; }
 
-    .item-row { border:1px solid #eee; border-radius:8px; padding:18px; margin-bottom:16px; border-top:3px solid #E8792D; }
-    .item-row-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
-    .item-number { display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:50%; background:#f4f6f9; color:#3b3b58; font-weight:700; font-size:13px; }
-    .btn-remove-item { display:inline-flex; align-items:center; gap:5px; background:#fdecea; color:#c0392b; border:none; padding:6px 12px; border-radius:6px; font-size:12.5px; font-weight:600; cursor:pointer; }
-    .btn-remove-item:hover { background:#fbdad6; }
+    .section-title{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:6px; }
+    .section-title h2{ display:flex; align-items:center; gap:8px; font-size:14px; font-weight:700; margin:0; color: var(--ink,#171B2C); }
+    .icon{ display:inline-flex; color: var(--orange,#EF7B2E); }
 
-    .item-row-body { display:flex; gap:24px; }
-    .item-col { flex:1; min-width:0; }
-    .item-col-image { flex:0 0 240px; }
+    .field{ margin-bottom:0; }
+    .field-top{ margin-bottom:8px; }
+    .field-label{ font-size:13px; font-weight:600; color: var(--ink,#171B2C); }
+    .field-hint{ font-size:11.5px; color: var(--faint,#9AA1B2); margin:4px 0 10px; }
 
-    .image-upload-box { display: flex; flex-direction: column; align-items: flex-start; }
-    .preview-wrap { width: 100%; }
-    .preview-img { width: 100%; height: 140px; object-fit: cover; border-radius: 6px; border: 1px solid #eee; margin-bottom: 10px; }
-    .preview-placeholder { width: 100%; height: 140px; display: flex; align-items: center; justify-content: center; background: #f4f6f9; border-radius: 6px; border: 1px dashed #ddd; color: #bbb; font-size: 26px; margin-bottom: 10px; }
-    .upload-btn { display: inline-flex; align-items: center; gap: 6px; background: #f4f6f9; color: #3b3b58; padding: 7px 14px; border-radius: 6px; font-size: 13px; cursor: pointer; border: 1px solid #ddd; }
-    .upload-btn:hover { background: #e9ecf2; }
+    input[type=text], textarea{
+        width:100%; border:1px solid var(--input-border,#DBDFEA); border-radius:10px;
+        padding:11px 14px; font-size:14px; font-family:inherit; color: var(--ink,#171B2C);
+        outline:none; transition:box-shadow .15s, border-color .15s; resize:vertical;
+    }
+    input[type=text]:focus, textarea:focus{
+        border-color: var(--orange,#EF7B2E);
+        box-shadow: 0 0 0 4px var(--orange-tint-strong,#FFE9D8);
+    }
+    .input-error{ border-color:#e74c3c !important; background:#fff8f8; }
+    .field-error{ display:flex; align-items:center; gap:5px; color:#e74c3c; font-size:12.5px; margin-top:6px; }
 
-    .form-actions { display: flex; gap: 12px; margin-top: 6px; }
-    .btn-cancel { padding: 11px 22px; border-radius: 6px; border: 1px solid #ddd; color: #555; text-decoration: none; font-size: 14px; }
-    .btn-cancel:hover { background: #f4f6f9; }
-    .btn-submit { display: flex; align-items: center; gap: 7px; background: #3b3b58; color: #fff; border: none; padding: 11px 24px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; }
-    .btn-submit:hover { background: #2b2b42; }
+    .upload-btn-error{ border-color:#e74c3c !important; background:#fff8f8; }
+
+    .notice{ display:flex; align-items:flex-start; gap:8px; background: var(--canvas,#F6F7FB); border-radius:10px; padding:9px 12px; margin-bottom:12px; }
+    .notice.caution{ background:#FFF8E8; border:1px solid #F5E3B3; }
+    .notice.caution i{ color:#B7791F; font-size:13px; }
+    .notice.caution p{ color:#8A6116; margin:0; font-size:11.5px; }
+
+    .req{ color: var(--orange, #EF7B2E); }
+
+    /* ===== Add item button ===== */
+    .btn-add-item{
+        display:inline-flex; align-items:center; gap:6px; font-size:12.5px; font-weight:600; color:#fff;
+        background: var(--orange,#EF7B2E); border:none; padding:9px 16px; border-radius:9px; cursor:pointer;
+        transition: background .15s ease, transform .1s ease;
+    }
+    .btn-add-item:hover{ background: var(--orange-deep,#DA6A20); }
+
+    /* ===== Item rows ===== */
+    .item-row{
+        border:1px solid var(--line,#E9EBF2); border-radius:12px; padding:20px; margin-bottom:16px;
+        border-top:3px solid var(--orange,#EF7B2E); background:#fff;
+    }
+    .item-row-header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+    .item-number{
+        display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px;
+        border-radius:50%; background: var(--orange-tint,#FFF8F3); color: var(--orange-deep,#DA6A20);
+        font-weight:700; font-size:13px;
+    }
+    .btn-remove-item{
+        display:inline-flex; align-items:center; gap:5px; background:#FFF5F4; color:#D5392F;
+        border:1px solid #F5D3D0; padding:6px 12px; border-radius:8px; font-size:12.5px; font-weight:600; cursor:pointer;
+        transition: background .15s ease;
+    }
+    .btn-remove-item:hover{ background:#FBD5D5; }
+
+    .item-row-body{ display:flex; gap:28px; }
+    .item-col{ flex:1; min-width:0; }
+    .item-col-image{ flex:0 0 240px; }
+
+    .image-upload-box{ display:flex; flex-direction:column; align-items:flex-start; }
+    .preview-wrap{ width:100%; }
+    .preview-img{ width:100%; height:140px; object-fit:cover; border-radius:10px; border:1px solid var(--line,#E9EBF2); margin-bottom:10px; }
+    .preview-placeholder{
+        width:100%; height:140px; display:flex; align-items:center; justify-content:center;
+        background: var(--canvas,#F6F7FB); border-radius:10px; border:1.5px dashed var(--input-border,#DBDFEA);
+        color: var(--faint,#9AA1B2); font-size:26px; margin-bottom:10px;
+    }
+    .upload-btn{
+        display:inline-flex; align-items:center; gap:6px; background: var(--canvas,#F6F7FB); color: var(--ink,#171B2C);
+        padding:8px 15px; border-radius:9px; font-size:12.5px; font-weight:600; cursor:pointer;
+        border:1px solid var(--input-border,#DBDFEA); transition:background .15s ease, border-color .15s ease;
+    }
+    .upload-btn:hover{ background: var(--orange-tint,#FFF8F3); border-color: var(--orange-border,#F3D8C2); color: var(--orange-deep,#DA6A20); }
+
+    /* ===== Sticky save bar ===== */
+    .savebar{
+        position:sticky; bottom:0; border-top:1px solid var(--line,#E9EBF2);
+        background:rgba(255,255,255,0.92); backdrop-filter:blur(6px);
+        margin:24px -32px -32px; padding:0 32px;
+        box-shadow:0 -4px 16px -8px rgba(15,21,38,0.06);
+    }
+    .savebar-inner{ padding:16px 0; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+    .savebar-status{ font-size:12px; color: var(--faint,#9AA1B2); }
+    .btn-group{ display:flex; align-items:center; gap:12px; }
+    .btn-cancel{
+        font-size:13px; font-weight:600; color: var(--muted,#667085); background:none; border:none;
+        padding:10px 16px; border-radius:8px; cursor:pointer; text-decoration:none; transition:color .15s, background .15s;
+    }
+    .btn-cancel:hover{ color: var(--ink,#171B2C); background: var(--canvas,#F6F7FB); }
+    .btn-save{
+        display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; color:#fff;
+        background:linear-gradient(135deg, #0F1526, #1D2439); border:none;
+        padding:11px 22px; border-radius:9px; cursor:pointer;
+        box-shadow:0 4px 12px -4px rgba(15,21,38,0.4);
+        transition:transform .12s ease, box-shadow .12s ease;
+    }
+    .btn-save:hover{ transform:translateY(-1px); box-shadow:0 8px 18px -6px rgba(15,21,38,0.5); }
 
     @media (max-width: 700px) {
         .item-row-body { flex-direction: column; }

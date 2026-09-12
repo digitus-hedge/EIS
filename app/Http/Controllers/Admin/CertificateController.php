@@ -24,38 +24,43 @@ class CertificateController extends Controller
     }
 
     public function store(Request $request)
-{
-    ini_set('memory_limit', '512M');
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:10240',
+        ], [
+            'title.required' => 'Please enter a certificate title.',
+            'title.max'      => 'Title must not exceed 255 characters.',
 
-    $request->validate([
-        'title' => 'required|string|max:255',
-        'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
-    ]);
-
-    try {
-        $imagePath = $this->processAndStoreImage($request->file('image'));
-
-        Certificate::create([
-            'title' => $request->title,
-            'image' => $imagePath,
+            'image.required' => 'Please upload a certificate image.',
+            'image.image'    => 'The file must be a valid image.',
+            'image.mimes'    => 'The image must be a JPG, PNG, or WEBP file.',
+            'image.max'      => 'The image must not exceed 10MB.',
         ]);
 
-        gc_collect_cycles();
+        try {
+            $imagePath = $this->processAndStoreImage($request->file('image'));
 
-        return redirect()
-            ->route('admin.about.certificates')
-            ->with('success', 'Certificate added successfully.');
+            Certificate::create([
+                'title' => $request->title,
+                'image' => $imagePath,
+            ]);
 
-    } catch (\Throwable $e) {
-        \Log::error('Certificate store() FAILED', [
-            'message' => $e->getMessage(),
-            'file'    => $e->getFile(),
-            'line'    => $e->getLine(),
-        ]);
+            gc_collect_cycles();
 
-        return back()->withInput()->with('error', 'Something went wrong: ' . $e->getMessage());
+            return redirect()
+                ->route('admin.about.certificates')
+                ->with('success', 'Certificate added successfully.');
+        } catch (\Throwable $e) {
+            \Log::error('Certificate store() FAILED', [
+                'message' => $e->getMessage(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
+            ]);
+
+            return back()->withInput()->with('error', 'Something went wrong: ' . $e->getMessage());
+        }
     }
-}
 
     public function destroy(Certificate $certificate)
     {

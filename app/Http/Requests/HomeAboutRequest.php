@@ -17,7 +17,7 @@ class HomeAboutRequest extends FormRequest
         return [
             'title'       => 'required|string|min:3|max:255',
             'description' => 'required|string',
-            'image'       => 'nullable|image|mimes:jpeg,jpg,png,webp|max:5120',
+            'image'       => 'nullable|image|mimes:jpeg,jpg,png,webp|max:10240',
         ];
     }
 
@@ -32,7 +32,7 @@ class HomeAboutRequest extends FormRequest
 
             'image.image'          => 'The file must be a valid image.',
             'image.mimes'          => 'Image must be a JPG, PNG, or WEBP file.',
-            'image.max'            => 'Image must not exceed 2MB.',
+            'image.max'            => 'Image must not exceed 10MB.',
         ];
     }
 

@@ -31,43 +31,52 @@ class ServicePageController extends Controller
      * Store/update the banner title + image.
      * Route: POST /admin/service/banner -> admin.service.banner.store
      */
-    public function storeBanner(Request $request)
-    {
-        ini_set('memory_limit', '512M');
+  public function storeBanner(Request $request)
+{
+    $servicePage = ServicePage::first() ?? new ServicePage();
 
-        $request->validate([
-            'banner_title' => 'required|string|max:255',
-            'banner'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
+    $request->validate([
+        'banner_title' => 'required|string|max:255',
+        'banner'       => $servicePage->banner
+                            ? 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240'
+                            : 'required|image|mimes:jpg,jpeg,png,webp|max:10240',
+    ], [
+        'banner_title.required' => 'Please enter a banner title.',
+        'banner_title.max'      => 'Title must not exceed 255 characters.',
+
+        'banner.required' => 'Please upload a banner image.',
+        'banner.image'    => 'The file must be a valid image.',
+        'banner.mimes'    => 'The banner image must be a JPG, PNG, or WEBP file.',
+        'banner.max'      => 'The banner image must not exceed 10MB.',
+    ]);
+
+    try {
+        $servicePage->banner_title = $request->banner_title;
+
+        if ($request->hasFile('banner')) {
+            if ($servicePage->banner) {
+                Storage::disk('public')->delete($servicePage->banner);
+            }
+            $servicePage->banner = $this->processAndStoreImage($request->file('banner'));
+            gc_collect_cycles();
+        }
+
+        $servicePage->save();
+
+        return redirect()
+            ->route('admin.service.banner')
+            ->with('success', 'Service banner saved successfully.');
+
+    } catch (\Throwable $e) {
+        \Log::error('Service banner store() FAILED', [
+            'message' => $e->getMessage(),
+            'file'    => $e->getFile(),
+            'line'    => $e->getLine(),
         ]);
 
-        try {
-            $servicePage = ServicePage::first() ?? new ServicePage();
-            $servicePage->banner_title = $request->banner_title;
-
-            if ($request->hasFile('banner')) {
-                if ($servicePage->banner) {
-                    Storage::disk('public')->delete($servicePage->banner);
-                }
-                $servicePage->banner = $this->processAndStoreImage($request->file('banner'));
-                gc_collect_cycles();
-            }
-
-            $servicePage->save();
-
-            return redirect()
-                ->route('admin.service.banner')
-                ->with('success', 'Service banner saved successfully.');
-
-        } catch (\Throwable $e) {
-            \Log::error('Service banner store() FAILED', [
-                'message' => $e->getMessage(),
-                'file'    => $e->getFile(),
-                'line'    => $e->getLine(),
-            ]);
-
-            return back()->withInput()->with('error', 'Something went wrong: ' . $e->getMessage());
-        }
+        return back()->withInput()->with('error', 'Something went wrong: ' . $e->getMessage());
     }
+}
 
     /**
      * Show the "Our Services" text section form.
@@ -84,34 +93,39 @@ class ServicePageController extends Controller
      * Store/update the "Our Services" title + description.
      * Route: POST /admin/service/our-service -> admin.service.our-service.store
      */
-    public function storeOurService(Request $request)
-    {
-        $request->validate([
-            'our_service_title'       => 'required|string|max:255',
-            'our_service_description' => 'required|string',
+   public function storeOurService(Request $request)
+{
+    $request->validate([
+        'our_service_title'       => 'required|string|max:255',
+        'our_service_description' => 'required|string|max:1000',
+    ], [
+        'our_service_title.required'       => 'Please enter a title.',
+        'our_service_title.max'            => 'Title must not exceed 255 characters.',
+
+        'our_service_description.required' => 'Please enter a description.',
+        'our_service_description.max'      => 'Description must not exceed 1000 characters.',
+    ]);
+
+    try {
+        $servicePage = ServicePage::first() ?? new ServicePage();
+        $servicePage->our_service_title = $request->our_service_title;
+        $servicePage->our_service_description = $request->our_service_description;
+        $servicePage->save();
+
+        return redirect()
+            ->route('admin.service.our-service')
+            ->with('success', 'Our Services section saved successfully.');
+
+    } catch (\Throwable $e) {
+        \Log::error('Our Service section store() FAILED', [
+            'message' => $e->getMessage(),
+            'file'    => $e->getFile(),
+            'line'    => $e->getLine(),
         ]);
 
-        try {
-            $servicePage = ServicePage::first() ?? new ServicePage();
-            $servicePage->our_service_title = $request->our_service_title;
-            $servicePage->our_service_description = $request->our_service_description;
-            $servicePage->save();
-
-            return redirect()
-                ->route('admin.service.our-service')
-                ->with('success', 'Our Services section saved successfully.');
-
-        } catch (\Throwable $e) {
-            \Log::error('Our Service section store() FAILED', [
-                'message' => $e->getMessage(),
-                'file'    => $e->getFile(),
-                'line'    => $e->getLine(),
-            ]);
-
-            return back()->withInput()->with('error', 'Something went wrong: ' . $e->getMessage());
-        }
+        return back()->withInput()->with('error', 'Something went wrong: ' . $e->getMessage());
     }
-
+}
     private function processAndStoreImage($file): string
     {
         $filename = 'service/banners/' . Str::random(20) . '.webp';

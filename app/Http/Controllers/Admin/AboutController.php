@@ -36,44 +36,53 @@ class AboutController extends Controller
      * Route: POST /admin/banner -> admin.about.banner.store
      */
     public function storeBanner(Request $request)
-    {
-        ini_set('memory_limit', '512M');
+{
+    $about = AboutUs::first() ?? new AboutUs();
 
-        $request->validate([
-            'title'  => 'required|string|max:255',
-            'banner' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
-        ]);
+    $request->validate([
+        'title'  => 'required|string|max:255',
+        'banner' => $about->banner
+                        ? 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120'
+                        : 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
+    ], [
+        'title.required'  => 'Please enter a title.',
+        'title.max'       => 'Title must not exceed 255 characters.',
 
-        try {
-            $about = AboutUs::first() ?? new AboutUs();
-            $about->title = $request->title;
+        'banner.required' => 'Please upload a banner image.',
+        'banner.image'    => 'The file must be a valid image.',
+        'banner.mimes'    => 'The banner image must be a JPG, PNG, or WEBP file.',
+        'banner.max'      => 'The banner image must not exceed 5MB.',
+    ]);
 
-            if ($request->hasFile('banner')) {
-                if ($about->banner) {
-                    Storage::disk('public')->delete($about->banner);
-                }
+    try {
+        $about->title = $request->title;
 
-                $about->banner = $this->processAndStoreImage($request->file('banner'));
-
-                gc_collect_cycles();
+        if ($request->hasFile('banner')) {
+            if ($about->banner) {
+                Storage::disk('public')->delete($about->banner);
             }
 
-            $about->save();
+            $about->banner = $this->processAndStoreImage($request->file('banner'));
 
-            return redirect()
-                ->route('admin.about.banner')
-                ->with('success', 'Banner saved successfully.');
-
-        } catch (\Throwable $e) {
-            \Log::error('About banner store() FAILED', [
-                'message' => $e->getMessage(),
-                'file'    => $e->getFile(),
-                'line'    => $e->getLine(),
-            ]);
-
-            return back()->withInput()->with('error', 'Something went wrong: ' . $e->getMessage());
+            gc_collect_cycles();
         }
+
+        $about->save();
+
+        return redirect()
+            ->route('admin.about.banner')
+            ->with('success', 'Banner saved successfully.');
+
+    } catch (\Throwable $e) {
+        \Log::error('About banner store() FAILED', [
+            'message' => $e->getMessage(),
+            'file'    => $e->getFile(),
+            'line'    => $e->getLine(),
+        ]);
+
+        return back()->withInput()->with('error', 'Something went wrong: ' . $e->getMessage());
     }
+}
 
     private function processAndStoreImage($file, string $folder = 'about/banners'): string
     {
@@ -150,45 +159,54 @@ class AboutController extends Controller
      * Store/update the Who We Are description + image.
      * Route: POST /admin/who-we-are -> admin.about.who-we-are.store
      */
-    public function storeWhoWeAre(Request $request)
-    {
-        ini_set('memory_limit', '512M');
+   public function storeWhoWeAre(Request $request)
+{
+    $about = AboutUs::first() ?? new AboutUs();
 
-        $request->validate([
-            'who_we_are_desc' => 'required|string',
-            'image'           => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
-        ]);
+    $request->validate([
+        'who_we_are_desc' => 'required|string|max:1000',
+        'image'           => $about->image
+                                ? 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120'
+                                : 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
+    ], [
+        'who_we_are_desc.required' => 'Please enter the who we are description.',
+        'who_we_are_desc.max'      => 'Description must not exceed 1000 characters.',
 
-        try {
-            $about = AboutUs::first() ?? new AboutUs();
-            $about->who_we_are_desc = $request->who_we_are_desc;
+        'image.required' => 'Please upload an image.',
+        'image.image'    => 'The file must be a valid image.',
+        'image.mimes'    => 'The image must be a JPG, PNG, or WEBP file.',
+        'image.max'      => 'The image must not exceed 5MB.',
+    ]);
 
-            if ($request->hasFile('image')) {
-                if ($about->image) {
-                    Storage::disk('public')->delete($about->image);
-                }
+    try {
+        $about->who_we_are_desc = $request->who_we_are_desc;
 
-                $about->image = $this->processAndStoreImage($request->file('image'), 'about/who-we-are');
-
-                gc_collect_cycles();
+        if ($request->hasFile('image')) {
+            if ($about->image) {
+                Storage::disk('public')->delete($about->image);
             }
 
-            $about->save();
+            $about->image = $this->processAndStoreImage($request->file('image'), 'about/who-we-are');
 
-            return redirect()
-                ->route('admin.about.who-we-are')
-                ->with('success', 'Who We Are section saved successfully.');
-
-        } catch (\Throwable $e) {
-            \Log::error('Who We Are store() FAILED', [
-                'message' => $e->getMessage(),
-                'file'    => $e->getFile(),
-                'line'    => $e->getLine(),
-            ]);
-
-            return back()->withInput()->with('error', 'Something went wrong: ' . $e->getMessage());
+            gc_collect_cycles();
         }
+
+        $about->save();
+
+        return redirect()
+            ->route('admin.about.who-we-are')
+            ->with('success', 'Who We Are section saved successfully.');
+
+    } catch (\Throwable $e) {
+        \Log::error('Who We Are store() FAILED', [
+            'message' => $e->getMessage(),
+            'file'    => $e->getFile(),
+            'line'    => $e->getLine(),
+        ]);
+
+        return back()->withInput()->with('error', 'Something went wrong: ' . $e->getMessage());
     }
+}
 
     /**
  * Show the "Regional Footprint" page.
@@ -353,25 +371,31 @@ public function operation()
  */
 public function storeOperationVideo(Request $request)
 {
-    ini_set('memory_limit', '512M');
-
     $request->validate([
         'title'       => 'required|string|max:255',
-        'description' => 'nullable|string',
-        'thumbnail'   => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
-        'video'       => 'nullable|mimes:mp4,mov,webm|max:10240',
+        'description' => 'required|string|max:1000',
+        'thumbnail'   => 'required|image|mimes:jpg,jpeg,png,webp|max:10240',
+        'video'       => 'required|mimes:mp4,mov,webm|max:20480',
+    ], [
+        'title.required'       => 'Please enter a title.',
+        'title.max'            => 'Title must not exceed 255 characters.',
+
+        'description.required' => 'Please enter a description.',
+        'description.max'      => 'Description must not exceed 1000 characters.',
+
+        'thumbnail.required' => 'Please upload a thumbnail image.',
+        'thumbnail.image'    => 'The thumbnail must be a valid image.',
+        'thumbnail.mimes'    => 'The thumbnail must be a JPG, PNG, or WEBP file.',
+        'thumbnail.max'      => 'The thumbnail must not exceed 10MB.',
+
+        'video.required' => 'Please upload a video file.',
+        'video.mimes'    => 'The video must be an MP4, MOV, or WEBM file.',
+        'video.max'      => 'The video must not exceed 20MB.',
     ]);
 
     try {
-        $thumbnailPath = null;
-        if ($request->hasFile('thumbnail')) {
-            $thumbnailPath = $this->processAndStoreImage($request->file('thumbnail'), 'operation/thumbnails');
-        }
-
-        $videoPath = null;
-        if ($request->hasFile('video')) {
-            $videoPath = $request->file('video')->store('operation/videos', 'public');
-        }
+        $thumbnailPath = $this->processAndStoreImage($request->file('thumbnail'), 'operation/thumbnails');
+        $videoPath = $request->file('video')->store('operation/videos', 'public');
 
         OperationVideo::create([
             'title'       => $request->title,

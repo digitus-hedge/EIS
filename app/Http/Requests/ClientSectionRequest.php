@@ -18,7 +18,7 @@ class ClientSectionRequest extends FormRequest
             'title'          => 'required|string|max:255',
             'description'    => 'required|string|max:1000',
             'images'         => 'nullable|array',
-            'images.*'       => 'nullable|image|mimes:jpeg,jpg,png,webp|max:2048',
+            'images.*'       => 'nullable|image|mimes:jpeg,jpg,png,webp|max:10240',
             'remove_images'  => 'nullable|array',
         ];
     }
@@ -34,7 +34,7 @@ class ClientSectionRequest extends FormRequest
 
             'images.*.image'       => 'Each file must be a valid image file.',
             'images.*.mimes'       => 'Images must be in JPG, PNG, or WEBP format.',
-            'images.*.max'         => 'Each image must not exceed 2MB in size.',
+            'images.*.max'         => 'Each image must not exceed 10MB in size.',
         ];
     }
 

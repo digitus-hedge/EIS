@@ -31,7 +31,7 @@ class BannerController extends Controller
      */
     public function store(BannerRequest $request)
     {
-        ini_set('memory_limit', '512M');
+        // ini_set('memory_limit', '512M');
 
         try {
             $data = $request->validated();
