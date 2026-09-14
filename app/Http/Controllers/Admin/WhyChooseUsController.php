@@ -18,31 +18,31 @@ class WhyChooseUsController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'heading'                => 'required|string|max:255',
-            'description'            => 'required|string|max:1000',
+            'heading'                => 'required|string|max:55',
+            'description'            => 'required|string|max:180',
             'items'                  => 'required|array|min:1|max:6',
-            'items.*.title'          => 'required|string|max:255',
-            'items.*.subheading'     => 'required|string|max:255',
+            'items.*.title'          => 'required|string|max:35',
+            'items.*.subheading'     => 'required|string|max:45',
             'items.*.description'    => 'required|string|max:1000',
             'items.*.image'          => 'required_without:items.*.existing_image|nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
             'items.*.existing_image' => 'nullable|string',
         ], [
             'heading.required'     => 'Please enter the main heading.',
-            'heading.max'          => 'Heading must not exceed 255 characters.',
+            'heading.max'          => 'Heading must not exceed 55 characters.',
 
             'description.required' => 'Please enter the main description.',
-            'description.max'      => 'Description must not exceed 1000 characters.',
+            'description.max'      => 'Description must not exceed 500 characters.',
 
             'items.required' => 'Please add at least one item.',
             'items.min'       => 'Please add at least one item.',
             'items.max'       => 'You can add a maximum of 6 items.',
 
             'items.*.title.required'       => 'Please enter a title for item :position.',
-            'items.*.title.max'            => 'Title for item :position must not exceed 255 characters.',
+            'items.*.title.max'            => 'Title for item :position must not exceed 35 characters.',
             'items.*.subheading.required'  => 'Please enter a subheading for item :position.',
-            'items.*.subheading.max'       => 'Subheading for item :position must not exceed 255 characters.',
+            'items.*.subheading.max'       => 'Subheading for item :position must not exceed 45 characters.',
             'items.*.description.required' => 'Please enter a description for item :position.',
-            'items.*.description.max'      => 'Description for item :position must not exceed 1000 characters.',
+            'items.*.description.max'      => 'Description for item :position must not exceed 500 characters.',
 
             'items.*.image.required_without' => 'Please upload an image for item :position.',
             'items.*.image.image'            => 'The file for item :position must be a valid image.',

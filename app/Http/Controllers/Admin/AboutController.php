@@ -40,13 +40,13 @@ class AboutController extends Controller
     $about = AboutUs::first() ?? new AboutUs();
 
     $request->validate([
-        'title'  => 'required|string|max:255',
+        'title'  => 'required|string|max:55',
         'banner' => $about->banner
                         ? 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120'
                         : 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
     ], [
         'title.required'  => 'Please enter a title.',
-        'title.max'       => 'Title must not exceed 255 characters.',
+        'title.max'       => 'Title must not exceed 55 characters.',
 
         'banner.required' => 'Please upload a banner image.',
         'banner.image'    => 'The file must be a valid image.',
@@ -119,8 +119,8 @@ class AboutController extends Controller
     public function storeAbout(Request $request)
     {
         $request->validate([
-            'about_title' => 'required|string|max:255',
-            'about_desc'  => 'required|string',
+            'about_title' => 'required|string|max:75',
+            'about_desc'  => 'required|string|max:550',
         ]);
 
         try {
@@ -159,18 +159,25 @@ class AboutController extends Controller
      * Store/update the Who We Are description + image.
      * Route: POST /admin/who-we-are -> admin.about.who-we-are.store
      */
-   public function storeWhoWeAre(Request $request)
+ public function storeWhoWeAre(Request $request)
 {
     $about = AboutUs::first() ?? new AboutUs();
 
     $request->validate([
-        'who_we_are_desc' => 'required|string|max:1000',
-        'image'           => $about->image
-                                ? 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120'
-                                : 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
+        'who_we_are_desc'             => 'required|string|max:1000',
+        'who_we_are_meta_title'       => 'required|string|max:80',
+        'who_we_are_meta_description' => 'required|string|max:200',
+        'image'                       => $about->image
+                                            ? 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120'
+                                            : 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
     ], [
         'who_we_are_desc.required' => 'Please enter the who we are description.',
         'who_we_are_desc.max'      => 'Description must not exceed 1000 characters.',
+
+        'who_we_are_meta_title.required'       => 'Please enter a meta title.',
+        'who_we_are_meta_title.max'            => 'Meta title must not exceed 255 characters.',
+        'who_we_are_meta_description.required' => 'Please enter a meta description.',
+        'who_we_are_meta_description.max'      => 'Meta description must not exceed 500 characters.',
 
         'image.required' => 'Please upload an image.',
         'image.image'    => 'The file must be a valid image.',
@@ -179,7 +186,9 @@ class AboutController extends Controller
     ]);
 
     try {
-        $about->who_we_are_desc = $request->who_we_are_desc;
+        $about->who_we_are_desc             = $request->who_we_are_desc;
+        $about->who_we_are_meta_title       = $request->who_we_are_meta_title;
+        $about->who_we_are_meta_description = $request->who_we_are_meta_description;
 
         if ($request->hasFile('image')) {
             if ($about->image) {
@@ -225,10 +234,8 @@ public function regionalFootprint()
  */
 public function storeRegionalLocation(Request $request)
 {
-    ini_set('memory_limit', '512M');
-
-    $request->validate([
-        'title'                 => 'required|string|max:255',
+    $data = $request->validate([
+        'title'                 => 'required|string|max:70',
         'address'               => 'nullable|string|max:255',
         'latitude'              => 'required|numeric',
         'longitude'             => 'required|numeric',
@@ -237,21 +244,41 @@ public function storeRegionalLocation(Request $request)
         'offices.*.title'       => 'required|string|max:255',
         'offices.*.description' => 'nullable|string',
         'offices.*.image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+    ], [
+        'title.required'    => 'Please enter a location title.',
+        'title.max'         => 'Location title must not exceed 70 characters.',
+
+        'address.max'       => 'Address must not exceed 255 characters.',
+
+        'latitude.required'  => 'Please select a location on the map.',
+        'latitude.numeric'   => 'Latitude must be a valid number.',
+        'longitude.required' => 'Please select a location on the map.',
+        'longitude.numeric'  => 'Longitude must be a valid number.',
+
+        'offices.required' => 'Please add at least one office.',
+        'offices.min'      => 'Please add at least one office.',
+
+        'offices.*.title.required' => 'Office title is required.',
+        'offices.*.title.max'      => 'Office title must not exceed 255 characters.',
+
+        'offices.*.image.image' => 'Office image must be a valid image.',
+        'offices.*.image.mimes' => 'Office image must be a JPG, PNG, or WEBP file.',
+        'offices.*.image.max'   => 'Office image must not exceed 5MB.',
     ]);
 
     try {
         DB::beginTransaction();
 
         $location = RegionalLocation::create([
-            'title'      => $request->title,
-            'address'    => $request->address,
-            'latitude'   => $request->latitude,
-            'longitude'  => $request->longitude,
-            'place_id'   => $request->place_id,
+            'title'      => $data['title'],
+            'address'    => $data['address'] ?? null,
+            'latitude'   => $data['latitude'],
+            'longitude'  => $data['longitude'],
+            'place_id'   => $data['place_id'] ?? null,
             'sort_order' => RegionalLocation::max('sort_order') + 1,
         ]);
 
-        foreach ($request->offices as $index => $officeData) {
+        foreach ($data['offices'] as $index => $officeData) {
             $imagePath = null;
 
             if ($request->hasFile("offices.$index.image")) {
@@ -372,16 +399,16 @@ public function operation()
 public function storeOperationVideo(Request $request)
 {
     $request->validate([
-        'title'       => 'required|string|max:255',
-        'description' => 'required|string|max:1000',
+        'title'       => 'required|string|max:50',
+        'description' => 'required|string|max:120',
         'thumbnail'   => 'required|image|mimes:jpg,jpeg,png,webp|max:10240',
         'video'       => 'required|mimes:mp4,mov,webm|max:20480',
     ], [
         'title.required'       => 'Please enter a title.',
-        'title.max'            => 'Title must not exceed 255 characters.',
+        'title.max'            => 'Title must not exceed 50 characters.',
 
         'description.required' => 'Please enter a description.',
-        'description.max'      => 'Description must not exceed 1000 characters.',
+        'description.max'      => 'Description must not exceed 120 characters.',
 
         'thumbnail.required' => 'Please upload a thumbnail image.',
         'thumbnail.image'    => 'The thumbnail must be a valid image.',

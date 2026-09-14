@@ -55,7 +55,7 @@
         </div>
     </div>
 
-    <form action="{{ route('admin.about.banner.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.about.banner.store') }}" method="POST" enctype="multipart/form-data" id="aboutBannerForm">
         @csrf
 
         <div class="card">
@@ -85,7 +85,7 @@
 
             <div class="image-slot" style="max-width:400px;">
                 <div class="drop img-slot {{ ($about->banner ?? null) ? 'filled' : '' }}"
-                     data-file-input="file-banner" onclick="handleDropClick(this)">
+                     data-file-input="file-banner"   id="drop-banner"  onclick="handleDropClick(this)">
                     @if ($about->banner ?? null)
                         <img src="{{ asset('storage/' . $about->banner) }}" id="preview-banner" alt="About banner">
                         <button type="button" class="remove-img-btn" onclick="removeUploadedImage(event, this, 'banner', 'preview-banner')" title="Remove image">
@@ -236,6 +236,99 @@
     }
     .btn-save:hover{ transform:translateY(-1px); box-shadow:0 8px 18px -6px rgba(15,21,38,0.5); }
 </style>
+
+
+<script>
+document.getElementById('aboutBannerForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    submitAboutBannerForm();
+});
+
+function submitAboutBannerForm() {
+    const form = document.getElementById('aboutBannerForm');
+    const formData = new FormData(form);
+    const submitBtn = form.querySelector('.btn-save');
+    const originalBtnHtml = submitBtn.innerHTML;
+
+    // clear previous errors
+    form.querySelectorAll('.field-error').forEach(el => el.remove());
+    form.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving...';
+
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(async (response) => {
+        const data = await response.json().catch(() => null);
+
+        if (response.status === 422 && data && data.errors) {
+            showAboutBannerValidationErrors(data.errors);
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error('Request failed');
+        }
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Saved!',
+            text: 'About banner updated successfully.',
+            confirmButtonColor: '#EF7B2E',
+            timer: 2000,
+            timerProgressBar: true
+        }).then(() => {
+            window.location.reload();
+        });
+    })
+    .catch(() => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Something went wrong. Please try again.',
+            confirmButtonColor: '#D5392F'
+        });
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnHtml;
+    });
+}
+
+function showAboutBannerValidationErrors(errors) {
+    const form = document.getElementById('aboutBannerForm');
+
+    const fieldMap = {
+        title: f => f.querySelector('[name="title"]'),
+        banner: f => document.getElementById('drop-banner'),
+    };
+
+    Object.keys(errors).forEach(field => {
+        const message = errors[field][0];
+        const target = fieldMap[field] ? fieldMap[field](form) : null;
+        if (!target) return;
+
+        target.classList.add('input-error');
+
+        const errorEl = document.createElement('span');
+        errorEl.className = 'field-error';
+        errorEl.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+        target.insertAdjacentElement('afterend', errorEl);
+    });
+
+    const firstErrorField = form.querySelector('.input-error');
+    if (firstErrorField) {
+        firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+</script>
 
 <script>
     function handleDropClick(el) {

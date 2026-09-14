@@ -17,10 +17,13 @@ class Service extends Model
         'process',
         'features_heading',
         'features',
+        'show_on_home'
     ];
 
     protected $casts = [
         'process'  => 'array',
         'features' => 'array',
+        'show_on_home' => 'boolean',
+
     ];
 }

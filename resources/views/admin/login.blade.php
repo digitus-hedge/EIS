@@ -125,11 +125,62 @@
         .login-box button:hover {
             background: #2b2b42;
         }
+
+
+           .brand-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .brand-header img {
+            /* width: 50%; */
+            height: auto;
+            object-fit: contain;
+            margin-bottom: 12px;
+        }
+
+        .brand-header .brand-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e1e2d;
+            letter-spacing: 0.5px;
+        }
+
+        .brand-header .brand-tagline {
+            font-size: 11.5px;
+            color: #999;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .login-box h2 {
+            text-align: center;
+            margin-bottom: 6px;
+            color: #1e1e2d;
+            font-size: 19px;
+        }
+
+        .login-box p.subtitle {
+            text-align: center;
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 25px;
+        }
     </style>
 </head>
 <body>
     <div class="login-box">
-        <h2>Admin Login</h2>
+       
+
+       <div class="brand-header">
+            <img src="{{ asset('images/favicon.png') }}" alt="EIS Logo">
+            <div class="brand-name">EIS Admin Login</div>
+            <!-- <div class="brand-tagline">Control Panel</div> -->
+        </div>
+
         <p class="subtitle">Sign in to access your dashboard</p>
 
         @if ($errors->any())

@@ -28,5 +28,7 @@ class AboutUs extends Model
         'about_desc',
         'who_we_are_desc',
         'image',
+        'who_we_are_meta_title',
+        'who_we_are_meta_description'
     ];
 }

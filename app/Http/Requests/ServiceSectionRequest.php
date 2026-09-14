@@ -16,8 +16,8 @@ class ServiceSectionRequest extends FormRequest
     {
         return [
             'label'       => 'nullable|string|max:50',
-            'heading'     => 'required|string|max:255',
-            'description' => 'required|string|max:1000',
+            'heading'     => 'required|string|max:90',
+            'description' => 'required|string|max:140',
         ];
     }
 }

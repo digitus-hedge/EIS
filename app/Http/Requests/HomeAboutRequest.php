@@ -15,8 +15,8 @@ class HomeAboutRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title'       => 'required|string|min:3|max:255',
-            'description' => 'required|string',
+            'title'       => 'required|string|min:3|max:60',
+            'description' => 'required|string|max:1200',
             'image'       => 'nullable|image|mimes:jpeg,jpg,png,webp|max:10240',
         ];
     }
@@ -29,7 +29,7 @@ class HomeAboutRequest extends FormRequest
             'title.max'            => 'Title cannot exceed :max characters.',
 
             'description.required' => 'Please enter a description.',
-
+            'description.max' => 'Description must not exceed :max characters.',
             'image.image'          => 'The file must be a valid image.',
             'image.mimes'          => 'Image must be a JPG, PNG, or WEBP file.',
             'image.max'            => 'Image must not exceed 10MB.',

@@ -113,19 +113,22 @@
 
                 <div class="rf-office-grid">
                     @foreach ($location->offices as $office)
-                        <div class="rf-office-card">
-                            @if ($office->image)
-                                <img src="{{ Storage::url($office->image) }}" alt="{{ $office->title }}">
-                            @endif
-                            <div class="body">
-                                <strong>{{ $office->title }}</strong>
-                                <p>{{ $office->description }}</p>
-                            </div>
-                            <form action="{{ route('admin.about.regional-footprint.offices.destroy', $office) }}" method="POST" onsubmit="return confirm('Remove this office?');">
-                                @csrf @method('DELETE')
-                                <button type="submit"><i class="bi bi-x-lg"></i></button>
-                            </form>
-                        </div>
+                      <div class="rf-office-card">
+    @if ($office->image)
+        <img src="{{ Storage::url($office->image) }}" alt="{{ $office->title }}">
+    @endif
+    <div class="body">
+        <strong>{{ $office->title }}</strong>
+        <p>{{ $office->description }}</p>
+    </div>
+    <form action="{{ route('admin.about.regional-footprint.offices.destroy', $office) }}" method="POST"
+          id="delete-office-{{ $office->id }}">
+        @csrf @method('DELETE')
+        <button type="button" class="btn-delete-office-trigger" data-form-id="delete-office-{{ $office->id }}" data-name="{{ $office->title }}">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </form>
+</div>
                     @endforeach
                 </div>
 
@@ -144,22 +147,39 @@
                             <div class="field-top"><label class="field-label">Description</label></div>
                             <textarea name="description" rows="2"></textarea>
                         </div>
-                        <div class="field" style="margin-top:12px;">
+
+                        <!-- <div class="field" style="margin-top:12px;">
                             <div class="field-top"><label class="field-label">Image</label></div>
                             <input type="file" name="image" accept="image/*">
-                        </div>
+                        </div> -->
+
+                        <div class="field" style="margin-top:12px;">
+    <div class="field-top"><label class="field-label">Image</label></div>
+    <div class="image-slot" style="max-width:220px;">
+        <div class="drop img-slot" data-file-input="rf-mini-image-{{ $location->id }}" onclick="handleDropClick(this)">
+            <div class="preview-placeholder" id="rf-mini-preview-{{ $location->id }}">
+                <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:18px;"></i></div>
+                <div class="drop-title">Click to upload</div>
+                <div class="drop-sub">or drag &amp; drop</div>
+            </div>
+        </div>
+        <input type="file" id="rf-mini-image-{{ $location->id }}" name="image" accept="image/*" hidden
+               onchange="previewImage(this, 'rf-mini-preview-{{ $location->id }}')">
+    </div>
+</div>
                         <button type="submit" class="btn-secondary-pill" style="margin-top:14px;">
                             <i class="bi bi-plus-lg"></i> Add Office
                         </button>
                     </form>
                 </div>
 
-                <form action="{{ route('admin.about.regional-footprint.destroy', $location) }}" method="POST" onsubmit="return confirm('Remove this whole location and its offices?');" style="margin-top:14px;">
-                    @csrf @method('DELETE')
-                    <button type="submit" class="btn-danger-pill">
-                        <i class="bi bi-trash3"></i> Remove Location
-                    </button>
-                </form>
+             <form action="{{ route('admin.about.regional-footprint.destroy', $location) }}" method="POST"
+      id="delete-location-{{ $location->id }}" style="margin-top:14px;">
+    @csrf @method('DELETE')
+    <button type="button" class="btn-danger-pill btn-delete-location-trigger" data-form-id="delete-location-{{ $location->id }}" data-name="{{ $location->title }}">
+        <i class="bi bi-trash3"></i> Remove Location
+    </button>
+</form>
             </div>
         @empty
             <p class="field-hint">No locations added yet.</p>
@@ -179,10 +199,26 @@
             <div class="field-top"><label class="field-label">Description</label></div>
             <textarea name="offices[__INDEX__][description]" rows="2"></textarea>
         </div>
-        <div class="field" style="margin-top:12px; margin-bottom:0;">
+        <!-- <div class="field" style="margin-top:12px; margin-bottom:0;">
             <div class="field-top"><label class="field-label">Image</label></div>
             <input type="file" name="offices[__INDEX__][image]" accept="image/*">
+        </div> -->
+
+
+        <div class="field" style="margin-top:12px; margin-bottom:0;">
+    <div class="field-top"><label class="field-label">Image</label></div>
+    <div class="image-slot" style="max-width:220px;">
+        <div class="drop img-slot" data-file-input="rf-office-image-__INDEX__" onclick="handleDropClick(this)">
+            <div class="preview-placeholder" id="rf-office-preview-__INDEX__">
+                <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:18px;"></i></div>
+                <div class="drop-title">Click to upload</div>
+                <div class="drop-sub">or drag &amp; drop</div>
+            </div>
         </div>
+        <input type="file" id="rf-office-image-__INDEX__" name="offices[__INDEX__][image]" accept="image/*" hidden
+               onchange="previewImage(this, 'rf-office-preview-__INDEX__')">
+    </div>
+</div>
     </div>
 </template>
 
@@ -313,6 +349,31 @@
     .rf-mini-form{
         margin-top:14px; border-top:1px dashed var(--line,#E9EBF2); padding-top:14px; display:none;
     }
+
+
+    .image-slot{ position:relative; }
+.drop.img-slot{
+    position:relative; width:100%; height:140px;
+    border:1.5px dashed var(--input-border,#DBDFEA); border-radius:12px; background:#fff;
+    display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden;
+    transition:border-color .15s ease;
+}
+.drop.img-slot:hover{ border-color: var(--orange-border,#F3D8C2); }
+.drop.img-slot.filled{ border-style:solid; padding:0; }
+.drop.img-slot img{ width:100%; height:100%; object-fit:cover; }
+.drop.img-slot.input-error{ border-color:#E9483F; background:#FFF5F4; }
+
+.preview-placeholder{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-align:center; }
+.ico-circle{ width:34px; height:34px; border-radius:50%; background: var(--canvas,#F6F7FB); display:flex; align-items:center; justify-content:center; margin-bottom:4px; }
+.drop-title{ font-weight:600; font-size:13px; color: var(--ink,#171B2C); }
+.drop-sub{ font-size:11px; color: var(--faint,#9AA1B2); }
+
+.remove-img-btn{
+    position:absolute; top:8px; right:8px; width:26px; height:26px; border-radius:8px;
+    background:rgba(0,0,0,0.55); color:#fff; border:none; display:flex; align-items:center;
+    justify-content:center; cursor:pointer; font-size:12px; z-index:2; transition:background .15s ease;
+}
+.remove-img-btn:hover{ background:rgba(0,0,0,0.75); }
 </style>
 
 <script>
@@ -440,6 +501,202 @@
         rfInitMap();
         rfAddOfficeRow(); // one office row visible by default
     });
+</script>
+
+<script>
+    document.addEventListener('click', function (e) {
+        const officeBtn = e.target.closest('.btn-delete-office-trigger');
+        if (officeBtn) {
+            const formId = officeBtn.dataset.formId;
+            const name = officeBtn.dataset.name;
+            Swal.fire({
+                title: 'Are you sure?',
+                html: `Do you really want to remove <strong>"${name}"</strong>?<br>This action cannot be undone.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, remove it',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#E9483F',
+                cancelButtonColor: '#9AA1B2',
+                reverseButtons: true,
+                focusCancel: true
+            }).then((result) => {
+                if (result.isConfirmed) document.getElementById(formId).submit();
+            });
+            return;
+        }
+
+        const locBtn = e.target.closest('.btn-delete-location-trigger');
+        if (locBtn) {
+            const formId = locBtn.dataset.formId;
+            const name = locBtn.dataset.name;
+            Swal.fire({
+                title: 'Are you sure?',
+                html: `Remove <strong>"${name}"</strong> and all its offices?<br>This action cannot be undone.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, remove it',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#E9483F',
+                cancelButtonColor: '#9AA1B2',
+                reverseButtons: true,
+                focusCancel: true
+            }).then((result) => {
+                if (result.isConfirmed) document.getElementById(formId).submit();
+            });
+        }
+    });
+</script>
+<script>
+document.getElementById('rf-add-location-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    submitRfLocationForm();
+});
+
+function submitRfLocationForm() {
+    const form = document.getElementById('rf-add-location-form');
+    const formData = new FormData(form);
+    const submitBtn = document.getElementById('rf-submit-location-btn');
+    const originalBtnHtml = submitBtn.innerHTML;
+
+    form.querySelectorAll('.field-error').forEach(el => el.remove());
+    form.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving...';
+
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(async (response) => {
+        const data = await response.json().catch(() => null);
+
+        if (response.status === 422 && data && data.errors) {
+            showRfValidationErrors(data.errors);
+            submitBtn.innerHTML = originalBtnHtml;
+            submitBtn.disabled = false; // location is still selected, keep it usable
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error('Request failed');
+        }
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Saved!',
+            text: 'Location added successfully.',
+            confirmButtonColor: '#EF7B2E',
+            timer: 2000,
+            timerProgressBar: true
+        }).then(() => {
+            window.location.reload();
+        });
+    })
+    .catch(() => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Something went wrong. Please try again.',
+            confirmButtonColor: '#D5392F'
+        });
+        submitBtn.innerHTML = originalBtnHtml;
+        submitBtn.disabled = false;
+    });
+}
+
+function showRfValidationErrors(errors) {
+    const form = document.getElementById('rf-add-location-form');
+
+    Object.keys(errors).forEach(field => {
+        const message = errors[field][0];
+
+        // top-level location fields (title/address/latitude/longitude come from the map pick)
+        if (['title', 'address', 'latitude', 'longitude'].includes(field)) {
+            const preview = document.getElementById('rf-selected-preview');
+            const errorEl = document.createElement('span');
+            errorEl.className = 'field-error';
+            errorEl.style.marginBottom = '14px';
+            errorEl.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+            preview.insertAdjacentElement('afterend', errorEl);
+            return;
+        }
+
+        // offices.{index}.{subfield} — matched by exact name attribute, not row position,
+        // since removed rows can leave index gaps
+        const m = field.match(/^offices\.(\d+)\.(\w+)$/);
+        if (m) {
+            const [, idx, subfield] = m;
+            const input = form.querySelector(`[name="offices[${idx}][${subfield}]"]`);
+            if (!input) return;
+
+            input.classList.add('input-error');
+            const errorEl = document.createElement('span');
+            errorEl.className = 'field-error';
+            errorEl.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+            input.insertAdjacentElement('afterend', errorEl);
+            return;
+        }
+
+        // general "offices" array error (e.g. "at least 1 office required")
+        if (field === 'offices') {
+            const wrapper = document.getElementById('rf-offices-wrapper');
+            const errorEl = document.createElement('span');
+            errorEl.className = 'field-error';
+            errorEl.style.marginBottom = '10px';
+            errorEl.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+            wrapper.insertAdjacentElement('beforebegin', errorEl);
+        }
+    });
+
+    const firstError = form.querySelector('.input-error, .field-error');
+    if (firstError) {
+        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+
+function handleDropClick(el) {
+    if (el.classList.contains('filled')) return;
+    const inputId = el.getAttribute('data-file-input');
+    const input = document.getElementById(inputId);
+    if (input) input.click();
+}
+
+function previewImage(input, previewId) {
+    const preview = document.getElementById(previewId);
+    if (!preview) return;
+
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const drop = preview.closest('.drop');
+            drop.innerHTML = `
+                <img src="${e.target.result}" alt="Preview">
+                <button type="button" class="remove-img-btn" title="Remove image"><i class="bi bi-x-lg"></i></button>
+            `;
+            drop.classList.add('filled');
+
+            drop.querySelector('.remove-img-btn').onclick = function (ev) {
+                ev.stopPropagation();
+                input.value = '';
+                drop.classList.remove('filled', 'input-error');
+                drop.innerHTML = `
+                    <div class="preview-placeholder" id="${previewId}">
+                        <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:18px;"></i></div>
+                        <div class="drop-title">Click to upload</div>
+                        <div class="drop-sub">or drag &amp; drop</div>
+                    </div>
+                `;
+            };
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
 </script>
 
 @endsection

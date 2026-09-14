@@ -55,7 +55,7 @@
         </div>
     </div>
 
-    <form action="{{ route('admin.service.banner.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.service.banner.store') }}" method="POST" id="serviceBannerForm"  enctype="multipart/form-data">
         @csrf
 
         <div class="card">
@@ -84,7 +84,7 @@
             </div>
 
             <div class="image-slot" style="max-width:400px;">
-                <div class="drop img-slot {{ ($servicePage->banner ?? null) ? 'filled' : '' }}"
+                <div class="drop img-slot {{ ($servicePage->banner ?? null) ? 'filled' : '' }}"     id="drop-service-banner"
                      data-file-input="file-banner" onclick="handleDropClick(this)">
                     @if ($servicePage->banner ?? null)
                         <img src="{{ asset('storage/' . $servicePage->banner) }}" id="preview-banner" alt="Service banner">
@@ -332,6 +332,98 @@
         firstErrorMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 });
+</script>
+
+
+<script>
+document.getElementById('serviceBannerForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    submitServiceBannerForm();
+});
+
+function submitServiceBannerForm() {
+    const form = document.getElementById('serviceBannerForm');
+    const formData = new FormData(form);
+    const submitBtn = form.querySelector('.btn-save');
+    const originalBtnHtml = submitBtn.innerHTML;
+
+    form.querySelectorAll('.field-error').forEach(el => el.remove());
+    form.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving...';
+
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(async (response) => {
+        const data = await response.json().catch(() => null);
+
+        if (response.status === 422 && data && data.errors) {
+            showServiceBannerValidationErrors(data.errors);
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error('Request failed');
+        }
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Saved!',
+            text: 'Service banner updated successfully.',
+            confirmButtonColor: '#EF7B2E',
+            timer: 2000,
+            timerProgressBar: true
+        }).then(() => {
+            window.location.reload();
+        });
+    })
+    .catch(() => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Something went wrong. Please try again.',
+            confirmButtonColor: '#D5392F'
+        });
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnHtml;
+    });
+}
+
+function showServiceBannerValidationErrors(errors) {
+    const form = document.getElementById('serviceBannerForm');
+
+    const fieldMap = {
+        banner_title: f => f.querySelector('[name="banner_title"]'),
+        banner: f => document.getElementById('drop-service-banner'),
+    };
+
+    Object.keys(errors).forEach(field => {
+        const message = errors[field][0];
+        const target = fieldMap[field] ? fieldMap[field](form) : null;
+        if (!target) return;
+
+        target.classList.add('input-error');
+
+        const errorEl = document.createElement('span');
+        errorEl.className = 'field-error';
+        errorEl.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+        target.insertAdjacentElement('afterend', errorEl);
+    });
+
+    const firstErrorField = form.querySelector('.input-error');
+    if (firstErrorField) {
+        firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
 </script>
 
 @endsection

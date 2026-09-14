@@ -60,12 +60,12 @@
             <h2><span class="icon"><i class="bi bi-camera-video"></i></span> Add New Video</h2>
         </div>
 
-        <form action="{{ route('admin.about.operation.videos.store') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('admin.about.operation.videos.store') }}" id="operation_form" method="POST" enctype="multipart/form-data">
             @csrf
 
             <div class="field">
                 <div class="field-top"><label class="field-label">Title<span class="req">*</span></label></div>
-                <input type="text" name="title" value="{{ old('title') }}"
+                <input type="text"  name="title" value="{{ old('title') }}"
                        class="{{ $errors->has('title') ? 'input-error' : '' }}"
                        placeholder="Enter video title">
                 @error('title')
@@ -91,8 +91,10 @@
                         <p><b>Recommended Size:</b>280 × 220px ·JPG, PNG, WEBP &middot; up to 10MB.</p>
                     </div>
                     <div class="image-slot" style="max-width:100%;">
-                        <div class="drop img-slot {{ $errors->has('thumbnail') ? 'input-error' : '' }}" data-file-input="op-thumb-input" onclick="handleDropClick(this)">
-                            <div class="preview-placeholder" id="op-thumb-preview">
+<div class="drop img-slot {{ $errors->has('thumbnail') ? 'input-error' : '' }}"
+     id="op-thumb-drop"
+     data-file-input="op-thumb-input" onclick="handleDropClick(this)">
+                    <div class="preview-placeholder" id="op-thumb-preview">
                                 <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:18px;"></i></div>
                                 <div class="drop-title">Click to upload</div>
                                 <div class="drop-sub">or drag &amp; drop</div>
@@ -127,7 +129,7 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn-save" style="margin-top:20px;">
+            <button type="button" class="btn-save" onclick="validateForm();" style="margin-top:20px;">
                 <i class="bi bi-check-lg"></i> Add Video
             </button>
         </form>
@@ -289,6 +291,103 @@
 </style>
 
 <script>
+
+
+document.getElementById('operation_form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    submitOperationForm();
+});
+
+function validateForm(){
+    submitOperationForm();
+}
+
+function submitOperationForm() {
+    const form = document.getElementById('operation_form');
+    const formData = new FormData(form);
+    const submitBtn = document.querySelector('.btn-save');
+
+    // clear previous errors
+    document.querySelectorAll('.field-error').forEach(el => el.remove());
+    document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving...';
+
+   fetch(form.action, {
+    method: 'POST',
+    body: formData,
+    headers: {
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+    }
+})
+.then(async (response) => {
+    const data = await response.json().catch(() => null);
+
+    if (response.status === 422 && data && data.errors) {
+        showValidationErrors(data.errors);
+        return; // no popup, inline errors are enough
+    }
+
+    if (!response.ok) {
+        throw new Error('Request failed');
+    }
+
+    Swal.fire({
+        icon: 'success',
+        title: 'Saved!',
+        text: 'Video added successfully.',
+        confirmButtonColor: '#EF7B2E',
+        timer: 2000,
+        timerProgressBar: true
+    }).then(() => {
+        window.location.reload();
+    });
+})
+.catch(() => {
+    Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Something went wrong. Please try again.',
+        confirmButtonColor: '#D5392F'
+    });
+})
+.finally(() => {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<i class="bi bi-check-lg"></i> Add Video';
+});
+}
+
+function showValidationErrors(errors) {
+    const fieldMap = {
+        title: form => form.querySelector('[name="title"]'),
+        description: form => form.querySelector('[name="description"]'),
+        thumbnail: form => document.getElementById('op-thumb-drop'),
+        video: form => document.getElementById('op-video-drop'),
+    };
+
+    const form = document.getElementById('operation_form');
+
+    Object.keys(errors).forEach(field => {
+        const message = errors[field][0];
+        const target = fieldMap[field] ? fieldMap[field](form) : null;
+        if (!target) return;
+
+        target.classList.add('input-error');
+
+        const errorEl = document.createElement('span');
+        errorEl.className = 'field-error';
+        errorEl.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+        target.insertAdjacentElement('afterend', errorEl);
+    });
+
+    const firstErrorField = document.querySelector('.input-error');
+    if (firstErrorField) {
+        firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+
     function handleDropClick(el) {
         if (el.classList.contains('filled')) return;
         const inputId = el.getAttribute('data-file-input');

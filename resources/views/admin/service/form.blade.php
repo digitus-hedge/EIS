@@ -72,17 +72,41 @@
         @endif
 
         {{-- ================= BANNER SECTION ================= --}}
-        <div class="card">
-            <div class="section-title">
-                <h2><span class="icon"><i class="bi bi-type"></i></span> Banner Title<span class="req">*</span></h2>
-            </div>
-            <div class="field">
+     
+            <div class="card">
+            <div class="two-col">
+                <div class="field" style="margin-bottom:0;">
+                    <div class="field-top">
+                        <label class="field-label">Banner Title <span class="req">*</span></label>
+                    </div>
+               
+
+
+                       <div class="field">
                 <input type="text" name="banner_title" value="{{ old('banner_title', $service->banner_title) }}"
                     class="{{ $errors->has('banner_title') ? 'input-error' : '' }}"
                     placeholder="e.g. API Threading Services">
                 @error('banner_title')
                 <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
                 @enderror
+            </div>
+
+                </div>
+
+                <div class="toggle-field">
+                    <div class="field-top">
+                        <label class="field-label">Show on Home Page</label>
+                    </div>
+                    <label class="switch-toggle">
+                        <input type="checkbox" name="show_on_home" value="1"
+                               {{ old('show_on_home', $service->show_on_home) ? 'checked' : '' }}>
+                        <span class="switch-slider"></span>
+                    </label>
+                    <span class="field-hint" style="display:block; margin-top:6px;">Enable to display this service on the homepage.</span>
+                    @error('show_on_home')
+                        <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                    @enderror
+                </div>
             </div>
         </div>
 
@@ -113,7 +137,7 @@
 
             <div class="image-slot" style="max-width:400px;">
                 <div class="drop img-slot {{ $service->banner_image ? 'filled' : '' }} {{ $errors->has('banner_image') ? 'input-error' : '' }}"
-                     data-file-input="file-banner-image" onclick="handleDropClick(this)">
+                     data-file-input="file-banner-image"    id="drop-banner-image" onclick="handleDropClick(this)">
                     @if ($service->banner_image)
                         <img src="{{ Storage::url($service->banner_image) }}" id="preview-banner-image" alt="Banner image">
                         <button type="button" class="remove-img-btn" onclick="removeUploadedImage(event, this, 'banner-image', 'preview-banner-image')" title="Remove image">
@@ -143,7 +167,7 @@
         {{-- ================= OVERVIEW SECTION ================= --}}
         <div class="card">
             <div class="section-title">
-                <h2><span class="icon"><i class="bi bi-type"></i></span> Overview Title</h2>
+                <h2><span class="icon"><i class="bi bi-type"></i></span> Overview Title <span class="req">*</span></h2>
             </div>
             <div class="field">
                 <input type="text" name="overview_title" value="{{ old('overview_title', $service->overview_title) }}"
@@ -157,7 +181,7 @@
 
         <div class="card">
             <div class="section-title">
-                <h2><span class="icon"><i class="bi bi-card-text"></i></span> Overview Description</h2>
+                <h2><span class="icon"><i class="bi bi-card-text"></i></span> Overview Description <span class="req">*</span></h2>
             </div>
             <div class="field">
                 <textarea name="overview_description" rows="4"
@@ -171,7 +195,7 @@
 
         <div class="card">
             <div class="section-title">
-                <h2><span class="icon"><i class="bi bi-image"></i></span> Overview Image</h2>
+                <h2><span class="icon"><i class="bi bi-image"></i></span> Overview Image <span class="req">*</span></h2>
             </div>
 
             <div class="notice caution">
@@ -181,7 +205,7 @@
 
             <div class="image-slot" style="max-width:400px;">
                 <div class="drop img-slot {{ $service->overview_image ? 'filled' : '' }} {{ $errors->has('overview_image') ? 'input-error' : '' }}"
-                     data-file-input="file-overview-image" onclick="handleDropClick(this)">
+                     data-file-input="file-overview-image"      id="drop-overview-image"  onclick="handleDropClick(this)">
                     @if ($service->overview_image)
                         <img src="{{ Storage::url($service->overview_image) }}" id="preview-overview-image" alt="Overview image">
                         <button type="button" class="remove-img-btn" onclick="removeUploadedImage(event, this, 'overview-image', 'preview-overview-image')" title="Remove image">
@@ -211,7 +235,7 @@
         {{-- ================= PROCESS SECTION ================= --}}
         <div class="card">
             <div class="section-title">
-                <h2><span class="icon"><i class="bi bi-camera-reels"></i></span> Process</h2>
+                <h2><span class="icon"><i class="bi bi-camera-reels"></i></span> Process <span class="req">*</span></h2>
             </div>
             <p class="field-hint">Detail page &mdash; step-by-step process, each with a description and a video. Add as many as needed.</p>
 
@@ -233,7 +257,7 @@
         {{-- ================= FEATURES SECTION ================= --}}
         <div class="card">
             <div class="section-title">
-                <h2><span class="icon"><i class="bi bi-type"></i></span> Features Heading</h2>
+                <h2><span class="icon"><i class="bi bi-type"></i></span> Features Heading <span class="req">*</span></h2>
             </div>
             <div class="field">
                 <input type="text" name="features_heading" value="{{ old('features_heading', $service->features_heading) }}"
@@ -247,7 +271,7 @@
 
         <div class="card">
             <div class="section-title">
-                <h2><span class="icon"><i class="bi bi-grid-3x3-gap"></i></span> Features (max 4)</h2>
+                <h2><span class="icon"><i class="bi bi-grid-3x3-gap"></i></span> Features (max 4) <span class="req">*</span></h2>
             </div>
             <p class="field-hint">Each feature has an icon, a title, and a short description. Maximum 4 features.</p>
 
@@ -268,6 +292,40 @@
                 </span>
             @endif
         </div>
+
+
+
+        {{-- ================= META TITLE ================= --}}
+<div class="card">
+    <div class="section-title">
+        <h2><span class="icon"><i class="bi bi-type"></i></span> Meta Title</h2>
+    </div>
+ 
+    <div class="field">
+        <input type="text" name="meta_title"
+               value="{{ old('meta_title', $service->meta_title) }}"
+               class="{{ $errors->has('meta_title') ? 'input-error' : '' }}"
+               placeholder="e.g. API Threading Services | Company Name" maxlength="255">
+        @error('meta_title')
+            <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+        @enderror
+    </div>
+</div>
+
+{{-- ================= META DESCRIPTION ================= --}}
+<div class="card">
+    <div class="section-title">
+        <h2><span class="icon"><i class="bi bi-card-text"></i></span> Meta Description</h2>
+    </div>
+    <div class="field">
+        <textarea name="meta_description" rows="3"
+                  class="{{ $errors->has('meta_description') ? 'input-error' : '' }}"
+                  placeholder="Enter meta description for search engines">{{ old('meta_description', $service->meta_description) }}</textarea>
+        @error('meta_description')
+            <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+        @enderror
+    </div>
+</div>
 
         <div class="savebar">
             <div class="savebar-inner">
@@ -435,10 +493,18 @@
     .remove-img-btn:hover{ background:rgba(0,0,0,0.85); }
 
     /* ===== Small row-based image/video slots (Process thumbnail/video, Feature icon) ===== */
-    .row-slot .drop.img-slot{ aspect-ratio:1/1; height:110px; }
-    .feature-row-fields .row-slot .drop.img-slot{ height:90px; }
-    .row-slot .drop-title{ font-size:11px; }
-    .row-slot .ico-circle{ width:30px; height:30px; margin-bottom:4px; }
+  .row-slot .drop.img-slot{ aspect-ratio:1/1; height:110px; }
+.feature-row-fields .row-slot .drop.img-slot{ height:90px; }
+.row-slot .drop-title{ font-size:11px; }
+.row-slot .ico-circle{ width:30px; height:30px; margin-bottom:4px; }
+
+.row-slot .drop.img-slot img{
+    width:100% !important;
+    height:100% !important;
+    object-fit:cover !important;
+    max-width:none !important;
+    display:block;
+}
 
     .video-slot{ position:relative; width:100%; }
     .video-drop{
@@ -517,6 +583,25 @@
         .inspection-row{ padding-right:18px; }
         .inspection-row .btn-remove-row{ position:static; margin-top:12px; }
     }
+
+        .two-col{ display:grid; grid-template-columns:1fr 220px; gap:24px; align-items:start; }
+    @media (max-width:700px){ .two-col{ grid-template-columns:1fr; } }
+
+        .toggle-field{ padding-top:2px; }
+
+           /* ===== Toggle switch (orange, matching this design system) ===== */
+    .switch-toggle{ position:relative; display:inline-block; width:46px; height:26px; }
+    .switch-toggle input{ opacity:0; width:0; height:0; }
+    .switch-slider{
+        position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0;
+        background:#DBDFEA; border-radius:26px; transition:.25s;
+    }
+    .switch-slider::before{
+        position:absolute; content:""; height:20px; width:20px; left:3px; bottom:3px;
+        background:#fff; border-radius:50%; transition:.25s; box-shadow:0 1px 2px rgba(0,0,0,0.15);
+    }
+    .switch-toggle input:checked + .switch-slider{ background: var(--orange,#EF7B2E); }
+    .switch-toggle input:checked + .switch-slider::before{ transform:translateX(20px); }
 </style>
 
 @php
@@ -565,16 +650,15 @@
 @endphp
 <script>
     // ===== Size limits (must match ServiceRequest validation rules) =====
-    const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10MB - banner/overview images
-    const MAX_ICON_BYTES  = 5 * 1024 * 1024;  // 5MB  - feature icons
-    const MAX_VIDEO_BYTES = 20 * 1024 * 1024; // 20MB - process videos
-    const MAX_TOTAL_BYTES = 95 * 1024 * 1024; // keep under php.ini post_max_size (100M) with a buffer
+    const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
+    const MAX_ICON_BYTES  = 5 * 1024 * 1024;
+    const MAX_VIDEO_BYTES = 20 * 1024 * 1024;
+    const MAX_TOTAL_BYTES = 95 * 1024 * 1024;
 
     function formatBytes(bytes) {
         return (bytes / (1024 * 1024)).toFixed(1) + 'MB';
     }
 
-    // ===== Drag-and-drop slot click handler (banner/overview) =====
     function handleDropClick(el) {
         if (el.classList.contains('filled')) return;
         const inputId = el.getAttribute('data-file-input');
@@ -582,7 +666,6 @@
         if (input) input.click();
     }
 
-    // ===== Generic field-error helpers (used by dynamic row fields) =====
     function setFieldError(anchor, message, isClientError = true) {
         if (!anchor) return;
         clearFieldError(anchor);
@@ -617,7 +700,6 @@
         return true;
     }
 
-    // ===== Banner / Overview image upload (drag-and-drop slot style) =====
     function handleImageChange(input, previewId, maxBytes, label, fieldName) {
         if (!validateFileSize(input, maxBytes, label)) return;
 
@@ -687,7 +769,7 @@
         }
     }
 
-    // ===== Process rows (description + thumbnail + video, unlimited) =====
+    // ===== Process rows =====
     const existingProcess = @json($processForJs);
     const processContainer = document.getElementById('processRows');
     const processTemplate = document.getElementById('processRowTemplate');
@@ -705,7 +787,8 @@
         descField.value = data.description ?? '';
 
         const thumbDrop = row.querySelector('[data-row-slot="thumbnail"]');
-        thumbDrop.addEventListener('click', () => thumbDrop.nextElementSibling.click());
+        const thumbInput = row.querySelector('input[type="file"][name$="[thumbnail]"]');
+        thumbDrop.addEventListener('click', () => thumbInput.click());
 
         if (data.thumbnail) {
             thumbDrop.classList.add('filled');
@@ -718,7 +801,8 @@
         }
 
         const videoDrop = row.querySelector('[data-row-slot="video"]');
-        videoDrop.addEventListener('click', () => videoDrop.nextElementSibling.click());
+        const videoInput = row.querySelector('input[type="file"][name$="[video]"]');
+        videoDrop.addEventListener('click', () => videoInput.click());
 
         if (data.video) {
             videoDrop.classList.add('has-file');
@@ -731,12 +815,8 @@
         }
 
         if (data.errors) {
-            if (data.errors.description) {
-                setFieldError(descField, data.errors.description, false);
-            }
-            if (data.errors.video) {
-                setFieldError(videoDrop, data.errors.video, false);
-            }
+            if (data.errors.description) setFieldError(descField, data.errors.description, false);
+            if (data.errors.video) setFieldError(videoDrop, data.errors.video, false);
         }
 
         row.querySelector('.inspection-remove').addEventListener('click', () => row.remove());
@@ -753,7 +833,6 @@
         addProcessRow();
     }
 
-    // Shared remove-button wiring for row-based slots (thumbnail/icon/video)
     function wireRowRemove(dropEl, existingInput, placeholderClass, isVideo = false) {
         const btn = dropEl.querySelector('.remove-img-btn');
         if (!btn) return;
@@ -815,7 +894,7 @@
         }
     }
 
-    // ===== Feature rows (icon + title + description, max 4) =====
+    // ===== Feature rows =====
     const MAX_FEATURES = 4;
     const existingFeatures = @json($featuresForJs);
     const featureContainer = document.getElementById('featureRows');
@@ -851,7 +930,10 @@
         descField.value = data.description ?? '';
 
         const iconDrop = row.querySelector('[data-row-slot="icon"]');
-        iconDrop.addEventListener('click', () => iconDrop.nextElementSibling.click());
+        const iconInput = row.querySelector('input[type="file"][name$="[icon]"]');
+        const existingIconInput = row.querySelector('.existing-icon-input');
+
+        iconDrop.addEventListener('click', () => iconInput.click());
 
         if (data.icon) {
             iconDrop.classList.add('filled');
@@ -859,20 +941,15 @@
                 <img src="${data.icon_url ?? data.icon}" alt="Icon">
                 <button type="button" class="remove-img-btn" title="Remove"><i class="bi bi-x-lg"></i></button>
             `;
-            row.querySelector('.existing-icon-input').value = data.icon;
-            wireRowRemove(iconDrop, row.querySelector('.existing-icon-input'), 'feature-preview');
+            existingIconInput.value = data.icon;
+            // FIXED: was passing iconInput + truthy string into placeholderClass/isVideo slots
+            wireRowRemove(iconDrop, existingIconInput, 'feature-preview');
         }
 
         if (data.errors) {
-            if (data.errors.title) {
-                setFieldError(titleField, data.errors.title, false);
-            }
-            if (data.errors.description) {
-                setFieldError(descField, data.errors.description, false);
-            }
-            if (data.errors.icon) {
-                setFieldError(iconDrop, data.errors.icon, false);
-            }
+            if (data.errors.title) setFieldError(titleField, data.errors.title, false);
+            if (data.errors.description) setFieldError(descField, data.errors.description, false);
+            if (data.errors.icon) setFieldError(iconDrop, data.errors.icon, false);
         }
 
         row.querySelector('.inspection-remove').addEventListener('click', () => {
@@ -912,41 +989,165 @@
         }
     }
 
-    // ===== Final guard: block submission if total file size would exceed post_max_size =====
+    // ===== AJAX submit (replaces the old preventDefault-only guard) =====
     document.getElementById('serviceForm').addEventListener('submit', function (e) {
-        let totalBytes = 0;
+        e.preventDefault();
+        submitServiceForm();
+    });
 
-        this.querySelectorAll('input[type="file"]').forEach(input => {
-            if (input.files && input.files[0]) {
-                totalBytes += input.files[0].size;
-            }
+    function submitServiceForm() {
+        const form = document.getElementById('serviceForm');
+        let totalBytes = 0;
+        form.querySelectorAll('input[type="file"]').forEach(input => {
+            if (input.files && input.files[0]) totalBytes += input.files[0].size;
         });
 
         const totalErrorBox = document.getElementById('totalSizeError');
         const totalErrorText = document.getElementById('totalSizeErrorText');
 
         if (totalBytes > MAX_TOTAL_BYTES) {
-            e.preventDefault();
             totalErrorText.textContent =
                 `Total upload size (${formatBytes(totalBytes)}) exceeds the ${formatBytes(MAX_TOTAL_BYTES)} limit for this form. ` +
                 `Please remove or replace some images/videos before saving.`;
             totalErrorBox.style.display = 'flex';
             totalErrorBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        } else {
-            totalErrorBox.style.display = 'none';
+            return;
         }
+        totalErrorBox.style.display = 'none';
+
+        const formData = new FormData(form);
+        const submitBtn = form.querySelector('.btn-save');
+        const originalBtnHtml = submitBtn.innerHTML;
+
+        form.querySelectorAll('.field-error').forEach(el => el.remove());
+        form.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving...';
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+       .then(async (response) => {
+    const data = await response.json().catch(() => null);
+
+    if (response.status === 422 && data && data.errors) {
+        showServiceValidationErrors(data.errors);
+        return;
+    }
+
+    if (!response.ok) {
+        throw new Error('Request failed');
+    }
+
+    Swal.fire({
+        icon: 'success',
+        title: 'Saved!',
+        text: (data && data.message) ? data.message : 'Service page updated successfully.',
+        confirmButtonColor: '#EF7B2E',
+        timer: 2000,
+        timerProgressBar: true
+    }).then(() => {
+        window.location.href = (data && data.redirect) ? data.redirect : "{{ route('admin.home.services') }}";
     });
+})
+        .catch(() => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Something went wrong. Please try again.',
+                confirmButtonColor: '#D5392F'
+            });
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnHtml;
+        });
+    }
 
-    // ===== Scroll to the first validation error (runs last, after all rows are built) =====
-    const firstErrorField = document.querySelector('.input-error, .drop.img-slot.input-error, .video-drop.input-error');
-    const firstErrorMsg = document.querySelector('.field-error');
+    function showServiceValidationErrors(errors) {
+        const form = document.getElementById('serviceForm');
 
-    if (firstErrorField) {
-        firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        firstErrorField.classList.add('error-flash');
-        setTimeout(() => firstErrorField.classList.remove('error-flash'), 1500);
-    } else if (firstErrorMsg) {
-        firstErrorMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const topLevelMap = {
+            banner_title: f => f.querySelector('[name="banner_title"]'),
+            banner_description: f => f.querySelector('[name="banner_description"]'),
+            banner_image: f => document.getElementById('drop-banner-image'),
+            overview_title: f => f.querySelector('[name="overview_title"]'),
+            overview_description: f => f.querySelector('[name="overview_description"]'),
+            overview_image: f => document.getElementById('drop-overview-image'),
+            features_heading: f => f.querySelector('[name="features_heading"]'),
+            meta_title: f => f.querySelector('[name="meta_title"]'),
+            meta_description: f => f.querySelector('[name="meta_description"]'),
+            show_on_home: f => f.querySelector('[name="show_on_home"]'),
+        };
+
+        Object.keys(errors).forEach(field => {
+            const message = errors[field][0];
+
+            let m = field.match(/^process\.(\d+)\.(\w+)$/);
+            if (m) {
+                const [, idx, sub] = m;
+                const input = form.querySelector(`[name="process[${idx}][${sub}]"]`);
+                if (!input) return;
+                const target = (sub === 'thumbnail' || sub === 'video') ? input.previousElementSibling : input;
+                target.classList.add('input-error');
+                const errorEl = document.createElement('span');
+                errorEl.className = 'field-error';
+                errorEl.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+                target.insertAdjacentElement('afterend', errorEl);
+                return;
+            }
+
+            m = field.match(/^features\.(\d+)\.(\w+)$/);
+            if (m) {
+                const [, idx, sub] = m;
+                const input = form.querySelector(`[name="features[${idx}][${sub}]"]`);
+                if (!input) return;
+                const target = sub === 'icon' ? input.previousElementSibling : input;
+                target.classList.add('input-error');
+                const errorEl = document.createElement('span');
+                errorEl.className = 'field-error';
+                errorEl.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+                target.insertAdjacentElement('afterend', errorEl);
+                return;
+            }
+
+            if (field === 'process') {
+                const container = document.getElementById('processRows');
+                const errorEl = document.createElement('span');
+                errorEl.className = 'field-error';
+                errorEl.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+                container.insertAdjacentElement('afterend', errorEl);
+                return;
+            }
+            if (field === 'features') {
+                const container = document.getElementById('featureRows');
+                const errorEl = document.createElement('span');
+                errorEl.className = 'field-error';
+                errorEl.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+                container.insertAdjacentElement('afterend', errorEl);
+                return;
+            }
+
+            const target = topLevelMap[field] ? topLevelMap[field](form) : null;
+            if (!target) return;
+
+            target.classList.add('input-error');
+            const errorEl = document.createElement('span');
+            errorEl.className = 'field-error';
+            errorEl.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+            target.insertAdjacentElement('afterend', errorEl);
+        });
+
+        const firstErrorField = form.querySelector('.input-error');
+        if (firstErrorField) {
+            firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
     }
 </script>
 

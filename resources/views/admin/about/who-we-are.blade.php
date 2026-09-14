@@ -55,75 +55,108 @@
         </div>
     </div>
 
-    <form action="{{ route('admin.about.who-we-are.store') }}" method="POST" enctype="multipart/form-data">
-        @csrf
+   <form action="{{ route('admin.about.who-we-are.store') }}" method="POST" enctype="multipart/form-data">
+    @csrf
 
-        <div class="card">
-            <div class="section-title">
-                <h2><span class="icon"><i class="bi bi-card-text"></i></span> Who We Are Description<span class="req">*</span></h2>
-            </div>
-            <div class="field">
-                <textarea name="who_we_are_desc" rows="6"
-                          class="{{ $errors->has('who_we_are_desc') ? 'input-error' : '' }}"
-                          placeholder="Enter who we are description">{{ old('who_we_are_desc', $about->who_we_are_desc ?? '') }}</textarea>
-                @error('who_we_are_desc')
-                    <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
-                @enderror
-            </div>
+    <div class="card">
+        <div class="section-title">
+            <h2><span class="icon"><i class="bi bi-card-text"></i></span> Who We Are Description<span class="req">*</span></h2>
         </div>
-
-        <div class="card">
-            <div class="section-title">
-                <h2><span class="icon"><i class="bi bi-image"></i></span> Image<span class="req">*</span></h2>
-            </div>
-
-             <div class="notice caution">
-                <i class="bi bi-exclamation-triangle" style="margin-top:1px;"></i>
-                <p><b>Recommended size:</b> 1200 &times; 600px &middot; JPG, PNG, WEBP &middot; up to 10MB.</p>
-            </div>
-
-            <div class="image-slot" style="max-width:300px;">
-                <div class="drop img-slot {{ $about->image ? 'filled' : '' }}"
-                     data-file-input="file-image" onclick="handleDropClick(this)">
-                    @if ($about->image)
-                        <img src="{{ asset('storage/' . $about->image) }}" id="preview-image" alt="Who We Are image">
-                        <button type="button" class="remove-img-btn" onclick="removeUploadedImage(event, this, 'image', 'preview-image')" title="Remove image">
-                            <i class="bi bi-x-lg"></i>
-                        </button>
-                        <div class="uploaded-tag"><i class="bi bi-check-circle"></i> Uploaded</div>
-                    @else
-                        <div class="preview-placeholder" id="preview-image">
-                            <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:18px;"></i></div>
-                            <div class="drop-title">Click to upload</div>
-                            <div class="drop-sub">or drag &amp; drop</div>
-                        </div>
-                    @endif
-                </div>
-                <input type="file" id="file-image" name="image" accept="image/*" hidden
-                       onchange="previewImage(this, 'preview-image')">
-                <input type="hidden" name="remove_image" id="remove-image" value="0">
-                @if (!$about->image)
-                    <button type="button" class="choose-btn" onclick="document.getElementById('file-image').click()">Choose file</button>
-                @endif
-            </div>
-            @error('image')
+        <div class="field">
+            <textarea name="who_we_are_desc" rows="6"
+                      class="{{ $errors->has('who_we_are_desc') ? 'input-error' : '' }}"
+                      placeholder="Enter who we are description">{{ old('who_we_are_desc', $about->who_we_are_desc ?? '') }}</textarea>
+            @error('who_we_are_desc')
                 <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
             @enderror
         </div>
+    </div>
 
-        <div class="savebar">
-            <div class="savebar-inner">
-                <span class="savebar-status">All changes save to the live About page</span>
-                <div class="btn-group">
-                    <a href="{{ route('admin.dashboard') }}" class="btn-cancel">Cancel</a>
-                    <button type="submit" class="btn-save">
-                        <i class="bi bi-check-lg"></i>
-                        {{ $about->exists ? 'Update' : 'Save' }}
+    <div class="card">
+        <div class="section-title">
+            <h2><span class="icon"><i class="bi bi-image"></i></span> Image<span class="req">*</span></h2>
+        </div>
+
+         <div class="notice caution">
+            <i class="bi bi-exclamation-triangle" style="margin-top:1px;"></i>
+            <p><b>Recommended size:</b> 1200 &times; 600px &middot; JPG, PNG, WEBP &middot; up to 10MB.</p>
+        </div>
+
+        <div class="image-slot" style="max-width:300px;">
+            <div class="drop img-slot {{ $about->image ? 'filled' : '' }}"
+                 data-file-input="file-image" onclick="handleDropClick(this)">
+                @if ($about->image)
+                    <img src="{{ asset('storage/' . $about->image) }}" id="preview-image" alt="Who We Are image">
+                    <button type="button" class="remove-img-btn" onclick="removeUploadedImage(event, this, 'image', 'preview-image')" title="Remove image">
+                        <i class="bi bi-x-lg"></i>
                     </button>
-                </div>
+                    <div class="uploaded-tag"><i class="bi bi-check-circle"></i> Uploaded</div>
+                @else
+                    <div class="preview-placeholder" id="preview-image">
+                        <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:18px;"></i></div>
+                        <div class="drop-title">Click to upload</div>
+                        <div class="drop-sub">or drag &amp; drop</div>
+                    </div>
+                @endif
+            </div>
+            <input type="file" id="file-image" name="image" accept="image/*" hidden
+                   onchange="previewImage(this, 'preview-image')">
+            <input type="hidden" name="remove_image" id="remove-image" value="0">
+            @if (!$about->image)
+                <button type="button" class="choose-btn" onclick="document.getElementById('file-image').click()">Choose file</button>
+            @endif
+        </div>
+        @error('image')
+            <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+        @enderror
+    </div>
+
+    {{-- ================= META TITLE ================= --}}
+    <div class="card">
+        <div class="section-title">
+            <h2><span class="icon"><i class="bi bi-type"></i></span> Meta Title</h2>
+        </div>
+        <!-- <p class="field-hint">Used in the page's &lt;title&gt; tag and search engine results.</p> -->
+        <div class="field">
+            <input type="text" name="who_we_are_meta_title"
+                   value="{{ old('who_we_are_meta_title', $about->who_we_are_meta_title ?? '') }}"
+                   class="{{ $errors->has('who_we_are_meta_title') ? 'input-error' : '' }}"
+                   placeholder="e.g. Who We Are | Company Name" maxlength="255">
+            @error('who_we_are_meta_title')
+                <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+            @enderror
+        </div>
+    </div>
+
+    {{-- ================= META DESCRIPTION ================= --}}
+    <div class="card">
+        <div class="section-title">
+            <h2><span class="icon"><i class="bi bi-card-text"></i></span> Meta Description</h2>
+        </div>
+        <!-- <p class="field-hint">Shown as the page summary in search engine results. Keep it concise (150–160 characters recommended).</p> -->
+        <div class="field">
+            <textarea name="who_we_are_meta_description" rows="3"
+                      class="{{ $errors->has('who_we_are_meta_description') ? 'input-error' : '' }}"
+                      placeholder="Enter meta description for search engines">{{ old('who_we_are_meta_description', $about->who_we_are_meta_description ?? '') }}</textarea>
+            @error('who_we_are_meta_description')
+                <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+            @enderror
+        </div>
+    </div>
+
+    <div class="savebar">
+        <div class="savebar-inner">
+            <span class="savebar-status">All changes save to the live About page</span>
+            <div class="btn-group">
+                <a href="{{ route('admin.dashboard') }}" class="btn-cancel">Cancel</a>
+                <button type="submit" class="btn-save">
+                    <i class="bi bi-check-lg"></i>
+                    {{ $about->exists ? 'Update' : 'Save' }}
+                </button>
             </div>
         </div>
-    </form>
+    </div>
+</form>
 </div>
 
 <style>

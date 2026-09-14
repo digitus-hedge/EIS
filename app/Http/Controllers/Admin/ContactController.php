@@ -27,14 +27,20 @@ class ContactController extends Controller
     $contact = Contact::first() ?? new Contact();
 
     $data = $request->validate([
-        'banner_title'  => 'required|string|max:255',
-        'banner_image'  => $contact->banner_image
-                                ? 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240'
-                                : 'required|image|mimes:jpg,jpeg,png,webp|max:10240',
-        'phone'         => 'required|string|max:50',
-        'email'         => 'required|email|max:255',
-        'address'       => 'required|string|max:1000',
-        'contact_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
+        'banner_title'      => 'required|string|max:255',
+        'banner_image'      => $contact->banner_image
+                                    ? 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240'
+                                    : 'required|image|mimes:jpg,jpeg,png,webp|max:10240',
+        'remove_banner_image'  => 'nullable|boolean',
+        'phone'             => 'required|string|max:50',
+        'email'             => 'required|email|max:255',
+        'address'           => 'required|string|max:1000',
+        'contact_image'     => $contact->contact_image
+                                    ? 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240'
+                                    : 'required|image|mimes:jpg,jpeg,png,webp|max:10240',
+        'remove_contact_image' => 'nullable|boolean',
+        'meta_title'        => 'nullable|string|max:80',
+        'meta_description'  => 'nullable|string|max:200',
     ], [
         'banner_title.required' => 'Please enter a banner title.',
         'banner_title.max'      => 'Banner title must not exceed 255 characters.',
@@ -57,13 +63,25 @@ class ContactController extends Controller
         'contact_image.image' => 'The photo must be a valid image.',
         'contact_image.mimes' => 'The photo must be a JPG, PNG, or WEBP file.',
         'contact_image.max'   => 'The photo must not exceed 10MB.',
+
+        'meta_title.max'       => 'Meta title must not exceed 80 characters.',
+        'meta_description.max' => 'Meta description must not exceed 200 characters.',
     ]);
 
     $contact->banner_title = $data['banner_title'];
     $contact->phone = $data['phone'];
     $contact->email = $data['email'];
     $contact->address = $data['address'];
+    $contact->meta_title = $data['meta_title'] ?? null;
+    $contact->meta_description = $data['meta_description'] ?? null;
 
+    // Banner image
+    if ($request->boolean('remove_banner_image') && !$request->hasFile('banner_image')) {
+        if ($contact->banner_image) {
+            Storage::disk('public')->delete($contact->banner_image);
+        }
+        $contact->banner_image = null;
+    }
     if ($request->hasFile('banner_image')) {
         if ($contact->banner_image) {
             Storage::disk('public')->delete($contact->banner_image);
@@ -71,6 +89,13 @@ class ContactController extends Controller
         $contact->banner_image = $this->processAndStoreImage($request->file('banner_image'));
     }
 
+    // Contact image
+    if ($request->boolean('remove_contact_image') && !$request->hasFile('contact_image')) {
+        if ($contact->contact_image) {
+            Storage::disk('public')->delete($contact->contact_image);
+        }
+        $contact->contact_image = null;
+    }
     if ($request->hasFile('contact_image')) {
         if ($contact->contact_image) {
             Storage::disk('public')->delete($contact->contact_image);
@@ -84,7 +109,6 @@ class ContactController extends Controller
         ->route('admin.contact.edit')
         ->with('success', 'Contact section updated successfully.');
 }
-
     private function processAndStoreImage($file, ?int $width = null, ?int $height = null): string
     {
         $width = $width ?? $this->imageWidth;

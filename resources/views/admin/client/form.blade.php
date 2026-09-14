@@ -229,6 +229,112 @@
 });
 </script>
 
+
+<script>
+document.getElementById('clientForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    submitClientForm();
+});
+
+function submitClientForm() {
+    const form = document.getElementById('clientForm');
+    const formData = new FormData(form);
+    const submitBtn = form.querySelector('.btn-save');
+    const originalBtnHtml = submitBtn.innerHTML;
+
+    // clear previous errors
+    form.querySelectorAll('.field-error').forEach(el => el.remove());
+    form.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving...';
+
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(async (response) => {
+        const data = await response.json().catch(() => null);
+
+        if (response.status === 422 && data && data.errors) {
+            showClientValidationErrors(data.errors);
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error('Request failed');
+        }
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Saved!',
+            text: 'Client section updated successfully.',
+            confirmButtonColor: '#EF7B2E',
+            timer: 2000,
+            timerProgressBar: true
+        }).then(() => {
+            window.location.reload();
+        });
+    })
+    .catch(() => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Something went wrong. Please try again.',
+            confirmButtonColor: '#D5392F'
+        });
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnHtml;
+    });
+}
+
+function showClientValidationErrors(errors) {
+    const form = document.getElementById('clientForm');
+
+    const fieldMap = {
+        title: f => f.querySelector('[name="title"]'),
+        description: f => f.querySelector('[name="description"]'),
+    };
+
+    Object.keys(errors).forEach(field => {
+        const message = errors[field][0];
+
+        // images / images.* -> show under the "Add new images" row, since dynamic
+        // rows have no stable per-file target to attach to individually
+        if (field === 'images' || field.startsWith('images.')) {
+            const imageRows = document.getElementById('imageRows');
+            const errorEl = document.createElement('span');
+            errorEl.className = 'field-error';
+            errorEl.style.marginTop = '14px';
+            errorEl.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+            imageRows.insertAdjacentElement('afterend', errorEl);
+            return;
+        }
+
+        const target = fieldMap[field] ? fieldMap[field](form) : null;
+        if (!target) return;
+
+        target.classList.add('input-error');
+
+        const errorEl = document.createElement('span');
+        errorEl.className = 'field-error';
+        errorEl.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+        target.insertAdjacentElement('afterend', errorEl);
+    });
+
+    const firstErrorField = form.querySelector('.input-error') || document.getElementById('imageRows');
+    if (firstErrorField) {
+        firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+</script>
+
 <style>
     .crumbs{ display:flex; align-items:center; gap:8px; font-size:13px; color: var(--faint,#9AA1B2); margin-bottom:10px; }
     .crumbs b{ color: var(--ink,#171B2C); font-weight:600; }

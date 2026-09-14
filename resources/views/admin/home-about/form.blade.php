@@ -71,7 +71,7 @@
             </div>
 
             <div class="image-slot" style="max-width:300px;">
-                <div class="drop img-slot {{ $about->image ? 'filled' : '' }}" data-file-input="file-image" onclick="handleDropClick(this)">
+                <div class="drop img-slot {{ $about->image ? 'filled' : '' }}"    id="drop-image"  data-file-input="file-image" onclick="handleDropClick(this)">
                     @if ($about->image)
                         <img src="{{ Storage::url($about->image) }}" id="preview-image" alt="About image">
                         <button type="button" class="remove-img-btn" onclick="removeUploadedImage(event, this, 'image', 'preview-image')" title="Remove image">
@@ -104,7 +104,7 @@
             <div class="section-title">
                 <h2><span class="icon"><i class="bi bi-code-slash"></i></span> Description <span class="req">*</span></h2>
                 <span class="section-sub" id="char-count-msg" style="margin:0;">
-                    <span id="char-count">0</span> / 600 characters
+                    <span id="char-count">0</span> /1200 characters
                 </span>
             </div>
 
@@ -149,7 +149,7 @@
         promotion: false,
 
         setup: function (editor) {
-            const maxChars = 600;
+            const maxChars = 1200;
 
             function updateCounter() {
                 editor.save();
@@ -301,6 +301,100 @@
         firstErrorMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 });
+</script>
+
+
+<script>
+document.getElementById('aboutForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    submitAboutForm();
+});
+
+function submitAboutForm() {
+    const form = document.getElementById('aboutForm');
+    const formData = new FormData(form);
+    const submitBtn = form.querySelector('.btn-save');
+    const originalBtnHtml = submitBtn.innerHTML;
+
+    // clear previous errors
+    form.querySelectorAll('.field-error').forEach(el => el.remove());
+    form.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving...';
+
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(async (response) => {
+        const data = await response.json().catch(() => null);
+
+        if (response.status === 422 && data && data.errors) {
+            showAboutValidationErrors(data.errors);
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error('Request failed');
+        }
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Saved!',
+            text: 'About section updated successfully.',
+            confirmButtonColor: '#EF7B2E',
+            timer: 2000,
+            timerProgressBar: true
+        }).then(() => {
+            window.location.reload();
+        });
+    })
+    .catch(() => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Something went wrong. Please try again.',
+            confirmButtonColor: '#D5392F'
+        });
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnHtml;
+    });
+}
+
+function showAboutValidationErrors(errors) {
+    const form = document.getElementById('aboutForm');
+
+    const fieldMap = {
+        title: f => f.querySelector('[name="title"]'),
+        image: f => document.getElementById('drop-image'),
+        description: f => f.querySelector('[name="description"]'),
+    };
+
+    Object.keys(errors).forEach(field => {
+        const message = errors[field][0];
+        const target = fieldMap[field] ? fieldMap[field](form) : null;
+        if (!target) return;
+
+        target.classList.add('input-error');
+
+        const errorEl = document.createElement('span');
+        errorEl.className = 'field-error';
+        errorEl.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+        target.insertAdjacentElement('afterend', errorEl);
+    });
+
+    const firstErrorField = form.querySelector('.input-error');
+    if (firstErrorField) {
+        firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
 </script>
 
 <style>

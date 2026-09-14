@@ -36,13 +36,13 @@ class ServicePageController extends Controller
     $servicePage = ServicePage::first() ?? new ServicePage();
 
     $request->validate([
-        'banner_title' => 'required|string|max:255',
+        'banner_title' => 'required|string|max:100',
         'banner'       => $servicePage->banner
                             ? 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240'
                             : 'required|image|mimes:jpg,jpeg,png,webp|max:10240',
     ], [
         'banner_title.required' => 'Please enter a banner title.',
-        'banner_title.max'      => 'Title must not exceed 255 characters.',
+        'banner_title.max'      => 'Title must not exceed 100 characters.',
 
         'banner.required' => 'Please upload a banner image.',
         'banner.image'    => 'The file must be a valid image.',
@@ -96,7 +96,7 @@ class ServicePageController extends Controller
    public function storeOurService(Request $request)
 {
     $request->validate([
-        'our_service_title'       => 'required|string|max:255',
+        'our_service_title'       => 'required|string|max:70',
         'our_service_description' => 'required|string|max:1000',
     ], [
         'our_service_title.required'       => 'Please enter a title.',

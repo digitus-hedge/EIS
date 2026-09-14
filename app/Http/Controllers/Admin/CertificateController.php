@@ -26,11 +26,11 @@ class CertificateController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
+            'title' => 'required|string|max:60',
             'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:10240',
         ], [
             'title.required' => 'Please enter a certificate title.',
-            'title.max'      => 'Title must not exceed 255 characters.',
+            'title.max'      => 'Title must not exceed 60 characters.',
 
             'image.required' => 'Please upload a certificate image.',
             'image.image'    => 'The file must be a valid image.',
