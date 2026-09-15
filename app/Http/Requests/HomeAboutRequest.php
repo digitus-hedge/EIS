@@ -15,7 +15,7 @@ class HomeAboutRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title'       => 'required|string|min:3|max:60',
+            'title'       => 'required|string|min:3|max:70',
             'description' => 'required|string|max:1200',
             'image'       => 'nullable|image|mimes:jpeg,jpg,png,webp|max:10240',
         ];

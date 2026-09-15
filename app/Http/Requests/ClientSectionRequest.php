@@ -15,7 +15,7 @@ class ClientSectionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title'          => 'required|string|max:55',
+            'title'          => 'required|string|max:70',
             'description'    => 'required|string|max:140',
             'images'         => 'nullable|array',
             'images.*'       => 'nullable|image|mimes:jpeg,jpg,png,webp|max:10240',
@@ -27,7 +27,7 @@ class ClientSectionRequest extends FormRequest
     {
         return [
             'title.required'       => 'Please enter a title.',
-            'title.max'            => 'Title cannot exceed 55 characters.',
+            'title.max'            => 'Title cannot exceed 70 characters.',
 
             'description.required' => 'Please enter a description.',
             'description.max'      => 'Description cannot exceed 140 characters.',
