@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Admin Login</title>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login</title>
         <link rel="icon" type="image/webp" href="{{ asset('images/favicon.png') }}">
     <link rel="shortcut icon" type="image/webp" href="{{ asset('images/favicon.png') }}">
     <link rel="apple-touch-icon" href="{{ asset('images/favicon.png') }}">
@@ -173,6 +174,82 @@
             font-size: 13px;
             margin-bottom: 25px;
         }
+
+        /* ===== Mobile responsiveness ===== */
+@media (max-width: 480px) {
+    body {
+        padding: 16px;
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .login-box {
+        width: 100%;
+        max-width: 360px;
+        padding: 30px 24px;
+        border-radius: 12px;
+    }
+
+    .brand-header img {
+        width: 60px;
+    }
+
+    .brand-header .brand-name {
+        font-size: 17px;
+    }
+
+    .login-box h2 {
+        font-size: 17px;
+    }
+
+    .login-box p.subtitle {
+        font-size: 12.5px;
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        font-size: 12.5px;
+    }
+
+    .input-wrapper input {
+        padding: 10px 12px 10px 34px;
+        font-size: 13.5px;
+    }
+
+    .input-wrapper i.field-icon {
+        left: 10px;
+        font-size: 14px;
+    }
+
+    .toggle-password {
+        right: 10px;
+        font-size: 14px;
+    }
+
+    .login-box button {
+        padding: 12px;
+        font-size: 14px;
+    }
+}
+
+/* ===== Extra small phones ===== */
+@media (max-width: 340px) {
+    .login-box {
+        padding: 24px 18px;
+    }
+
+    .brand-header .brand-name {
+        font-size: 15px;
+    }
+}
+
+/* ===== Short screens (landscape phones) ===== */
+@media (max-height: 600px) {
+    body {
+        align-items: flex-start;
+        padding-top: 30px;
+    }
+}
     </style>
 </head>
 <body>

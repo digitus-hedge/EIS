@@ -102,7 +102,7 @@
         </form>
     </div>
 
-    <div class="card">
+    <div class="card" id="existing-certificates-section">
         <div class="section-title">
             <h2><span class="icon"><i class="bi bi-collection"></i></span> Existing Certificates</h2>
         </div>

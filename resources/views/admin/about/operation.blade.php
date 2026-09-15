@@ -135,7 +135,7 @@
         </form>
     </div>
 
-    <div class="card">
+    <div class="card" id="existing-videos-section">
         <div class="section-title">
             <h2><span class="icon"><i class="bi bi-collection-play"></i></span> Existing Videos</h2>
         </div>

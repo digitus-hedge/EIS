@@ -99,7 +99,7 @@
         </form>
     </div>
 
-    <div class="card">
+    <div class="card" id="existing-locations-section">
         <div class="section-title">
             <h2><span class="icon"><i class="bi bi-buildings"></i></span> Existing Locations</h2>
         </div>

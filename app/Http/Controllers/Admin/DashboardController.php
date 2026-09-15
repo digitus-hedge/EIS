@@ -3,12 +3,24 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Service;
+use App\Models\OperationVideo;
+use App\Models\RegionalLocation;
+use App\Models\Certificate;
 
 class DashboardController extends Controller
 {
-    public function index()
+     public function index()
     {
-        return view('admin.dashboard');
+        $counts = [
+            'services'          => Service::count(),
+            'operations'        => OperationVideo::count(),
+            'regionals'         => RegionalLocation::count(),
+            'certificates'      => Certificate::count(),
+        
+        ];
+
+        return view('admin.dashboard', compact('counts'));
     }
 
     public function home()
