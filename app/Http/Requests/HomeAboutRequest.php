@@ -16,7 +16,7 @@ class HomeAboutRequest extends FormRequest
     {
         return [
             'title'       => 'required|string|min:3|max:70',
-            'description' => 'required|string|max:1200',
+            'description' => 'required|string',
             'image'       => 'nullable|image|mimes:jpeg,jpg,png,webp|max:10240',
         ];
     }
@@ -48,18 +48,27 @@ class HomeAboutRequest extends FormRequest
     /**
      * Image required only if there's no existing image already saved (edit mode).
      */
-    public function withValidator($validator): void
-    {
-        $validator->after(function ($validator) {
-            // Fetch the existing record from the database directly
-            $about = HomeAbout::first();
+  public function withValidator($validator): void
+{
+    $validator->after(function ($validator) {
+        // ----- Image required (existing check) -----
+        $about = HomeAbout::first();
 
-            $hasNewImage = $this->hasFile('image');
-            $hasExistingImage = $about && !empty($about->image);
+        $hasNewImage = $this->hasFile('image');
+        $hasExistingImage = $about && !empty($about->image);
 
-            if (!$hasNewImage && !$hasExistingImage) {
-                $validator->errors()->add('image', 'Please upload an image.');
-            }
-        });
-    }
+        if (!$hasNewImage && !$hasExistingImage) {
+            $validator->errors()->add('image', 'Please upload an image.');
+        }
+
+        // ----- Description: validate against plain-text length, not raw HTML -----
+        $plainText = trim(strip_tags($this->input('description', '')));
+
+        if ($plainText === '') {
+            $validator->errors()->add('description', 'Description is required.');
+        } elseif (mb_strlen($plainText) > 1200) {
+            $validator->errors()->add('description', 'Description must not exceed 1200 characters.');
+        }
+    });
+}
 }
