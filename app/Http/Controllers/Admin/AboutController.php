@@ -35,36 +35,90 @@ class AboutController extends Controller
      * STORE — creates the about_us row if none exists, otherwise updates the existing one
      * Route: POST /admin/banner -> admin.about.banner.store
      */
-    public function storeBanner(Request $request)
+  public function storeBanner(Request $request)
 {
     $about = AboutUs::first() ?? new AboutUs();
 
     $request->validate([
-        'title'  => 'required|string|max:55',
-        'banner' => $about->banner
-                        ? 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120'
-                        : 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
+        'title'        => 'required|string|max:55',
+        'banner'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
+        'banner_video' => 'nullable|mimes:mp4,mov,webm|max:20480',
+        'remove_banner' => 'nullable|boolean',
+        'remove_banner_video' => 'nullable|boolean',
     ], [
         'title.required'  => 'Please enter a title.',
         'title.max'       => 'Title must not exceed 55 characters.',
 
-        'banner.required' => 'Please upload a banner image.',
         'banner.image'    => 'The file must be a valid image.',
         'banner.mimes'    => 'The banner image must be a JPG, PNG, or WEBP file.',
-        'banner.max'      => 'The banner image must not exceed 5MB.',
+        'banner.max'      => 'The banner image must not exceed 10MB.',
+
+        'banner_video.mimes' => 'The banner video must be an MP4, MOV, or WEBM file.',
+        'banner_video.max'   => 'The banner video must not exceed 20MB.',
     ]);
+
+    // ----- Either image or video required -----
+    $hasNewImage = $request->hasFile('banner');
+    $hasNewVideo = $request->hasFile('banner_video');
+    $hasExistingImage = $about->banner && !$request->boolean('remove_banner');
+    $hasExistingVideo = $about->banner_video && !$request->boolean('remove_banner_video');
+
+    if (!($hasNewImage || $hasExistingImage) && !($hasNewVideo || $hasExistingVideo)) {
+        $message = 'Please upload either a Banner Image or a Banner Video.';
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'message' => $message,
+                'errors' => [
+                    'banner' => [$message],
+                ],
+            ], 422);
+        }
+
+        return back()->withInput()->withErrors([
+            'banner' => $message,
+        ]);
+    }
 
     try {
         $about->title = $request->title;
 
+        // ----- Banner Image -----
         if ($request->hasFile('banner')) {
             if ($about->banner) {
                 Storage::disk('public')->delete($about->banner);
             }
-
             $about->banner = $this->processAndStoreImage($request->file('banner'));
 
+            if ($about->banner_video) {
+                Storage::disk('public')->delete($about->banner_video);
+                $about->banner_video = null;
+            }
+
             gc_collect_cycles();
+        } elseif ($request->boolean('remove_banner')) {
+            if ($about->banner) {
+                Storage::disk('public')->delete($about->banner);
+            }
+            $about->banner = null;
+        }
+
+        // ----- Banner Video -----
+        if ($request->hasFile('banner_video')) {
+            if ($about->banner_video) {
+                Storage::disk('public')->delete($about->banner_video);
+            }
+            $about->banner_video = $request->file('banner_video')->store('about/banner-videos', 'public');
+
+            if ($about->banner) {
+                Storage::disk('public')->delete($about->banner);
+                $about->banner = null;
+            }
+        } elseif ($request->boolean('remove_banner_video')) {
+            if ($about->banner_video) {
+                Storage::disk('public')->delete($about->banner_video);
+            }
+            $about->banner_video = null;
         }
 
         $about->save();
@@ -83,7 +137,6 @@ class AboutController extends Controller
         return back()->withInput()->with('error', 'Something went wrong: ' . $e->getMessage());
     }
 }
-
     private function processAndStoreImage($file, string $folder = 'about/banners'): string
     {
         $filename = $folder . '/' . Str::random(20) . '.webp';

@@ -31,34 +31,90 @@ class ServicePageController extends Controller
      * Store/update the banner title + image.
      * Route: POST /admin/service/banner -> admin.service.banner.store
      */
-  public function storeBanner(Request $request)
+ public function storeBanner(Request $request)
 {
     $servicePage = ServicePage::first() ?? new ServicePage();
 
     $request->validate([
         'banner_title' => 'required|string|max:100',
-        'banner'       => $servicePage->banner
-                            ? 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240'
-                            : 'required|image|mimes:jpg,jpeg,png,webp|max:10240',
+        'banner'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
+        'banner_video' => 'nullable|mimes:mp4,mov,webm|max:20480',
+        'remove_banner' => 'nullable|boolean',
+        'remove_banner_video' => 'nullable|boolean',
     ], [
         'banner_title.required' => 'Please enter a banner title.',
         'banner_title.max'      => 'Title must not exceed 100 characters.',
 
-        'banner.required' => 'Please upload a banner image.',
         'banner.image'    => 'The file must be a valid image.',
         'banner.mimes'    => 'The banner image must be a JPG, PNG, or WEBP file.',
         'banner.max'      => 'The banner image must not exceed 10MB.',
+
+        'banner_video.mimes' => 'The banner video must be an MP4, MOV, or WEBM file.',
+        'banner_video.max'   => 'The banner video must not exceed 20MB.',
     ]);
+
+    // ----- Either image or video required -----
+    $hasNewImage = $request->hasFile('banner');
+    $hasNewVideo = $request->hasFile('banner_video');
+    $hasExistingImage = $servicePage->banner && !$request->boolean('remove_banner');
+    $hasExistingVideo = $servicePage->banner_video && !$request->boolean('remove_banner_video');
+
+    if (!($hasNewImage || $hasExistingImage) && !($hasNewVideo || $hasExistingVideo)) {
+        $message = 'Please upload either a Banner Image or a Banner Video.';
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'message' => $message,
+                'errors' => [
+                    'banner' => [$message],
+                ],
+            ], 422);
+        }
+
+        return back()->withInput()->withErrors([
+            'banner' => $message,
+        ]);
+    }
 
     try {
         $servicePage->banner_title = $request->banner_title;
 
+        // ----- Banner Image -----
         if ($request->hasFile('banner')) {
             if ($servicePage->banner) {
                 Storage::disk('public')->delete($servicePage->banner);
             }
             $servicePage->banner = $this->processAndStoreImage($request->file('banner'));
+
+            if ($servicePage->banner_video) {
+                Storage::disk('public')->delete($servicePage->banner_video);
+                $servicePage->banner_video = null;
+            }
+
             gc_collect_cycles();
+        } elseif ($request->boolean('remove_banner')) {
+            if ($servicePage->banner) {
+                Storage::disk('public')->delete($servicePage->banner);
+            }
+            $servicePage->banner = null;
+        }
+
+        // ----- Banner Video -----
+        if ($request->hasFile('banner_video')) {
+            if ($servicePage->banner_video) {
+                Storage::disk('public')->delete($servicePage->banner_video);
+            }
+            $servicePage->banner_video = $request->file('banner_video')->store('service-page/banner-videos', 'public');
+
+            if ($servicePage->banner) {
+                Storage::disk('public')->delete($servicePage->banner);
+                $servicePage->banner = null;
+            }
+        } elseif ($request->boolean('remove_banner_video')) {
+            if ($servicePage->banner_video) {
+                Storage::disk('public')->delete($servicePage->banner_video);
+            }
+            $servicePage->banner_video = null;
         }
 
         $servicePage->save();

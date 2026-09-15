@@ -71,44 +71,79 @@
             </div>
         </div>
 
-        <div class="card">
-            <div class="section-title">
-                <h2><span class="icon"><i class="bi bi-image"></i></span> Banner Image<span class="req">*</span></h2>
-            </div>
+     <div class="card">
+    <div class="section-title">
+        <h2><span class="icon"><i class="bi bi-image"></i></span> Banner Image or Video<span class="req">*</span></h2>
+    </div>
 
-              <div class="notice caution">
-                <i class="bi bi-exclamation-triangle" style="margin-top:1px;"></i>
-                <p><b>Recommended size:</b> 1200 &times; 600px &middot; JPG, PNG, WEBP &middot; up to 10MB.</p>
-            </div>
+    <div class="notice caution">
+        <i class="bi bi-exclamation-triangle" style="margin-top:1px;"></i>
+        <p><b>Image:</b> 1200 &times; 600px &middot; JPG, PNG, WEBP &middot; up to 10MB.
+           <b>Video:</b> MP4, MOV, WEBM &middot; up to 20MB.</p>
+    </div>
 
-            <div class="image-slot" style="max-width:400px;">
-                <div class="drop img-slot {{ $contact->banner_image ? 'filled' : '' }}"  id="drop-banner-image"
-                     data-file-input="file-banner-image" onclick="handleDropClick(this)">
-                    @if ($contact->banner_image)
-                        <img src="{{ Storage::url($contact->banner_image) }}" id="preview-banner-image" alt="Contact banner">
-                        <button type="button" class="remove-img-btn" onclick="removeUploadedImage(event, this, 'banner-image', 'preview-banner-image')" title="Remove image">
-                            <i class="bi bi-x-lg"></i>
-                        </button>
-                        <div class="uploaded-tag"><i class="bi bi-check-circle"></i> Uploaded</div>
-                    @else
-                        <div class="preview-placeholder" id="preview-banner-image">
-                            <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:18px;"></i></div>
-                            <div class="drop-title">Click to upload</div>
-                            <div class="drop-sub">or drag &amp; drop</div>
-                        </div>
-                    @endif
-                </div>
-                <input type="file" id="file-banner-image" name="banner_image" accept="image/*" hidden
-                       onchange="previewImage(this, 'preview-banner-image')">
-                <input type="hidden" name="remove_banner_image" id="remove-banner-image" value="0">
-                @if (!$contact->banner_image)
-                    <button type="button" class="choose-btn" onclick="document.getElementById('file-banner-image').click()">Choose file</button>
+    <div class="images-row">
+        {{-- Image slot --}}
+        <div class="image-slot">
+            <div class="slot-top"><span class="slot-label">Banner Image</span></div>
+            <div class="drop img-slot {{ ($contact->banner_image ?? null) ? 'filled' : '' }}" id="drop-banner-image"
+                 data-file-input="file-banner-image" onclick="handleDropClick(this)">
+                @if ($contact->banner_image ?? null)
+                    <img src="{{ asset('storage/' . $contact->banner_image) }}" id="preview-banner-image" alt="Banner image">
+                    <button type="button" class="remove-img-btn" onclick="removeUploadedImage(event, this, 'banner_image', 'preview-banner-image')" title="Remove image">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                    <div class="uploaded-tag"><i class="bi bi-check-circle"></i> Uploaded</div>
+                @else
+                    <div class="preview-placeholder" id="preview-banner-image">
+                        <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:18px;"></i></div>
+                        <div class="drop-title">Click to upload</div>
+                        <div class="drop-sub">or drag &amp; drop</div>
+                    </div>
                 @endif
             </div>
+            <input type="file" id="file-banner-image" name="banner_image" accept="image/*" hidden
+                   onchange="previewImage(this, 'preview-banner-image')">
+            <input type="hidden" name="remove_banner_image" id="remove-banner_image" value="0">
+            @if (!($contact->banner_image ?? null))
+                <button type="button" class="choose-btn" onclick="document.getElementById('file-banner-image').click()">Choose file</button>
+            @else
+                <div class="video-btn-spacer"></div>
+            @endif
             @error('banner_image')
-            <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
             @enderror
         </div>
+
+        {{-- Video slot --}}
+        <div class="image-slot">
+            <div class="slot-top"><span class="slot-label">Banner Video</span></div>
+            <div class="video-drop {{ ($contact->banner_video ?? null) ? 'has-file filled' : '' }} {{ $errors->has('banner_video') ? 'input-error' : '' }}"
+                 id="drop-banner-video" onclick="handleContactVideoDropClick(this)">
+                @if ($contact->banner_video ?? null)
+                    <video src="{{ asset('storage/' . $contact->banner_video) }}" muted playsinline preload="metadata"></video>
+                    <button type="button" class="remove-img-btn" onclick="removeContactUploadedVideo(event)" title="Remove video">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                    <div class="uploaded-tag"><i class="bi bi-camera-video-fill"></i> Uploaded</div>
+                @else
+                    <div class="preview-placeholder" id="preview-banner-video">
+                        <div class="ico-circle"><i class="bi bi-camera-video" style="color:#AEB4C4;font-size:18px;"></i></div>
+                        <div class="drop-title">Click to upload</div>
+                        <div class="drop-sub">or drag &amp; drop</div>
+                    </div>
+                @endif
+            </div>
+            <input type="file" id="file-banner-video" name="banner_video" accept="video/*" hidden
+                   onchange="showContactBannerVideoFileName(this)">
+            <input type="hidden" name="remove_banner_video" id="remove-banner_video" value="0">
+            <div class="video-btn-spacer"></div>
+            @error('banner_video')
+                <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+            @enderror
+        </div>
+    </div>
+</div>
 
         <div class="two-col">
             <div class="card">
@@ -346,6 +381,31 @@
         transition:transform .12s ease, box-shadow .12s ease;
     }
     .btn-save:hover{ transform:translateY(-1px); box-shadow:0 8px 18px -6px rgba(15,21,38,0.5); }
+
+    .images-row{ display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start; }
+.image-slot{ width:350px; flex-shrink:0; }
+.slot-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.slot-label{ font-size:12px; font-weight:500; color: var(--muted,#667085); }
+.video-btn-spacer{ margin-top:8px; height:35px; }
+
+.video-drop{
+    position:relative; height:190px; border-radius:12px;
+    border:2px dashed var(--input-border,#DBDFEA); background:#FAFBFD;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    cursor:pointer; overflow:hidden; transition:border-color .15s, background .15s; text-align:center;
+}
+.video-drop:hover{ border-color: var(--orange,#EF7B2E); background: var(--orange-tint,#FFF8F3); }
+.video-drop.has-file .drop-title{ color: var(--green,#12875A); }
+.video-drop.input-error{ border-color:#e74c3c; background:#fff8f8; }
+.video-drop.filled{ border:2px solid transparent; cursor:default; }
+.video-drop video{ width:100%; height:100%; object-fit:cover; display:block; background:#0F1220; }
+.video-drop .uploaded-tag{
+    position:absolute; left:0; right:0; bottom:0; padding:8px 12px;
+    background:linear-gradient(to top, rgba(0,0,0,0.55), transparent);
+    color:rgba(255,255,255,0.9); font-size:11px; display:flex; align-items:center; gap:4px;
+    pointer-events:none;
+}
+.drop{ height:190px; }
 </style>
 
 <script>
@@ -526,16 +586,17 @@ function submitContactForm() {
 function showContactValidationErrors(errors) {
     const form = document.getElementById('contactForm');
 
-    const fieldMap = {
-        banner_title: f => f.querySelector('[name="banner_title"]'),
-        banner_image: f => document.getElementById('drop-banner-image'),
-        phone: f => f.querySelector('[name="phone"]'),
-        email: f => f.querySelector('[name="email"]'),
-        address: f => f.querySelector('[name="address"]'),
-        contact_image: f => document.getElementById('drop-contact-image'),
-        meta_title: f => f.querySelector('[name="meta_title"]'),
-        meta_description: f => f.querySelector('[name="meta_description"]'),
-    };
+   const fieldMap = {
+    banner_title: f => f.querySelector('[name="banner_title"]'),
+    banner_image: f => document.getElementById('drop-banner-image'),
+    banner_video: f => document.getElementById('drop-banner-video'),
+    phone: f => f.querySelector('[name="phone"]'),
+    email: f => f.querySelector('[name="email"]'),
+    address: f => f.querySelector('[name="address"]'),
+    contact_image: f => document.getElementById('drop-contact-image'),
+    meta_title: f => f.querySelector('[name="meta_title"]'),
+    meta_description: f => f.querySelector('[name="meta_description"]'),
+};
 
     Object.keys(errors).forEach(field => {
         const message = errors[field][0];
@@ -554,6 +615,54 @@ function showContactValidationErrors(errors) {
     if (firstErrorField) {
         firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
+}
+
+
+
+function handleContactVideoDropClick(el) {
+    if (el.classList.contains('filled')) return;
+    document.getElementById('file-banner-video').click();
+}
+
+function showContactBannerVideoFileName(input) {
+    const drop = document.getElementById('drop-banner-video');
+    const file = input.files && input.files[0];
+    if (!file) return;
+
+    const videoURL = URL.createObjectURL(file);
+
+    drop.classList.add('has-file', 'filled');
+    drop.innerHTML = `
+        <video src="${videoURL}" muted playsinline preload="metadata"></video>
+        <button type="button" class="remove-img-btn" onclick="removeContactUploadedVideo(event)" title="Remove video">
+            <i class="bi bi-x-lg"></i>
+        </button>
+        <div class="uploaded-tag"><i class="bi bi-camera-video-fill"></i> Uploaded</div>
+    `;
+}
+
+function removeContactUploadedVideo(event) {
+    event.stopPropagation();
+    const drop = document.getElementById('drop-banner-video');
+    const fileInput = document.getElementById('file-banner-video');
+    const removeInput = document.getElementById('remove-banner_video');
+
+    const existingVideo = drop.querySelector('video');
+    if (existingVideo && existingVideo.src.startsWith('blob:')) {
+        URL.revokeObjectURL(existingVideo.src);
+    }
+
+    if (removeInput) removeInput.value = '1';
+    if (fileInput) fileInput.value = '';
+
+    drop.classList.remove('has-file', 'filled');
+    drop.innerHTML = `
+        <div class="preview-placeholder" id="preview-banner-video">
+            <div class="ico-circle"><i class="bi bi-camera-video" style="color:#AEB4C4;font-size:18px;"></i></div>
+            <div class="drop-title">Click to upload</div>
+            <div class="drop-sub">or drag &amp; drop</div>
+        </div>
+    `;
 }
 </script>
 
