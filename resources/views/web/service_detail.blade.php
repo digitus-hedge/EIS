@@ -52,14 +52,24 @@
             z-index: 2;
         }
 
-        .hero .hero-content {
-            position: relative;
-            z-index: 5;
-            flex: 1;
-            display: flex;
-            align-items: center;
-            padding: 0 90px;
-        }
+       .hero .hero-content {
+        position: relative;
+        z-index: 5;
+        flex: 1;
+        display: flex;
+        align-items: flex-end;      /* was center — now bottom-anchored */
+        justify-content: flex-start;
+        padding: 0 90px 90px;       /* added bottom padding */
+    }
+
+    .hero-video{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      z-index:1;
+    }
 
         .hero .hero-inner {
             max-width: 760px;
@@ -74,68 +84,69 @@
         }
 
         .hero h1 {
-            color: var(--white);
-            font-size: clamp(28px, 4.2vw, 60px);
-            line-height: 1.20;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-            margin: 0 70px 0;
-            text-shadow: 0 2px 24px rgba(0, 0, 0, 0.35);
-            word-break: break-word;
-        }
+    color: var(--white);
+    font-size: clamp(28px, 4.2vw, 60px);
+    line-height: 1.15;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin: 0 0 20px;
+    text-shadow: 0 2px 24px rgba(0, 0, 0, 0.35);
+    word-break: break-word;
+}
 
-        .hero .lede {
-            color: var(--white);
-            font-size: 25px;
-            font-weight: 700px;
-            max-width: 640px;
-            margin: 0 70px 20px;
-        }
+.hero .lede {
+    color: rgba(255,255,255,0.92);
+    font-size: clamp(16px, 1.6vw, 20px);
+    font-weight: 500;
+    max-width: 640px;
+    margin: 0 0 10px;
+    line-height: 1.55;
+}
 
         @media (max-width: 1024px) {
-            .hero .hero-content {
-                padding: 0 50px;
-            }
+           .hero .hero-content {
+            padding: 0 50px 70px;
+        }
         }
 
         @media (max-width: 900px) {
-            .hero .hero-content {
-                padding: 0 24px;
-            }
+           .hero .hero-content {
+        padding: 0 24px 56px;
+    }
         }
 
         @media (max-width: 600px) {
-            .hero {
-                min-height: auto;
-            }
+           .hero {
+        min-height: auto;
+    }
 
             .hero .hero-content {
-                padding: 60px 20px 60px;
-                align-items: flex-start;
-            }
+        padding: 60px 20px 48px;
+        align-items: flex-start;
+    }
 
-            .hero .eyebrow {
-                font-size: 15px;
-                margin-bottom: 14px;
-            }
+    .hero .eyebrow {
+        font-size: 15px;
+        margin-bottom: 14px;
+    }
 
-            .hero h1 {
-                margin-bottom: 18px;
-            }
+    .hero h1 {
+        margin-bottom: 18px;
+    }
 
-            .hero .lede {
-                margin-bottom: 26px;
-            }
+    .hero .lede {
+        margin-bottom: 26px;
+    }
         }
 
         @media (max-width: 380px) {
-            .hero .hero-content {
-                padding: 48px 16px 48px;
-            }
+           .hero .hero-content {
+        padding: 48px 16px 40px;
+    }
 
-            .hero .eyebrow {
-                font-size: 14px;
-            }
+    .hero .eyebrow {
+        font-size: 14px;
+    }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -1076,32 +1087,44 @@
 }
     </style>
 
-    <section class="hero">
-        @include('web.layout.navbar')
+<section class="hero">
+    @include('web.layout.navbar')
 
-        @if ($service->banner_image)
-            <div class="hero-slides">
-                <img src="{{ Storage::url($service->banner_image) }}" class="hero-slide active"
-                    alt="{{ $service->banner_title ?? 'Service banner' }}">
-            </div>
-        @else
-            <div class="hero-slides">
-                <img src="{{ asset('images/hero_image.jpeg') }}" class="hero-slide active" alt="Service banner">
-            </div>
-        @endif
-
-        <div class="rig-decor" aria-hidden="true"></div>
-        <div class="hero-figure" aria-hidden="true"></div>
-
-        <div class="hero-content">
-            <div class="hero-inner">
-                <p class="eyebrow">Quality. Safety. Reliability.</p>
-                <h1>{{ $service->banner_title }}</h1>
-                @if ($service->banner_description)
-                    <p class="lede">{{ $service->banner_description }}</p>
-                @endif
-            </div>
+    @if (!empty($service->banner_video))
+        {{-- Video takes priority over the static banner image --}}
+        <video
+            class="hero-video"
+            src="{{ Storage::url($service->banner_video) }}"
+            autoplay
+            muted
+            loop
+            playsinline
+            preload="auto"
+        ></video>
+    @elseif ($service->banner_image)
+        <div class="hero-slides">
+            <img src="{{ Storage::url($service->banner_image) }}" class="hero-slide active"
+                alt="{{ $service->banner_title ?? 'Service banner' }}">
         </div>
+    @else
+        <div class="hero-slides">
+            <img src="{{ asset('images/hero_image.jpeg') }}" class="hero-slide active" alt="Service banner">
+        </div>
+    @endif
+
+    <div class="rig-decor" aria-hidden="true"></div>
+    <div class="hero-figure" aria-hidden="true"></div>
+
+    <div class="hero-content">
+        <div class="hero-inner">
+            <p class="eyebrow">Quality. Safety. Reliability.</p>
+            <h1>{{ $service->banner_title }}</h1>
+            @if ($service->banner_description)
+                <p class="lede">{{ $service->banner_description }}</p>
+            @endif
+        </div>
+    </div>
+</section>
     </section>
 
     <section class="service-overview">

@@ -144,7 +144,8 @@
   align-items:center;
   justify-content:space-between;
   padding:8px 60px;
-  flex-wrap:wrap;
+  flex-wrap:nowrap;
+  gap:10px;
 }
 
 .site-navbar .brand{
@@ -153,6 +154,8 @@
   align-items:center;
   gap:14px;
   min-width:0;
+  flex:1 1 auto;
+  overflow:hidden;
 }
 
 .site-navbar .brand-logo{
@@ -161,16 +164,21 @@
   max-width:60vw;
   display:block;
 }
+.site-header.is-scrolled .site-navbar .navbar{
+  padding:4px 60px;
+}
 
 .brand-logo-scrolled{
   position:absolute;
-  top:0;
+  top:50%;
   left:0;
+  transform:translateY(-50%);
+  height:65px !important;        /* smaller scrolled logo, adjust as needed */
+  width:auto;
   opacity:0;
   pointer-events:none;
   transition:opacity 0.3s ease;
 }
-
 .site-header.is-scrolled .brand-logo-top{
   opacity:0;
 }
@@ -276,16 +284,17 @@
   }
 
   .site-navbar .nav-toggle{
-    display:block;
-    background:none;
-    border:none;
-    font-size:24px;
-    cursor:pointer;
-    line-height:1;
-    padding:4px 8px;
-    border-radius:6px;
-    transition:background 0.2s ease;
-  }
+  display:block;
+  background:none;
+  border:none;
+  font-size:24px;
+  cursor:pointer;
+  line-height:1;
+  padding:4px 8px;
+  border-radius:6px;
+  transition:background 0.2s ease;
+  flex-shrink:0;
+}
 
   .site-header.is-scrolled .site-navbar .nav-toggle{
     color:#1a1a1a;
@@ -378,11 +387,17 @@
     background:#f5f5f5 !important;
   }
 }
-
 /* ===== Phones ===== */
 @media (max-width: 600px){
-  .site-navbar .navbar{ padding:10px 18px; }
-  .site-navbar .brand-logo{ height:36px; }
+  .site-navbar .navbar{ padding:8px 14px; }
+
+  .site-navbar .brand{ max-width:calc(100% - 50px); }
+
+  .site-navbar .brand-logo{
+    height:auto;
+    max-height:38px;
+    max-width:100%;
+  }
 
   .site-navbar .nav-links{
     top:calc(100% + 1px);
@@ -394,9 +409,9 @@
 <header class="site-header" id="siteHeader">
   <div class="topbar">
     <div class="topbar-left">
-      <span><i class="bi bi-geo-alt"></i> Gazna Road, Ankawa, Erbil, Iraq</span>
-      <span><i class="bi bi-telephone"></i> +964 662 575316</span>
-      <span><i class="bi bi-envelope"></i> info@eisltd.com</span>
+      <span><i class="bi bi-geo-alt"></i> {{ $contact->address ?? 'Gazna Road, Ankawa, Erbil, Iraq' }}</span>
+      <span><i class="bi bi-telephone"></i> {{ $contact->phone ?? '+964 662 575316' }}</span>
+      <span><i class="bi bi-envelope"></i> {{ $contact->email ?? 'info@eisltd.com' }}</span>
     </div>
     <div class="topbar-right">
       <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
@@ -426,15 +441,15 @@
         </li>
 
         <li class="nav-mobile-info">
-          <div class="nav-mobile-info-item">
-            <i class="bi bi-geo-alt"></i> Gazna Road, Ankawa, Erbil, Iraq
-          </div>
-          <div class="nav-mobile-info-item">
-            <i class="bi bi-telephone"></i> +964 662 575316
-          </div>
-          <div class="nav-mobile-info-item">
-            <i class="bi bi-envelope"></i> info@eisltd.com
-          </div>
+        <div class="nav-mobile-info-item">
+          <i class="bi bi-geo-alt"></i> {{ $contact->address ?? 'Gazna Road, Ankawa, Erbil, Iraq' }}
+        </div>
+        <div class="nav-mobile-info-item">
+          <i class="bi bi-telephone"></i> {{ $contact->phone ?? '+964 662 575316' }}
+        </div>
+        <div class="nav-mobile-info-item">
+          <i class="bi bi-envelope"></i> {{ $contact->email ?? 'info@eisltd.com' }}
+        </div>
           <div class="nav-mobile-socials">
             <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
             <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>

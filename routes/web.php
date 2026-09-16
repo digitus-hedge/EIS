@@ -18,6 +18,8 @@ use App\Http\Controllers\Admin\ServicePageController;
 use App\Http\Controllers\Admin\ContactController;
 use App\Http\Controllers\ContactPageController;
 use App\Http\Controllers\Admin\CertificateController;
+use App\Http\Controllers\EnquiryController;
+
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -31,7 +33,7 @@ Route::get('/services', [ServiceDetailController::class, 'index'])->name('servic
 Route::get('/service/{slug}', [ServiceDetailController::class, 'show'])->name('service.details');
 
 Route::get('/contact', [ContactPageController::class, 'index'])->name('contact');
-
+Route::post('/enquiry', [EnquiryController::class, 'store'])->name('enquiry.store');
 
 Route::prefix('admin')->name('admin.')->group(function () {
 

@@ -337,7 +337,6 @@
       <li><a href="{{ url('/about') }}">About Us</a></li>
       <li><a href="{{ url('/services') }}">Services</a></li>
       <li><a href="{{ url('/contact') }}">Contact</a></li>
-      <li><a href="{{ url('/privacy') }}">Privacy</a> | <a href="{{ url('/terms') }}">Terms</a></li>
     </ul>
 
     <div class="footer-social">
@@ -363,15 +362,15 @@
 
     <div class="footer-col contact-col">
       <div class="footer-contact-block">
-        <p class="footer-label">Contact Us</p>
-        <p class="footer-line"><a href="tel:+964662575316">+964 662 575316</a></p>
-        <p class="footer-line"><a href="mailto:info@eisltd.com">info@eisltd.com</a></p>
-      </div>
+  <p class="footer-label">Contact Us</p>
+  <p class="footer-line"><a href="tel:{{ $contact->phone ?? '+964662575316' }}">{{ $contact->phone ?? '+964 662 575316' }}</a></p>
+  <p class="footer-line"><a href="mailto:{{ $contact->email ?? 'info@eisltd.com' }}">{{ $contact->email ?? 'info@eisltd.com' }}</a></p>
+</div>
 
-      <div class="footer-contact-block">
-        <p class="footer-label">Head Office</p>
-        <p class="footer-line">Gazna Road, Ankawa,<br>Erbil, Iraq</p>
-      </div>
+<div class="footer-contact-block">
+  <p class="footer-label">Head Office</p>
+  <p class="footer-line">{{ $contact->address ?? 'Gazna Road, Ankawa, Erbil, Iraq' }}</p>
+</div>
     </div>
 
     <a href="#top" class="footer-to-top" aria-label="Back to top">&#8593;</a>
@@ -379,8 +378,6 @@
     <div class="footer-legal">
     <p>&copy;{{ date('Y') }} Energy Inspection Services Ltd. All rights reserved.</p>
     <ul class="footer-legal-links">
-      <li><a href="{{ url('/privacy') }}">Privacy Policy</a></li>
-      <li><a href="{{ url('/terms') }}">Terms of Service</a></li>
     </ul>
   </div>
 </footer>

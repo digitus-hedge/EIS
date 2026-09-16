@@ -524,15 +524,23 @@
   display:flex;
   align-items:flex-start;
   gap:70px;
+  height:calc(100vh - 80px);   
 }
 
 .services-left{
   flex:1 1 0;
   min-width:0;
-  position:sticky;
-  top:40px;
-  align-self:flex-start;
   max-height:calc(100vh - 80px);
+  overflow-y:auto;
+  overflow-x:hidden;
+  scrollbar-width:none;
+  -ms-overflow-style:none;
+}
+
+.services-left::-webkit-scrollbar{
+  display:none;
+  width:0;
+  height:0;
 }
 
 .services-right{
@@ -565,6 +573,7 @@
   min-width:0;
   padding:14px;
   border-radius:20px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.06);
   transition:transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s ease, background 0.4s ease;
 }
 
@@ -586,7 +595,7 @@
   width:80%;
   aspect-ratio: 16 / 9;
   height:170px;
-  border-radius:24px;
+  border-radius:20px;   /* was 24px — now matches .service-card */
   overflow:hidden;
   margin-bottom:18px;
   background-color:#e8e8e8;
@@ -673,23 +682,20 @@
 
 @media (max-width: 900px){
   .services{ padding:56px 24px 70px; }
-  .services-inner{ flex-direction:column; gap:44px; }
+  .services-inner{ flex-direction:column; gap:44px; height:auto; }
   .services-left{
     position:static;
+    height:auto;
+    overflow:visible;
     width:100%;
     max-width:100%;
     flex-basis:auto;
   }
   .services-right{
-  flex:1 1 0;
-  min-width:0;
-  max-width:50%;
-  max-height:calc(100vh - 80px);
-  overflow-y:auto;
-  overflow-x:hidden;
-  scrollbar-width:none;      /* Firefox */
-  -ms-overflow-style:none;   /* old Edge/IE */
-}
+    height:auto;
+    max-width:100%;
+    overflow:visible;
+  }
   .services-heading{
     word-break:break-word;
     overflow-wrap:break-word;
@@ -698,17 +704,15 @@
     word-break:break-word;
     overflow-wrap:break-word;
   }
-.services-grid{
-  display:grid;
-  grid-template-columns:repeat(2, 1fr);
-  gap:36px 28px;
-  width:100%;
-  max-width:100%;
+  .services-grid{
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:36px 28px;
+    width:100%;
+    max-width:100%;
+  }
 }
-}
-
-/* ===== Phones — single card auto-sliding carousel ===== */
-@media (max-width: 560px){
+@media (max-width: 900px){
   .services-heading{ font-size:clamp(22px, 6.5vw, 28px); }
   .services-sub{ font-size:15px; line-height:1.55; }
   .services-photo{ height:220px; }
@@ -1131,11 +1135,13 @@
     inset:0;
     background:linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,0.35) 100%);
     pointer-events:none;
+    border-radius:20px;
   }
 
   .why-panel-photo:hover{
     transform:translateY(-6px);
     box-shadow:0 32px 60px rgba(0,0,0,0.22);
+    border-radius:20px;
   }
 
   .why-panel-badge{
@@ -1706,10 +1712,10 @@
   });
 
   window.addEventListener('resize', function () {
-    isMobile = window.matchMedia('(max-width: 600px)').matches;
+    isMobile = window.matchMedia('(max-width: 900px)').matches;
     if (isMobile) startAutoplay();
     else clearInterval(autoplayTimer);
-  });
+});
 
   startAutoplay();
 })();
@@ -1751,32 +1757,6 @@
     document.querySelectorAll('[data-count-to]').forEach(animateCount);
   }
 
-
-  (function () {
-    const left = document.querySelector('.services-left');
-    const right = document.querySelector('.services-right');
-
-    if (!left || !right) return;
-
-    let isSyncing = false;
-
-    left.addEventListener('wheel', function (e) {
-        if (window.innerWidth <= 900) return;
-
-        e.preventDefault();
-
-        if (isSyncing) return;
-
-        isSyncing = true;
-
-        right.scrollTop += e.deltaY;
-
-        requestAnimationFrame(function () {
-            isSyncing = false;
-        });
-    }, { passive: false });
-})();
-
   (function () {
   const row = document.getElementById('servicesGrid');
   const dotsWrap = document.getElementById('servicesDots');
@@ -1800,7 +1780,7 @@
   const dots = Array.from(dotsWrap.children);
   let current = 0;
   let autoplayTimer;
-  let isMobile = window.matchMedia('(max-width: 560px)').matches;
+  let isMobile = window.matchMedia('(max-width: 900px)').matches;
 
   function scrollToIndex(i) {
     const item = items[i];

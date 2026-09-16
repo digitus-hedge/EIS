@@ -1,6 +1,5 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500;1,600&display=swap" rel="stylesheet">
 
 <style>
   .hero{
@@ -40,7 +39,6 @@
     z-index:1;
   }
 
-  /* Video background fills the same space as image slides */
   .hero-video{
     position:absolute;
     inset:0;
@@ -79,7 +77,7 @@
     z-index:2;
   }
 
-  /* ===== Content block — anchored bottom-left on ALL screen sizes ===== */
+  /* ===== Content block — anchored bottom-left, with a guaranteed top gap from the navbar ===== */
   .hero .hero-content{
     position:relative;
     z-index:5;
@@ -87,11 +85,13 @@
     display:flex;
     align-items:flex-end;
     justify-content:flex-start;
-    padding:0 90px 90px;
+    /* top padding acts as the minimum gap from navbar even if content grows tall */
+    padding:140px 90px 90px;
   }
 
   .hero .hero-inner{
-    max-width:760px;
+    /* width increases instead of height when content is long */
+    max-width:min(78%, 980px);
     animation: heroFadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
@@ -100,53 +100,10 @@
     to{ opacity:1; transform:translateY(0); }
   }
 
- .hero .welcome-greeting{
-  position:relative;
-  display:inline-flex;
-  align-items:center;
-  gap:14px;
-  margin-bottom:18px;
-  animation: welcomeFadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
-}
-
-.hero .welcome-greeting::before{
-  content:"";
-  display:inline-block;
-  width:34px;
-  height:1px;
-  background:linear-gradient(to right, transparent, var(--orange));
-}
-
-.hero .welcome-greeting::after{
-  content:"";
-  display:inline-block;
-  width:34px;
-  height:1px;
-  background:linear-gradient(to left, transparent, var(--orange));
-}
-
-.hero .welcome-text{
-  font-family: 'Cormorant Garamond', 'Segoe UI', serif;
-  font-style:italic;
-  font-weight:600;
-  font-size:clamp(20px, 2.2vw, 28px);
-  letter-spacing:0.5px;
-  background:linear-gradient(90deg, #ffffff 0%, var(--cream) 55%, var(--orange) 100%);
-  -webkit-background-clip:text;
-  background-clip:text;
-  color:transparent;
-  white-space:nowrap;
-}
-
-@keyframes welcomeFadeIn{
-  from{ opacity:0; transform:translateY(10px); letter-spacing:2px; }
-  to{ opacity:1; transform:translateY(0); letter-spacing:0.5px; }
-}
-
   .hero h1{
     color:var(--white);
     font-size:clamp(28px, 4.2vw, 58px);
-    line-height:1.12;
+    line-height:1.15;
     font-weight:800;
     letter-spacing:-0.5px;
     margin:0 0 22px;
@@ -158,7 +115,8 @@
     color:rgba(255,255,255,0.92);
     font-size:clamp(15px, 1.5vw, 18px);
     line-height:1.6;
-    max-width:600px;
+    /* description also allowed to use the wider inner container */
+    max-width:100%;
     margin:0 0 34px;
   }
 
@@ -215,12 +173,14 @@
 
   /* ===== Tablet ===== */
   @media (max-width: 1024px){
-    .hero .hero-content{ padding:0 50px 70px; }
+    .hero .hero-content{ padding:130px 50px 70px; }
+    .hero .hero-inner{ max-width:85%; }
   }
 
   /* ===== Small tablet / large phone ===== */
   @media (max-width: 900px){
-    .hero .hero-content{ padding:0 24px 56px; }
+    .hero .hero-content{ padding:120px 24px 56px; }
+    .hero .hero-inner{ max-width:100%; }
     .hero-dots{ left:24px; bottom:22px; }
 
     /* Buttons already live in the hamburger menu at this breakpoint — avoid showing them twice */
@@ -233,10 +193,7 @@
       min-height:60vh;
       min-height:60svh;
     }
-    .hero .hero-content{ padding:60px 20px 48px; }
-    .hero .welcome-greeting{ gap:10px; margin-bottom:14px; }
-  .hero .welcome-greeting::before,
-  .hero .welcome-greeting::after{ width:22px; }
+    .hero .hero-content{ padding:110px 20px 48px; }
     .hero h1{ margin-bottom:16px; }
     .hero .lede{ margin-bottom:0; }
     .hero-dots{ left:20px; bottom:16px; }
@@ -245,15 +202,13 @@
 
   /* ===== Very small phones ===== */
   @media (max-width: 380px){
-    .hero .hero-content{ padding:48px 16px 40px; }
-    .hero .eyebrow{ font-size:12px; }
+    .hero .hero-content{ padding:100px 16px 40px; }
   }
 
   @media (prefers-reduced-motion: reduce){
     .hero-slide{ transition:none; }
     .hero .btn{ transition:none; }
     .hero .hero-inner{ animation:none; }
-    .hero .welcome-greeting{ animation:none; }
   }
 </style>
 
@@ -315,12 +270,9 @@
 
   <div class="hero-content">
     <div class="hero-inner">
-     @if (!empty($banner->title))
-      <p class="welcome-greeting">
-        <span class="welcome-text"></span>
-      </p>
-      <h1>{{ $banner->title }}</h1>
-    @endif
+      @if (!empty($banner->title))
+        <h1>{{ $banner->title }}</h1>
+      @endif
 
       @if (!empty($banner->description))
         <p class="lede">{{ $banner->description }}</p>
@@ -356,7 +308,6 @@
       }, 6000);
     }
 
-    // Only runs when the image slideshow is present (i.e. no video)
     if (heroSlides.length > 1) {
       heroDots.forEach(function (dot) {
         dot.addEventListener('click', function () {
