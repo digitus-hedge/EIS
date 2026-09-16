@@ -701,6 +701,20 @@
     max-width: 400px;
     width: 100%;
 }
+
+.video-slot .video-drop.filled,
+.video-slot .video-drop.has-file {
+    border-style: solid;
+    border-color: var(--green,#12875A);
+    cursor: default;
+}
+
+.video-slot .video-drop video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block;
+}
 </style>
 
 @php
@@ -899,19 +913,21 @@
             wireRowRemove(thumbDrop, row.querySelector('.existing-thumbnail-input'), 'process-thumb-preview');
         }
 
-        const videoDrop = row.querySelector('[data-row-slot="video"]');
-        const videoInput = row.querySelector('input[type="file"][name$="[video]"]');
-        videoDrop.addEventListener('click', () => videoInput.click());
+       const videoDrop = row.querySelector('[data-row-slot="video"]');
+const videoInput = row.querySelector('input[type="file"][name$="[video]"]');
+videoDrop.addEventListener('click', () => {
+    if (!videoDrop.classList.contains('filled')) videoInput.click();
+});
 
-        if (data.video) {
-            videoDrop.classList.add('has-file');
-            videoDrop.innerHTML = `
-                <div class="drop-title">${data.video.split('/').pop()}</div>
-                <button type="button" class="remove-img-btn" title="Remove"><i class="bi bi-x-lg"></i></button>
-            `;
-            row.querySelector('.existing-video-input').value = data.video;
-            wireRowRemove(videoDrop, row.querySelector('.existing-video-input'), null, true);
-        }
+       if (data.video) {
+    videoDrop.classList.add('has-file', 'filled');
+    videoDrop.innerHTML = `
+        <video src="${data.video_url ?? data.video}" controls muted style="width:100%;height:100%;object-fit:cover;"></video>
+        <button type="button" class="remove-img-btn" title="Remove"><i class="bi bi-x-lg"></i></button>
+    `;
+    row.querySelector('.existing-video-input').value = data.video;
+    wireRowRemove(videoDrop, row.querySelector('.existing-video-input'), null, true);
+}
 
         if (data.errors) {
             if (data.errors.description) setFieldError(descField, data.errors.description, false);
@@ -932,7 +948,7 @@
         addProcessRow();
     }
 
-  function wireRowRemove(dropEl, existingInput, placeholderClass, isVideo = false) {
+ function wireRowRemove(dropEl, existingInput, placeholderClass, isVideo = false) {
     const btn = dropEl.querySelector('.remove-img-btn');
     if (!btn) return;
     btn.onclick = function (ev) {
@@ -942,7 +958,11 @@
         if (existingInput) existingInput.value = '';
 
         if (isVideo) {
-            dropEl.classList.remove('has-file');
+            const videoEl = dropEl.querySelector('video');
+            if (videoEl && videoEl.src.startsWith('blob:')) {
+                URL.revokeObjectURL(videoEl.src);
+            }
+            dropEl.classList.remove('has-file', 'filled');
             dropEl.innerHTML = `
                 <div class="ico-circle"><i class="bi bi-camera-video" style="color:#AEB4C4;font-size:16px;"></i></div>
                 <div class="drop-title">Click to upload</div>
@@ -992,10 +1012,12 @@ function previewProcessVideo(input) {
     if (oldError) oldError.remove();
 
     if (input.files && input.files[0]) {
-        dropEl.classList.add('has-file');
+        const videoURL = URL.createObjectURL(input.files[0]);
+
+        dropEl.classList.add('has-file', 'filled');
         dropEl.classList.remove('input-error');
         dropEl.innerHTML = `
-            <div class="drop-title">${input.files[0].name}</div>
+            <video src="${videoURL}" controls muted style="width:100%;height:100%;object-fit:cover;"></video>
             <button type="button" class="remove-img-btn" title="Remove"><i class="bi bi-x-lg"></i></button>
         `;
         const existingInput = wrapper.querySelector('.existing-video-input');

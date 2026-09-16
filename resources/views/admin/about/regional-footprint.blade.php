@@ -61,7 +61,7 @@
 
     <div class="card">
         <div class="section-title">
-            <h2><span class="icon"><i class="bi bi-geo-alt"></i></span> Add New Location</h2>
+            <h2><span class="icon"><i class="bi bi-geo-alt"></i></span> Add New Location   <span class="req">*</span></h2> 
         </div>
 
         <div class="rf-search-wrapper">
@@ -113,7 +113,7 @@
 
                 <div class="rf-office-grid">
                     @foreach ($location->offices as $office)
-                      <div class="rf-office-card">
+              <div class="rf-office-card">
     @if ($office->image)
         <img src="{{ Storage::url($office->image) }}" alt="{{ $office->title }}">
     @endif
@@ -121,13 +121,24 @@
         <strong>{{ $office->title }}</strong>
         <p>{{ $office->description }}</p>
     </div>
-    <form action="{{ route('admin.about.regional-footprint.offices.destroy', $office) }}" method="POST"
-          id="delete-office-{{ $office->id }}">
-        @csrf @method('DELETE')
-        <button type="button" class="btn-delete-office-trigger" data-form-id="delete-office-{{ $office->id }}" data-name="{{ $office->title }}">
-            <i class="bi bi-x-lg"></i>
+    <div class="rf-office-actions">
+        <form action="{{ route('admin.about.regional-footprint.offices.destroy', $office) }}" method="POST"
+              id="delete-office-{{ $office->id }}">
+            @csrf @method('DELETE')
+            <button type="button" class="btn-delete-office-trigger" data-form-id="delete-office-{{ $office->id }}" data-name="{{ $office->title }}">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </form>
+        <button type="button" class="rf-edit-office-trigger"
+                data-id="{{ $office->id }}"
+                data-title="{{ $office->title }}"
+                data-description="{{ $office->description }}"
+                data-image="{{ $office->image ? Storage::url($office->image) : '' }}"
+                data-url="{{ route('admin.about.regional-footprint.offices.update', $office) }}"
+                title="Edit">
+            <i class="bi bi-pencil"></i>
         </button>
-    </form>
+    </div>
 </div>
                     @endforeach
                 </div>
@@ -136,42 +147,40 @@
                     <i class="bi bi-plus-lg"></i> Add another office here
                 </button>
 
-                <div class="rf-mini-form" id="rf-mini-form-{{ $location->id }}">
-                    <form action="{{ route('admin.about.regional-footprint.offices.store', $location) }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        <div class="field">
-                            <div class="field-top"><label class="field-label">Office Title</label></div>
-                            <input type="text" name="title" required>
-                        </div>
-                        <div class="field" style="margin-top:12px;">
-                            <div class="field-top"><label class="field-label">Description</label></div>
-                            <textarea name="description" rows="2"></textarea>
-                        </div>
-
-                        <!-- <div class="field" style="margin-top:12px;">
-                            <div class="field-top"><label class="field-label">Image</label></div>
-                            <input type="file" name="image" accept="image/*">
-                        </div> -->
-
-                        <div class="field" style="margin-top:12px;">
-    <div class="field-top"><label class="field-label">Image</label></div>
-    <div class="image-slot" style="max-width:220px;">
-        <div class="drop img-slot" data-file-input="rf-mini-image-{{ $location->id }}" onclick="handleDropClick(this)">
-            <div class="preview-placeholder" id="rf-mini-preview-{{ $location->id }}">
-                <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:18px;"></i></div>
-                <div class="drop-title">Click to upload</div>
-                <div class="drop-sub">or drag &amp; drop</div>
-            </div>
+               <div class="rf-mini-form" id="rf-mini-form-{{ $location->id }}">
+    <form action="{{ route('admin.about.regional-footprint.offices.store', $location) }}" method="POST" enctype="multipart/form-data" class="rf-mini-office-form">
+        @csrf
+        <div class="field">
+            <div class="field-top"><label class="field-label">Office Title<span class="req">*</span></label></div>
+            <input type="text" name="title">
+            <span class="field-error mini-title-error" style="display:none;"><i class="bi bi-exclamation-circle"></i> <span></span></span>
         </div>
-        <input type="file" id="rf-mini-image-{{ $location->id }}" name="image" accept="image/*" hidden
-               onchange="previewImage(this, 'rf-mini-preview-{{ $location->id }}')">
-    </div>
-</div>
-                        <button type="submit" class="btn-secondary-pill" style="margin-top:14px;">
-                            <i class="bi bi-plus-lg"></i> Add Office
-                        </button>
-                    </form>
+        <div class="field" style="margin-top:12px;">
+            <div class="field-top"><label class="field-label">Description<span class="req">*</span></label></div>
+            <textarea name="description" rows="2"></textarea>
+            <span class="field-error mini-description-error" style="display:none;"><i class="bi bi-exclamation-circle"></i> <span></span></span>
+        </div>
+
+        <div class="field" style="margin-top:12px;">
+            <div class="field-top"><label class="field-label">Image<span class="req">*</span></label></div>
+            <div class="image-slot" style="max-width:220px;">
+                <div class="drop img-slot" data-file-input="rf-mini-image-{{ $location->id }}" onclick="handleDropClick(this)">
+                    <div class="preview-placeholder" id="rf-mini-preview-{{ $location->id }}">
+                        <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:18px;"></i></div>
+                        <div class="drop-title">Click to upload</div>
+                        <div class="drop-sub">or drag &amp; drop</div>
+                    </div>
                 </div>
+                <input type="file" id="rf-mini-image-{{ $location->id }}" name="image" accept="image/*" hidden
+                       onchange="previewImage(this, 'rf-mini-preview-{{ $location->id }}')">
+            </div>
+            <span class="field-error mini-image-error" style="display:none;"><i class="bi bi-exclamation-circle"></i> <span></span></span>
+        </div>
+        <button type="submit" class="btn-secondary-pill" style="margin-top:14px;">
+            <i class="bi bi-plus-lg"></i> Add Office
+        </button>
+    </form>
+</div>
 
              <form action="{{ route('admin.about.regional-footprint.destroy', $location) }}" method="POST"
       id="delete-location-{{ $location->id }}" style="margin-top:14px;">
@@ -185,6 +194,65 @@
             <p class="field-hint">No locations added yet.</p>
         @endforelse
     </div>
+
+
+ <div class="rf-edit-office-overlay" id="rfEditOfficeOverlay" style="display:none;">
+    <div class="rf-edit-office-box">
+        <div class="rf-edit-office-header">
+            <h3>Edit Office</h3>
+            <button type="button" class="modal-close" onclick="closeRfOfficeEdit()"><i class="bi bi-x-lg"></i></button>
+        </div>
+
+        <form id="rfEditOfficeForm" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
+
+            <div class="field">
+                <div class="field-top"><label class="field-label">Office Title<span class="req">*</span></label></div>
+                <input type="text" id="rfEditOfficeTitle" name="title">
+                <span class="field-error" id="rfEditOfficeTitleError" style="display:none;"><i class="bi bi-exclamation-circle"></i> <span></span></span>
+            </div>
+
+            <div class="field" style="margin-top:12px;">
+                <div class="field-top"><label class="field-label">Description<span class="req">*</span></label></div>
+                <textarea id="rfEditOfficeDesc" name="description" rows="2"></textarea>
+                <span class="field-error" id="rfEditOfficeDescError" style="display:none;"><i class="bi bi-exclamation-circle"></i> <span></span></span>
+            </div>
+
+               <div class="notice caution">
+                <i class="bi bi-exclamation-triangle" style="margin-top:1px;"></i>
+                <p><b>Recommended size:</b> {{ $imageWidth ?? 320 }} &times; {{ $imageHeight ?? 220 }}px &middot; JPG, PNG, WEBP &middot; up to 10MB.</p>
+            </div>
+
+            <div class="field" style="margin-top:12px;">
+                <div class="field-top"><label class="field-label">Image<span class="req">*</span></label></div>
+               
+            
+                <div class="image-slot" style="max-width:220px;">
+                    <div class="drop img-slot" id="rfEditOfficeDrop" data-file-input="rfEditOfficeImage" onclick="handleDropClick(this)">
+                        <div class="preview-placeholder" id="rfEditOfficePreview">
+                            <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:18px;"></i></div>
+                            <div class="drop-title">Click to upload</div>
+                            <div class="drop-sub">or drag &amp; drop</div>
+                        </div>
+                    </div>
+                    <input type="file" id="rfEditOfficeImage" name="image" accept="image/*" hidden
+                           onchange="previewImage(this, 'rfEditOfficePreview')">
+                </div>
+                <span class="field-hint" style="display:block; margin-top:6px;">Leave empty to keep the current image.</span>
+                <span class="field-error" id="rfEditOfficeImageError" style="display:none;"><i class="bi bi-exclamation-circle"></i> <span></span></span>
+            </div>
+
+            <div style="display:flex; gap:10px; margin-top:16px;">
+                <button type="button" class="btn-secondary-pill" id="rfEditOfficeSaveBtn" onclick="submitRfOfficeEdit()">
+                    <i class="bi bi-check-lg"></i> Save Changes
+                </button>
+                <button type="button" class="btn-cancel-edit" onclick="closeRfOfficeEdit()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 </div>
 
 <!-- Hidden template for a new office row in the "add location" form -->
@@ -192,11 +260,11 @@
     <div class="rf-office-row">
         <button type="button" class="rf-remove-office" title="Remove"><i class="bi bi-trash3"></i></button>
         <div class="field">
-            <div class="field-top"><label class="field-label">Office Title</label></div>
-            <input type="text" name="offices[__INDEX__][title]" required>
+            <div class="field-top"><label class="field-label">Office Title</label><span class="req">*</span></div>
+            <input type="text" name="offices[__INDEX__][title]">
         </div>
         <div class="field" style="margin-top:12px;">
-            <div class="field-top"><label class="field-label">Description</label></div>
+            <div class="field-top"><label class="field-label">Description</label><span class="req">*</span></div>
             <textarea name="offices[__INDEX__][description]" rows="2"></textarea>
         </div>
         <!-- <div class="field" style="margin-top:12px; margin-bottom:0;">
@@ -206,7 +274,11 @@
 
 
         <div class="field" style="margin-top:12px; margin-bottom:0;">
-    <div class="field-top"><label class="field-label">Image</label></div>
+              <div class="notice caution">
+                <i class="bi bi-exclamation-triangle" style="margin-top:1px;"></i>
+                <p><b>Recommended size:</b> {{ $imageWidth ?? 320 }} &times; {{ $imageHeight ?? 220 }}px &middot; JPG, PNG, WEBP &middot; up to 10MB.</p>
+            </div>
+    <div class="field-top"><label class="field-label">Image</label><span class="req">*</span></div>
     <div class="image-slot" style="max-width:220px;">
         <div class="drop img-slot" data-file-input="rf-office-image-__INDEX__" onclick="handleDropClick(this)">
             <div class="preview-placeholder" id="rf-office-preview-__INDEX__">
@@ -252,12 +324,12 @@
     }
 
     .notice{ display:flex; align-items:flex-start; gap:8px; background: var(--canvas,#F6F7FB); border-radius:10px; padding:10px 12px; }
-    .notice.caution{ background:#FFF8E8; border:1px solid #F5E3B3; }
+    .notice.caution{ background:#FFF8E8; border:1px solid #F5E3B3;margin-bottom: 15px;margin-top:10px; }
     .notice.caution i{ color:#B7791F; }
     .notice.caution p{ color:#8A6116; margin:0; font-size:12px; }
 
     /* ===== Search box ===== */
-    .rf-search-wrapper{ position:relative; max-width:520px; margin-bottom:14px; }
+    .rf-search-wrapper{ position:relative; margin-bottom:14px; }
     .rf-search-wrapper input{ width:100%; }
     .rf-search-results{
         position:absolute; top:calc(100% + 4px); left:0; right:0; background:#fff;
@@ -293,6 +365,31 @@
         background: var(--canvas,#F6F7FB); color: var(--ink,#171B2C); border:1px solid var(--input-border,#DBDFEA);
         padding:9px 16px; border-radius:9px; cursor:pointer; transition:background .15s ease, border-color .15s ease;
     }
+
+    .field-error{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    color:#D5392F;
+    font-size:12.5px;
+    margin-top:6px;
+}
+
+.field-error i{
+    font-size:13px;
+    flex-shrink:0;
+}
+
+.input-error{
+    border-color:#E9483F !important;
+    background:#FFF5F4;
+}
+
+.drop.img-slot.input-error{
+    border-color:#E9483F;
+    background:#FFF5F4;
+}
+
     .btn-secondary-pill:hover{ background: var(--orange-tint,#FFF8F3); border-color: var(--orange-border,#F3D8C2); color: var(--orange-deep,#DA6A20); }
 
     .btn-danger-pill{
@@ -374,6 +471,35 @@
     justify-content:center; cursor:pointer; font-size:12px; z-index:2; transition:background .15s ease;
 }
 .remove-img-btn:hover{ background:rgba(0,0,0,0.75); }
+
+    .req{ color: var(--orange, #EF7B2E); }
+.rf-office-actions{
+    position:absolute; top:8px; right:8px; display:flex; gap:6px;
+}
+.rf-office-actions form{ position:static; }
+.rf-office-actions button{
+    width:26px; height:26px; display:flex; align-items:center; justify-content:center;
+    background:rgba(0,0,0,0.55); color:#fff; border:none; border-radius:8px; font-size:11px; cursor:pointer;
+    transition:background .15s ease;
+}
+.rf-office-actions button:hover{ background:rgba(0,0,0,0.75); }
+
+.rf-edit-office-overlay{
+    position:fixed; inset:0; background:rgba(15,21,38,0.5);
+    display:flex; align-items:center; justify-content:center; z-index:1000;
+}
+.rf-edit-office-box{
+    background:#fff; border-radius:14px; padding:24px; width:100%; max-width:420px;
+    max-height:90vh; overflow-y:auto;
+}
+.rf-edit-office-header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+.rf-edit-office-header h3{ margin:0; font-size:16px; font-weight:700; color: var(--ink,#171B2C); }
+.modal-close{ background:none; border:none; cursor:pointer; color: var(--muted,#667085); font-size:16px; }
+.btn-cancel-edit{
+    font-size:13px; font-weight:600; color: var(--muted,#667085); background:none;
+    border:1px solid var(--line,#E9EBF2); padding:9px 16px; border-radius:9px; cursor:pointer;
+}
+.btn-cancel-edit:hover{ background: var(--canvas,#F6F7FB); }
 </style>
 
 <script>
@@ -501,6 +627,97 @@
         rfInitMap();
         rfAddOfficeRow(); // one office row visible by default
     });
+</script>
+
+
+<script>
+document.addEventListener('submit', function (e) {
+    const form = e.target.closest('.rf-mini-office-form');
+    if (!form) return;
+    e.preventDefault();
+    submitRfMiniOfficeForm(form);
+});
+
+function submitRfMiniOfficeForm(form) {
+    const formData = new FormData(form);
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalBtnHtml = submitBtn.innerHTML;
+
+    form.querySelectorAll('.field-error').forEach(el => el.style.display = 'none');
+    form.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving...';
+
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(async (response) => {
+        const data = await response.json().catch(() => null);
+
+        if (response.status === 422 && data && data.errors) {
+            showRfMiniOfficeErrors(form, data.errors);
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error('Request failed');
+        }
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Saved!',
+            text: (data && data.message) ? data.message : 'Office added successfully.',
+            confirmButtonColor: '#EF7B2E',
+            timer: 2000,
+            timerProgressBar: true
+        }).then(() => {
+            window.location.reload();
+        });
+    })
+    .catch(() => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Something went wrong. Please try again.',
+            confirmButtonColor: '#D5392F'
+        });
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnHtml;
+    });
+}
+
+function showRfMiniOfficeErrors(form, errors) {
+    const fieldMap = {
+        title: { input: form.querySelector('[name="title"]'), error: form.querySelector('.mini-title-error') },
+        description: { input: form.querySelector('[name="description"]'), error: form.querySelector('.mini-description-error') },
+        image: { input: form.querySelector('.drop.img-slot'), error: form.querySelector('.mini-image-error') },
+    };
+
+    Object.keys(errors).forEach(field => {
+        const message = errors[field][0];
+        const target = fieldMap[field];
+        if (!target || !target.input) return;
+
+        target.input.classList.add('input-error');
+        if (target.error) {
+            target.error.querySelector('span').textContent = message;
+            target.error.style.display = 'flex';
+        }
+    });
+
+    const firstError = form.querySelector('.input-error');
+    if (firstError) {
+        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
 </script>
 
 <script>
@@ -696,6 +913,150 @@ function previewImage(input, previewId) {
         };
         reader.readAsDataURL(input.files[0]);
     }
+}
+</script>
+
+
+<script>
+document.addEventListener('click', function (e) {
+    const editBtn = e.target.closest('.rf-edit-office-trigger');
+    if (editBtn) openRfOfficeEdit(editBtn);
+});
+
+function openRfOfficeEdit(btn) {
+    document.getElementById('rfEditOfficeForm').dataset.action = btn.dataset.url;
+    document.getElementById('rfEditOfficeTitle').value = btn.dataset.title;
+    document.getElementById('rfEditOfficeDesc').value = btn.dataset.description;
+    document.getElementById('rfEditOfficeImage').value = '';
+
+    const drop = document.getElementById('rfEditOfficeDrop');
+    if (btn.dataset.image) {
+        drop.innerHTML = `
+            <img src="${btn.dataset.image}" id="rfEditOfficePreview" alt="Office">
+            <button type="button" class="remove-img-btn" onclick="removeRfEditOfficeImage(event)" title="Remove image">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        `;
+        drop.classList.add('filled');
+    } else {
+        drop.innerHTML = `
+            <div class="preview-placeholder" id="rfEditOfficePreview">
+                <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:18px;"></i></div>
+                <div class="drop-title">Click to upload</div>
+                <div class="drop-sub">or drag &amp; drop</div>
+            </div>
+        `;
+        drop.classList.remove('filled');
+    }
+
+    // clear all previous error states
+    ['rfEditOfficeTitleError', 'rfEditOfficeDescError', 'rfEditOfficeImageError'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+    });
+    document.getElementById('rfEditOfficeTitle').classList.remove('input-error');
+    document.getElementById('rfEditOfficeDesc').classList.remove('input-error');
+    drop.classList.remove('input-error');
+
+    document.getElementById('rfEditOfficeOverlay').style.display = 'flex';
+}
+
+function removeRfEditOfficeImage(event) {
+    event.stopPropagation();
+    document.getElementById('rfEditOfficeImage').value = '';
+    const drop = document.getElementById('rfEditOfficeDrop');
+    drop.classList.remove('filled', 'input-error');
+    drop.innerHTML = `
+        <div class="preview-placeholder" id="rfEditOfficePreview">
+            <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:18px;"></i></div>
+            <div class="drop-title">Click to upload</div>
+            <div class="drop-sub">or drag &amp; drop</div>
+        </div>
+    `;
+}
+
+function closeRfOfficeEdit() {
+    document.getElementById('rfEditOfficeOverlay').style.display = 'none';
+}
+
+function submitRfOfficeEdit() {
+    const form = document.getElementById('rfEditOfficeForm');
+    const url = form.dataset.action;
+    const formData = new FormData(form);
+    const saveBtn = document.getElementById('rfEditOfficeSaveBtn');
+    const originalBtnHtml = saveBtn.innerHTML;
+
+    ['rfEditOfficeTitleError', 'rfEditOfficeDescError', 'rfEditOfficeImageError'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+    });
+    document.getElementById('rfEditOfficeTitle').classList.remove('input-error');
+    document.getElementById('rfEditOfficeDesc').classList.remove('input-error');
+    document.getElementById('rfEditOfficeDrop').classList.remove('input-error');
+
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving...';
+
+    fetch(url, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(async (response) => {
+        const data = await response.json().catch(() => null);
+
+        if (response.status === 422 && data && data.errors) {
+            if (data.errors.title) {
+                const el = document.getElementById('rfEditOfficeTitleError');
+                el.querySelector('span').textContent = data.errors.title[0];
+                el.style.display = 'flex';
+                document.getElementById('rfEditOfficeTitle').classList.add('input-error');
+            }
+            if (data.errors.description) {
+                const el = document.getElementById('rfEditOfficeDescError');
+                el.querySelector('span').textContent = data.errors.description[0];
+                el.style.display = 'flex';
+                document.getElementById('rfEditOfficeDesc').classList.add('input-error');
+            }
+            if (data.errors.image) {
+                const el = document.getElementById('rfEditOfficeImageError');
+                el.querySelector('span').textContent = data.errors.image[0];
+                el.style.display = 'flex';
+                document.getElementById('rfEditOfficeDrop').classList.add('input-error');
+            }
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error('Request failed');
+        }
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Saved!',
+            text: (data && data.message) ? data.message : 'Regional Locations Updated Successfully.',
+            confirmButtonColor: '#EF7B2E',
+            timer: 2000,
+            timerProgressBar: true
+        }).then(() => {
+            window.location.reload();
+        });
+    })
+    .catch(() => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Something went wrong. Please try again.',
+            confirmButtonColor: '#D5392F'
+        });
+    })
+    .finally(() => {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = originalBtnHtml;
+    });
 }
 </script>
 

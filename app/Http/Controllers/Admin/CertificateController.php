@@ -62,6 +62,60 @@ class CertificateController extends Controller
         }
     }
 
+
+    public function update(Request $request, Certificate $certificate)
+{
+    $request->validate([
+        'title' => 'required|string|max:60',
+        'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
+    ], [
+        'title.required' => 'Please enter a certificate title.',
+        'title.max'      => 'Title must not exceed 60 characters.',
+
+        'image.image' => 'The file must be a valid image.',
+        'image.mimes' => 'The image must be a JPG, PNG, or WEBP file.',
+        'image.max'   => 'The image must not exceed 10MB.',
+    ]);
+
+    try {
+        $certificate->title = $request->title;
+
+        if ($request->hasFile('image')) {
+            if ($certificate->image) {
+                Storage::disk('public')->delete($certificate->image);
+            }
+            $certificate->image = $this->processAndStoreImage($request->file('image'));
+        }
+
+        $certificate->save();
+
+        gc_collect_cycles();
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Certificate updated successfully.',
+            ]);
+        }
+
+        return redirect()
+            ->route('admin.about.certificates')
+            ->with('success', 'Certificate updated successfully.');
+    } catch (\Throwable $e) {
+        \Log::error('Certificate update() FAILED', [
+            'message' => $e->getMessage(),
+            'file'    => $e->getFile(),
+            'line'    => $e->getLine(),
+        ]);
+
+        if ($request->wantsJson()) {
+            return response()->json(['message' => 'Something went wrong.'], 500);
+        }
+
+        return back()->withInput()->with('error', 'Something went wrong: ' . $e->getMessage());
+    }
+}
+
     public function destroy(Certificate $certificate)
     {
         $certificate->delete(); // image deleted via model event

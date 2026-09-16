@@ -287,37 +287,40 @@ public function regionalFootprint()
  */
 public function storeRegionalLocation(Request $request)
 {
-    $data = $request->validate([
-        'title'                 => 'required|string|max:70',
-        'address'               => 'nullable|string|max:255',
-        'latitude'              => 'required|numeric',
-        'longitude'             => 'required|numeric',
-        'place_id'              => 'nullable|string|max:255',
-        'offices'               => 'required|array|min:1',
-        'offices.*.title'       => 'required|string|max:255',
-        'offices.*.description' => 'nullable|string',
-        'offices.*.image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
-    ], [
-        'title.required'    => 'Please enter a location title.',
-        'title.max'         => 'Location title must not exceed 70 characters.',
+  $data = $request->validate([
+    'title'                 => 'required|string|max:70',
+    'address'               => 'nullable|string|max:255',
+    'latitude'              => 'required|numeric',
+    'longitude'             => 'required|numeric',
+    'place_id'              => 'nullable|string|max:255',
+    'offices'               => 'required|array|min:1',
+    'offices.*.title'       => 'required|string|max:255',
+    'offices.*.description' => 'required|string',
+    'offices.*.image'       => 'required|image|mimes:jpg,jpeg,png,webp|max:10240',
+], [
+    'title.required'    => 'Please enter a location title.',
+    'title.max'         => 'Location title must not exceed 70 characters.',
 
-        'address.max'       => 'Address must not exceed 255 characters.',
+    'address.max'       => 'Address must not exceed 255 characters.',
 
-        'latitude.required'  => 'Please select a location on the map.',
-        'latitude.numeric'   => 'Latitude must be a valid number.',
-        'longitude.required' => 'Please select a location on the map.',
-        'longitude.numeric'  => 'Longitude must be a valid number.',
+    'latitude.required'  => 'Please select a location on the map.',
+    'latitude.numeric'   => 'Latitude must be a valid number.',
+    'longitude.required' => 'Please select a location on the map.',
+    'longitude.numeric'  => 'Longitude must be a valid number.',
 
-        'offices.required' => 'Please add at least one office.',
-        'offices.min'      => 'Please add at least one office.',
+    'offices.required' => 'Please add at least one office.',
+    'offices.min'      => 'Please add at least one office.',
 
-        'offices.*.title.required' => 'Office title is required.',
-        'offices.*.title.max'      => 'Office title must not exceed 255 characters.',
+    'offices.*.title.required' => 'Office title is required.',
+    'offices.*.title.max'      => 'Office title must not exceed 255 characters.',
 
-        'offices.*.image.image' => 'Office image must be a valid image.',
-        'offices.*.image.mimes' => 'Office image must be a JPG, PNG, or WEBP file.',
-        'offices.*.image.max'   => 'Office image must not exceed 5MB.',
-    ]);
+    'offices.*.description.required' => 'Office description is required.',
+
+    'offices.*.image.required' => 'Office image is required.',
+    'offices.*.image.image' => 'Office image must be a valid image.',
+    'offices.*.image.mimes' => 'Office image must be a JPG, PNG, or WEBP file.',
+    'offices.*.image.max'   => 'Office image must not exceed 10MB.',
+]);
 
     try {
         DB::beginTransaction();
@@ -375,20 +378,24 @@ public function storeRegionalLocation(Request $request)
  */
 public function storeRegionalOffice(Request $request, RegionalLocation $location)
 {
-    ini_set('memory_limit', '512M');
-
     $request->validate([
-        'title'       => 'required|string|max:255',
-        'description' => 'nullable|string',
-        'image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+        'title'       => 'required|string|max:40',
+        'description' => 'required|string',
+        'image'       => 'required|image|mimes:jpg,jpeg,png,webp|max:10240',
+    ], [
+        'title.required' => 'Please enter an office title.',
+        'title.max'      => 'Office title must not exceed 40 characters.',
+
+        'description.required' => 'Please enter an office description.',
+
+        'image.required' => 'Please upload an office image.',
+        'image.image'    => 'The file must be a valid image.',
+        'image.mimes'    => 'The image must be a JPG, PNG, or WEBP file.',
+        'image.max'      => 'The image must not exceed 10MB.',
     ]);
 
     try {
-        $imagePath = null;
-
-        if ($request->hasFile('image')) {
-            $imagePath = $this->processAndStoreImage($request->file('image'), 'about/regional-offices');
-        }
+        $imagePath = $this->processAndStoreImage($request->file('image'), 'about/regional-offices');
 
         RegionalOffice::create([
             'regional_location_id' => $location->id,
@@ -399,6 +406,13 @@ public function storeRegionalOffice(Request $request, RegionalLocation $location
         ]);
 
         gc_collect_cycles();
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Office added successfully.',
+            ]);
+        }
 
         return redirect()
             ->route('admin.about.regional-footprint')
@@ -411,10 +425,74 @@ public function storeRegionalOffice(Request $request, RegionalLocation $location
             'line'    => $e->getLine(),
         ]);
 
+        if ($request->wantsJson()) {
+            return response()->json(['message' => 'Something went wrong.'], 500);
+        }
+
         return back()->withInput()->with('error', 'Something went wrong: ' . $e->getMessage());
     }
 }
 
+public function updateRegionalOffice(Request $request, RegionalOffice $office)
+{
+    $request->validate([
+        'title'       => 'required|string|max:255',
+        'description' => 'required|string',
+        'image'       => $office->image
+                            ? 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240'
+                            : 'required|image|mimes:jpg,jpeg,png,webp|max:10240',
+    ], [
+        'title.required' => 'Please enter an office title.',
+        'title.max'      => 'Office title must not exceed 255 characters.',
+
+        'description.required' => 'Please enter an office description.',
+
+        'image.required' => 'Please upload an office image.',
+        'image.image'    => 'The file must be a valid image.',
+        'image.mimes'    => 'The image must be a JPG, PNG, or WEBP file.',
+        'image.max'      => 'The image must not exceed 10MB.',
+    ]);
+
+    try {
+        $office->title = $request->title;
+        $office->description = $request->description;
+
+        if ($request->hasFile('image')) {
+            if ($office->image) {
+                Storage::disk('public')->delete($office->image);
+            }
+            $office->image = $this->processAndStoreImage($request->file('image'), 'about/regional-offices');
+        }
+
+        $office->save();
+
+        gc_collect_cycles();
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Regional Location updated successfully.',
+            ]);
+        }
+
+        return redirect()
+            ->route('admin.about.regional-footprint')
+            ->with('success', 'Regional Location updated successfully.');
+
+    } catch (\Throwable $e) {
+        \Log::error('Regional office update() FAILED', [
+            'message' => $e->getMessage(),
+            'file'    => $e->getFile(),
+            'line'    => $e->getLine(),
+        ]);
+
+        if ($request->wantsJson()) {
+            return response()->json(['message' => 'Something went wrong.'], 500);
+        }
+
+        return back()->withInput()->with('error', 'Something went wrong: ' . $e->getMessage());
+    }
+}
 public function destroyRegionalLocation(RegionalLocation $location)
 {
     foreach ($location->offices as $office) {
@@ -496,6 +574,77 @@ public function storeOperationVideo(Request $request)
             'file'    => $e->getFile(),
             'line'    => $e->getLine(),
         ]);
+
+        return back()->withInput()->with('error', 'Something went wrong: ' . $e->getMessage());
+    }
+}
+
+
+public function updateOperationVideo(Request $request, OperationVideo $video)
+{
+    $request->validate([
+        'title'       => 'required|string|max:50',
+        'description' => 'required|string|max:120',
+        'thumbnail'   => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
+        'video'       => 'nullable|mimes:mp4,mov,webm|max:20480',
+    ], [
+        'title.required'       => 'Please enter a title.',
+        'title.max'            => 'Title must not exceed 50 characters.',
+
+        'description.required' => 'Please enter a description.',
+        'description.max'      => 'Description must not exceed 120 characters.',
+
+        'thumbnail.image' => 'The thumbnail must be a valid image.',
+        'thumbnail.mimes' => 'The thumbnail must be a JPG, PNG, or WEBP file.',
+        'thumbnail.max'   => 'The thumbnail must not exceed 10MB.',
+
+        'video.mimes' => 'The video must be an MP4, MOV, or WEBM file.',
+        'video.max'   => 'The video must not exceed 20MB.',
+    ]);
+
+    try {
+        $video->title = $request->title;
+        $video->description = $request->description;
+
+        if ($request->hasFile('thumbnail')) {
+            if ($video->thumbnail) {
+                Storage::disk('public')->delete($video->thumbnail);
+            }
+            $video->thumbnail = $this->processAndStoreImage($request->file('thumbnail'), 'operation/thumbnails');
+        }
+
+        if ($request->hasFile('video')) {
+            if ($video->video) {
+                Storage::disk('public')->delete($video->video);
+            }
+            $video->video = $request->file('video')->store('operation/videos', 'public');
+        }
+
+        $video->save();
+
+        gc_collect_cycles();
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Video updated successfully.',
+            ]);
+        }
+
+        return redirect()
+            ->route('admin.about.operation')
+            ->with('success', 'Video updated successfully.');
+
+    } catch (\Throwable $e) {
+        \Log::error('Operation video update() FAILED', [
+            'message' => $e->getMessage(),
+            'file'    => $e->getFile(),
+            'line'    => $e->getLine(),
+        ]);
+
+        if ($request->wantsJson()) {
+            return response()->json(['message' => 'Something went wrong.'], 500);
+        }
 
         return back()->withInput()->with('error', 'Something went wrong: ' . $e->getMessage());
     }

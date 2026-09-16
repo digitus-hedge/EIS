@@ -54,53 +54,59 @@
     </div>
 
     <div class="card">
-        <div class="section-title">
-            <h2><span class="icon"><i class="bi bi-patch-check"></i></span> Add Certificate</h2>
-        </div>
-
-        <form action="{{ route('admin.about.certificates.store') }}" method="POST" enctype="multipart/form-data" id="certForm">
-            @csrf
-
-            <div class="field">
-                <div class="field-top"><label class="field-label">Certificate Title<span class="req">*</span></label></div>
-                <input type="text" name="title" value="{{ old('title') }}"
-                       class="{{ $errors->has('title') ? 'input-error' : '' }}"
-                       placeholder="e.g. ISO 9001:2015">
-                @error('title')
-                    <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
-                @enderror
-            </div>
-
-            <div class="field" style="margin-top:18px;">
-                <div class="field-top"><label class="field-label">Certificate Image<span class="req">*</span></label></div>
-
-                <div class="notice caution">
-                    <i class="bi bi-exclamation-triangle" style="margin-top:1px;"></i>
-                    <p><b>Recommended Size:304 × 405px</b>JPG, PNG, WEBP &middot; up to 10MB.</p>
-                </div>
-
-          <div class="image-slot" style="max-width:280px;">
-    <div class="drop img-slot {{ $errors->has('image') ? 'input-error' : '' }}" data-file-input="certImage" onclick="handleDropClick(this)">
-        <div class="preview-placeholder" id="certPreview">
-            <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:18px;"></i></div>
-            <div class="drop-title">Click to upload</div>
-            <div class="drop-sub">or drag &amp; drop</div>
-        </div>
+    <div class="section-title">
+        <h2><span class="icon"><i class="bi bi-patch-check"></i></span> <span id="certFormHeading">Add Certificate</span></h2>
     </div>
-    <input type="file" id="certImage" name="image" accept="image/*" hidden
-           onchange="previewImage(this, 'certPreview')">
-</div>
-@error('image')
-    <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
-@enderror
-                
+
+    <form action="{{ route('admin.about.certificates.store') }}" method="POST" enctype="multipart/form-data" id="certForm">
+        @csrf
+        <input type="hidden" name="_method" id="certFormMethod" value="POST">
+
+        <div class="field">
+            <div class="field-top"><label class="field-label">Certificate Title<span class="req">*</span></label></div>
+            <input type="text" name="title" id="certTitleInput" value="{{ old('title') }}"
+                   class="{{ $errors->has('title') ? 'input-error' : '' }}"
+                   placeholder="e.g. ISO 9001:2015">
+            @error('title')
+                <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+            @enderror
+        </div>
+
+        <div class="field" style="margin-top:18px;">
+            <div class="field-top"><label class="field-label">Certificate Image<span class="req" id="certImageReq">*</span></label></div>
+
+            <div class="notice caution">
+                <i class="bi bi-exclamation-triangle" style="margin-top:1px;"></i>
+                <p><b>Recommended Size:304 × 405px</b>JPG, PNG, WEBP &middot; up to 10MB.</p>
             </div>
 
-            <button type="submit" class="btn-save" style="margin-top:20px;">
+            <div class="image-slot" style="max-width:280px;">
+                <div class="drop img-slot" id="certDrop" data-file-input="certImage" onclick="handleDropClick(this)">
+                    <div class="preview-placeholder" id="certPreview">
+                        <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:18px;"></i></div>
+                        <div class="drop-title">Click to upload</div>
+                        <div class="drop-sub">or drag &amp; drop</div>
+                    </div>
+                </div>
+                <input type="file" id="certImage" name="image" accept="image/*" hidden
+                       onchange="previewImage(this, 'certPreview')">
+            </div>
+            <span class="field-hint" id="certImageEditHint" style="display:none; margin-top:6px;">Leave empty to keep the current image.</span>
+            @error('image')
+                <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+            @enderror
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:20px;">
+            <button type="submit" class="btn-save" id="certSubmitBtn">
                 <i class="bi bi-check-lg"></i> Add Certificate
             </button>
-        </form>
-    </div>
+            <button type="button" class="btn-cancel-edit" id="certCancelEditBtn" style="display:none;" onclick="cancelCertEdit()">
+                Cancel
+            </button>
+        </div>
+    </form>
+</div>
 
     <div class="card" id="existing-certificates-section">
         <div class="section-title">
@@ -111,7 +117,7 @@
             @forelse ($certificates as $certificate)
                 <div class="cert-card">
                     <img src="{{ Storage::url($certificate->image) }}" alt="{{ $certificate->title }}">
-                    <div class="cert-card-body">
+                    <!-- <div class="cert-card-body">
                         <span class="cert-card-title">{{ $certificate->title }}</span>
                        <form action="{{ route('admin.about.certificates.destroy', $certificate->id) }}" method="POST"
       id="delete-cert-{{ $certificate->id }}">
@@ -123,7 +129,32 @@
         <i class="bi bi-trash3"></i>
     </button>
 </form>
-                    </div>
+                    </div> -->
+
+
+                    <div class="cert-card-body">
+    <span class="cert-card-title">{{ $certificate->title }}</span>
+    <div style="display:flex; gap:6px;">
+       <button type="button" class="cert-edit-btn"
+        data-id="{{ $certificate->id }}"
+        data-title="{{ $certificate->title }}"
+        data-image="{{ Storage::url($certificate->image) }}"
+        data-url="{{ route('admin.about.certificates.update', $certificate->id) }}"
+        title="Edit">
+    <i class="bi bi-pencil"></i>
+</button>
+        <form action="{{ route('admin.about.certificates.destroy', $certificate->id) }}" method="POST"
+              id="delete-cert-{{ $certificate->id }}">
+            @csrf
+            @method('DELETE')
+            <button type="button" class="cert-delete-btn btn-delete-cert-trigger"
+                    data-form-id="delete-cert-{{ $certificate->id }}"
+                    data-name="{{ $certificate->title }}">
+                <i class="bi bi-trash3"></i>
+            </button>
+        </form>
+    </div>
+</div>
                 </div>
             @empty
                 <p class="field-hint">No certificates added yet.</p>
@@ -215,6 +246,27 @@
         transition:background .15s ease;
     }
     .cert-delete-btn:hover{ background:#FBD5D5; }
+
+    .btn-cancel-edit{
+    font-size:13px; font-weight:600; color: var(--muted,#667085); background:none;
+    border:1px solid var(--line,#E9EBF2); padding:10px 18px; border-radius:9px; cursor:pointer;
+    transition:background .15s ease;
+}
+.btn-cancel-edit:hover{ background: var(--canvas,#F6F7FB); }
+
+.remove-img-btn{
+    position:absolute; top:8px; right:8px; width:28px; height:28px; border-radius:999px;
+    background:rgba(0,0,0,0.6); border:none; color:#fff; display:flex; align-items:center;
+    justify-content:center; cursor:pointer; transition:background .15s; z-index:3; font-size:13px;
+}
+.remove-img-btn:hover{ background:rgba(0,0,0,0.85); }
+
+.cert-edit-btn{
+    background:#EFF3FF; color:#2F5FDB; border:1px solid #D6E0FB; width:30px; height:30px;
+    border-radius:8px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+    transition:background .15s ease;
+}
+.cert-edit-btn:hover{ background:#DCE6FF; }
 </style>
 
 <script>
@@ -226,70 +278,148 @@
     }
 
     function previewImage(input, previewId) {
-        const preview = document.getElementById(previewId);
-        if (!preview) return;
+    const preview = document.getElementById(previewId);
+    if (!preview) return;
 
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.id = previewId;
-                preview.replaceWith(img);
-                const drop = img.closest('.drop');
-                if (drop) drop.classList.add('filled');
-            };
-            reader.readAsDataURL(input.files[0]);
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const drop = preview.closest('.drop');
+            drop.innerHTML = `
+                <img src="${e.target.result}" id="${previewId}" alt="Preview">
+                <button type="button" class="remove-img-btn" onclick="removeCertPreview(event, '${input.id}', '${previewId}')" title="Remove image">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            `;
+            drop.classList.add('filled');
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function removeCertPreview(event, inputId, previewId) {
+    event.stopPropagation();
+    document.getElementById(inputId).value = '';
+
+    const drop = document.getElementById(inputId).previousElementSibling
+        || document.querySelector(`#${previewId}`)?.closest('.drop');
+    // Safer: find the drop by walking up from the file input's sibling structure
+    const fileInput = document.getElementById(inputId);
+    const wrapper = fileInput.closest('.image-slot');
+    const dropEl = wrapper.querySelector('.drop');
+
+    dropEl.classList.remove('filled');
+    dropEl.innerHTML = `
+        <div class="preview-placeholder" id="${previewId}">
+            <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:18px;"></i></div>
+            <div class="drop-title">Click to upload</div>
+            <div class="drop-sub">or drag &amp; drop</div>
+        </div>
+    `;
+}
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // ===== Scroll to the first validation error on page load =====
+        const firstErrorField = document.querySelector('.input-error, .upload-btn-error');
+        const firstErrorMsg = document.querySelector('.field-error');
+
+        if (firstErrorField) {
+            firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            firstErrorField.classList.add('error-flash');
+            setTimeout(() => firstErrorField.classList.remove('error-flash'), 1500);
+        } else if (firstErrorMsg) {
+            firstErrorMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
-    }
-
-      document.addEventListener('DOMContentLoaded', function () {
-    // ===== Scroll to the first validation error on page load =====
-    const firstErrorField = document.querySelector('.input-error, .upload-btn-error');
-    const firstErrorMsg = document.querySelector('.field-error');
-
-    if (firstErrorField) {
-        firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        // Give a brief highlight so the eye lands exactly on the right field
-        firstErrorField.classList.add('error-flash');
-        setTimeout(() => firstErrorField.classList.remove('error-flash'), 1500);
-    } else if (firstErrorMsg) {
-        // Fallback: some errors (like the "at least 1 image" group error) don't
-        // sit on an input directly — scroll to the message itself instead.
-        firstErrorMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-});
- 
+    });
 </script>
 
 <script>
     // ---------- Delete confirmation ----------
     document.addEventListener('click', function (e) {
-        const btn = e.target.closest('.btn-delete-cert-trigger');
-        if (!btn) return;
+        const deleteBtn = e.target.closest('.btn-delete-cert-trigger');
+        if (deleteBtn) {
+            const formId = deleteBtn.dataset.formId;
+            const name = deleteBtn.dataset.name;
 
-        const formId = btn.dataset.formId;
-        const name = btn.dataset.name;
+            Swal.fire({
+                title: 'Are you sure?',
+                html: `Do you really want to delete <strong>"${name}"</strong>?<br>This action cannot be undone.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#E9483F',
+                cancelButtonColor: '#9AA1B2',
+                reverseButtons: true,
+                focusCancel: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById(formId).submit();
+                }
+            });
+            return;
+        }
 
-        Swal.fire({
-            title: 'Are you sure?',
-            html: `Do you really want to delete <strong>"${name}"</strong>?<br>This action cannot be undone.`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, delete it',
-            cancelButtonText: 'Cancel',
-            confirmButtonColor: '#E9483F',
-            cancelButtonColor: '#9AA1B2',
-            reverseButtons: true,
-            focusCancel: true
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById(formId).submit();
-            }
-        });
+        // ---------- Edit button: switch #certForm into edit mode ----------
+        const editBtn = e.target.closest('.cert-edit-btn');
+        if (editBtn) {
+            enterCertEditMode(editBtn);
+        }
     });
 
-    // ---------- Add Certificate: AJAX submit ----------
+   function enterCertEditMode(btn) {
+    document.getElementById('certForm').action = btn.dataset.url;
+    document.getElementById('certFormMethod').value = 'PUT';
+    document.getElementById('certFormHeading').textContent = 'Edit Certificate';
+    document.getElementById('certTitleInput').value = btn.dataset.title;
+    document.getElementById('certImageReq').style.display = 'none';
+    document.getElementById('certImageEditHint').style.display = 'block';
+    document.getElementById('certSubmitBtn').innerHTML = '<i class="bi bi-check-lg"></i> Save Changes';
+    document.getElementById('certCancelEditBtn').style.display = 'inline-flex';
+
+    const drop = document.getElementById('certDrop');
+    drop.innerHTML = `
+        <img src="${btn.dataset.image}" id="certPreview" alt="Certificate">
+        <button type="button" class="remove-img-btn" onclick="removeCertPreview(event, 'certImage', 'certPreview')" title="Remove image">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    `;
+    drop.classList.add('filled');
+    document.getElementById('certImage').value = '';
+
+    document.querySelectorAll('#certForm .field-error').forEach(el => el.remove());
+    document.querySelectorAll('#certForm .input-error').forEach(el => el.classList.remove('input-error'));
+
+    document.getElementById('certForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+    function cancelCertEdit() {
+        const form = document.getElementById('certForm');
+        form.action = "{{ route('admin.about.certificates.store') }}";
+        document.getElementById('certFormMethod').value = 'POST';
+        document.getElementById('certFormHeading').textContent = 'Add Certificate';
+        document.getElementById('certTitleInput').value = '';
+        document.getElementById('certImageReq').style.display = 'inline';
+        document.getElementById('certImageEditHint').style.display = 'none';
+        document.getElementById('certSubmitBtn').innerHTML = '<i class="bi bi-check-lg"></i> Add Certificate';
+        document.getElementById('certCancelEditBtn').style.display = 'none';
+
+        const drop = document.getElementById('certDrop');
+        drop.innerHTML = `
+            <div class="preview-placeholder" id="certPreview">
+                <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:18px;"></i></div>
+                <div class="drop-title">Click to upload</div>
+                <div class="drop-sub">or drag &amp; drop</div>
+            </div>
+        `;
+        drop.classList.remove('filled');
+        document.getElementById('certImage').value = '';
+
+        document.querySelectorAll('#certForm .field-error').forEach(el => el.remove());
+        document.querySelectorAll('#certForm .input-error').forEach(el => el.classList.remove('input-error'));
+    }
+
+    // ---------- Add/Edit Certificate: unified AJAX submit ----------
     document.getElementById('certForm').addEventListener('submit', function (e) {
         e.preventDefault();
         submitCertForm();
@@ -298,7 +428,8 @@
     function submitCertForm() {
         const form = document.getElementById('certForm');
         const formData = new FormData(form);
-        const submitBtn = form.querySelector('.btn-save');
+        const isEditMode = document.getElementById('certFormMethod').value === 'PUT';
+        const submitBtn = document.getElementById('certSubmitBtn');
         const originalBtnHtml = submitBtn.innerHTML;
 
         form.querySelectorAll('.field-error').forEach(el => el.remove());
@@ -307,6 +438,7 @@
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving...';
 
+        // Laravel reads _method spoofing from the body when the real HTTP verb is POST
         fetch(form.action, {
             method: 'POST',
             body: formData,
@@ -330,7 +462,7 @@
             Swal.fire({
                 icon: 'success',
                 title: 'Saved!',
-                text: 'Certificate added successfully.',
+                text: (data && data.message) ? data.message : (isEditMode ? 'Certificate updated successfully.' : 'Certificate added successfully.'),
                 confirmButtonColor: '#EF7B2E',
                 timer: 2000,
                 timerProgressBar: true
@@ -357,7 +489,7 @@
 
         const fieldMap = {
             title: f => f.querySelector('[name="title"]'),
-            image: f => f.querySelector('.drop.img-slot'),
+            image: f => document.getElementById('certDrop'),
         };
 
         Object.keys(errors).forEach(field => {

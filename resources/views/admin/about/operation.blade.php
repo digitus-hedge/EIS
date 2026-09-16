@@ -55,7 +55,7 @@
         </div>
     </div>
 
-    <div class="card">
+    <!-- <div class="card">
         <div class="section-title">
             <h2><span class="icon"><i class="bi bi-camera-video"></i></span> Add New Video</h2>
         </div>
@@ -133,7 +133,94 @@
                 <i class="bi bi-check-lg"></i> Add Video
             </button>
         </form>
+    </div> -->
+
+
+    <div class="card">
+    <div class="section-title">
+        <h2><span class="icon"><i class="bi bi-camera-video"></i></span> <span id="opFormHeading">Add New Video</span></h2>
     </div>
+
+    <form action="{{ route('admin.about.operation.videos.store') }}" id="operation_form" method="POST" enctype="multipart/form-data">
+        @csrf
+        <input type="hidden" name="_method" id="opFormMethod" value="POST">
+
+        <div class="field">
+            <div class="field-top"><label class="field-label">Title<span class="req">*</span></label></div>
+            <input type="text" name="title" id="opTitleInput" value="{{ old('title') }}"
+                   class="{{ $errors->has('title') ? 'input-error' : '' }}"
+                   placeholder="Enter video title">
+            @error('title')
+                <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+            @enderror
+        </div>
+
+        <div class="field" style="margin-top:16px;">
+            <div class="field-top"><label class="field-label">Description<span class="req">*</span></label></div>
+            <textarea name="description" id="opDescInput" rows="3"
+                      class="{{ $errors->has('description') ? 'input-error' : '' }}"
+                      placeholder="Enter video description">{{ old('description') }}</textarea>
+            @error('description')
+                <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+            @enderror
+        </div>
+
+        <div class="op-two-col">
+            <div class="field">
+                <div class="field-top"><label class="field-label">Thumbnail Image<span class="req" id="opThumbReq">*</span></label></div>
+                <div class="notice caution">
+                    <i class="bi bi-exclamation-triangle" style="margin-top:1px;"></i>
+                    <p><b>Recommended Size:</b>280 × 220px ·JPG, PNG, WEBP &middot; up to 10MB.</p>
+                </div>
+                <div class="image-slot" style="max-width:100%;">
+                    <div class="drop img-slot" id="op-thumb-drop" data-file-input="op-thumb-input" onclick="handleDropClick(this)">
+                        <div class="preview-placeholder" id="op-thumb-preview">
+                            <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:18px;"></i></div>
+                            <div class="drop-title">Click to upload</div>
+                            <div class="drop-sub">or drag &amp; drop</div>
+                        </div>
+                    </div>
+                    <input type="file" id="op-thumb-input" name="thumbnail" accept="image/*" hidden
+                           onchange="previewImage(this, 'op-thumb-preview')">
+                </div>
+                <span class="field-hint" id="opThumbEditHint" style="display:none; margin-top:6px;">Leave empty to keep the current thumbnail.</span>
+                @error('thumbnail')
+                    <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                @enderror
+            </div>
+
+            <div class="field">
+                <div class="field-top"><label class="field-label">Video File<span class="req" id="opVideoReq">*</span></label></div>
+                <div class="notice caution">
+                    <i class="bi bi-exclamation-triangle" style="margin-top:1px;"></i>
+                    <p><b>Featured Size:</b>1920 × 1080px,  MP4, MOV, WEBM &middot; up to 20MB.</p>
+                </div>
+               <div class="video-drop" onclick="if(!this.classList.contains('filled')) document.getElementById('op-video-input').click()" id="op-video-drop">
+                    <div class="preview-placeholder" id="op-video-preview">
+                        <div class="ico-circle"><i class="bi bi-camera-video" style="color:#AEB4C4;font-size:18px;"></i></div>
+                        <div class="drop-title">Click to upload</div>
+                        <div class="drop-sub">or drag &amp; drop</div>
+                    </div>
+                </div>
+                <input type="file" id="op-video-input" name="video" accept="video/*" hidden
+                       onchange="showVideoFileName(this)">
+                <span class="field-hint" id="opVideoEditHint" style="display:none; margin-top:6px;">Leave empty to keep the current video.</span>
+                @error('video')
+                    <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                @enderror
+            </div>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:20px;">
+            <button type="button" class="btn-save" id="opSubmitBtn" onclick="validateForm();">
+                <i class="bi bi-check-lg"></i> Add Video
+            </button>
+            <button type="button" class="btn-cancel-edit" id="opCancelEditBtn" style="display:none;" onclick="cancelOpEdit()">
+                Cancel
+            </button>
+        </div>
+    </form>
+</div>
 
     <div class="card" id="existing-videos-section">
         <div class="section-title">
@@ -148,25 +235,38 @@
                     <div class="op-video-thumb-placeholder"><i class="bi bi-image"></i></div>
                 @endif
                 <div class="body">
-                    <div class="op-video-top">
-                        <div>
-                            <strong>{{ $video->title }}</strong>
-                            @if ($video->video)
-                                <span class="op-video-tag ok"><i class="bi bi-camera-video-fill"></i> Video attached</span>
-                            @else
-                                <span class="op-video-tag error"><i class="bi bi-exclamation-circle"></i> No video file uploaded</span>
-                            @endif
-                        </div>
-                        <form action="{{ route('admin.about.operation.videos.destroy', $video) }}" method="POST"
-                              class="delete-form" id="delete-form-{{ $video->id }}" style="display:inline;">
-                            @csrf @method('DELETE')
-                            <button type="button" class="icon-btn icon-delete btn-delete-trigger"
-                                    data-form-id="delete-form-{{ $video->id }}"
-                                    data-name="{{ $video->title }}" title="Delete">
-                                <i class="bi bi-trash3"></i>
-                            </button>
-                        </form>
-                    </div>
+                 <div class="op-video-top">
+    <div>
+        <strong>{{ $video->title }}</strong>
+        @if ($video->video)
+            <span class="op-video-tag ok"><i class="bi bi-camera-video-fill"></i> Video attached</span>
+        @else
+            <span class="op-video-tag error"><i class="bi bi-exclamation-circle"></i> No video file uploaded</span>
+        @endif
+    </div>
+    <div class="op-video-actions">
+        <form action="{{ route('admin.about.operation.videos.destroy', $video) }}" method="POST"
+              class="delete-form" id="delete-form-{{ $video->id }}" style="display:inline;">
+            @csrf @method('DELETE')
+            <button type="button" class="icon-btn icon-delete btn-delete-trigger"
+                    data-form-id="delete-form-{{ $video->id }}"
+                    data-name="{{ $video->title }}" title="Delete">
+                <i class="bi bi-trash3"></i>
+            </button>
+        </form>
+        <button type="button" class="icon-btn icon-edit op-edit-trigger"
+        data-id="{{ $video->id }}"
+        data-title="{{ $video->title }}"
+        data-description="{{ $video->description }}"
+        data-thumbnail="{{ $video->thumbnail ? asset('storage/'.$video->thumbnail) : '' }}"
+        data-video-name="{{ $video->video ? basename($video->video) : '' }}"
+        data-video-url="{{ $video->video ? asset('storage/'.$video->video) : '' }}"
+        data-url="{{ route('admin.about.operation.videos.update', $video) }}"
+        title="Edit">
+    <i class="bi bi-pencil"></i>
+</button>
+    </div>
+</div>
                     <p>{{ $video->description }}</p>
                 </div>
             </div>
@@ -266,8 +366,24 @@
     .op-video-thumb-placeholder{ display:flex; align-items:center; justify-content:center; color: var(--faint,#9AA1B2); font-size:22px; }
     .op-video-card .body{ flex:1; min-width:0; }
 
-    .op-video-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:6px; }
-    .op-video-top strong{ display:block; font-size:14px; color: var(--ink,#171B2C); margin-bottom:4px; }
+.op-video-top{
+    display:flex;
+    align-items:flex-start;
+    gap:16px;
+    margin-bottom:6px;
+}
+
+.op-video-top > div:first-child{
+    flex: 1;
+    min-width: 0;
+}
+
+.op-video-actions{
+    display:flex;
+    gap:8px;
+    flex-shrink:0;
+}
+  .op-video-top strong{ display:block; font-size:14px; color: var(--ink,#171B2C); margin-bottom:4px; }
     .op-video-card .body p{ font-size:12.5px; color: var(--muted,#667085); margin:0; }
 
     .op-video-tag{ display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:600; }
@@ -288,6 +404,22 @@
         .op-video-card img, .op-video-thumb-placeholder{ width:100%; height:160px; }
         .op-video-top{ flex-direction:column; gap:6px; }
     }
+
+    .icon-edit{ background:#EFF3FF; color:#2F5FDB; }
+.icon-edit:hover{ background:#2F5FDB; color:#fff; }
+
+.btn-cancel-edit{
+    font-size:13px; font-weight:600; color: var(--muted,#667085); background:none;
+    border:1px solid var(--line,#E9EBF2); padding:11px 18px; border-radius:9px; cursor:pointer;
+    transition:background .15s ease;
+}
+.btn-cancel-edit:hover{ background: var(--canvas,#F6F7FB); }
+
+.video-drop.filled{
+    border-style: solid;
+    border-color: var(--green,#12875A);
+    cursor: default;
+}
 </style>
 
 <script>
@@ -302,61 +434,165 @@ function validateForm(){
     submitOperationForm();
 }
 
+document.addEventListener('click', function (e) {
+    const editBtn = e.target.closest('.op-edit-trigger');
+    if (editBtn) enterOpEditMode(editBtn);
+});
+
+function enterOpEditMode(btn) {
+    document.getElementById('operation_form').action = btn.dataset.url;
+    document.getElementById('opFormMethod').value = 'PUT';
+    document.getElementById('opFormHeading').textContent = 'Edit Video';
+    document.getElementById('opTitleInput').value = btn.dataset.title;
+    document.getElementById('opDescInput').value = btn.dataset.description;
+    document.getElementById('opThumbReq').style.display = 'none';
+    document.getElementById('opVideoReq').style.display = 'none';
+    document.getElementById('opThumbEditHint').style.display = 'block';
+    document.getElementById('opVideoEditHint').style.display = 'block';
+    document.getElementById('opSubmitBtn').innerHTML = '<i class="bi bi-check-lg"></i> Save Changes';
+    document.getElementById('opCancelEditBtn').style.display = 'inline-flex';
+
+    const thumbDrop = document.getElementById('op-thumb-drop');
+    if (btn.dataset.thumbnail) {
+        thumbDrop.innerHTML = `
+            <img src="${btn.dataset.thumbnail}" id="op-thumb-preview" alt="Thumbnail">
+            <button type="button" class="remove-img-btn" onclick="removeOpThumb(event)" title="Remove image">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        `;
+        thumbDrop.classList.add('filled');
+    }
+    document.getElementById('op-thumb-input').value = '';
+
+  const videoDrop = document.getElementById('op-video-drop');
+if (btn.dataset.videoName) {
+    videoDrop.classList.add('has-file', 'filled');
+    videoDrop.innerHTML = `
+        <video src="${btn.dataset.videoUrl}" controls muted style="width:100%;height:100%;object-fit:cover;"></video>
+        <button type="button" class="remove-img-btn" onclick="removeOpVideo(event)" title="Remove video">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    `;
+}
+    document.getElementById('op-video-input').value = '';
+
+    document.querySelectorAll('#operation_form .field-error').forEach(el => el.remove());
+    document.querySelectorAll('#operation_form .input-error').forEach(el => el.classList.remove('input-error'));
+
+    document.getElementById('operation_form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function removeOpThumb(event) {
+    event.stopPropagation();
+    document.getElementById('op-thumb-input').value = '';
+    const drop = document.getElementById('op-thumb-drop');
+    drop.classList.remove('filled', 'input-error');
+    drop.innerHTML = `
+        <div class="preview-placeholder" id="op-thumb-preview">
+            <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:18px;"></i></div>
+            <div class="drop-title">Click to upload</div>
+            <div class="drop-sub">or drag &amp; drop</div>
+        </div>
+    `;
+}
+
+function removeOpVideo(event) {
+    event.stopPropagation();
+    document.getElementById('op-video-input').value = '';
+
+    const drop = document.getElementById('op-video-drop');
+    const videoEl = drop.querySelector('video');
+    if (videoEl && videoEl.src.startsWith('blob:')) {
+        URL.revokeObjectURL(videoEl.src);
+    }
+
+    drop.classList.remove('has-file', 'filled', 'input-error');
+    drop.innerHTML = `
+        <div class="preview-placeholder" id="op-video-preview">
+            <div class="ico-circle"><i class="bi bi-camera-video" style="color:#AEB4C4;font-size:18px;"></i></div>
+            <div class="drop-title">Click to upload</div>
+            <div class="drop-sub">or drag &amp; drop</div>
+        </div>
+    `;
+}
+
+function cancelOpEdit() {
+    const form = document.getElementById('operation_form');
+    form.action = "{{ route('admin.about.operation.videos.store') }}";
+    document.getElementById('opFormMethod').value = 'POST';
+    document.getElementById('opFormHeading').textContent = 'Add New Video';
+    document.getElementById('opTitleInput').value = '';
+    document.getElementById('opDescInput').value = '';
+    document.getElementById('opThumbReq').style.display = 'inline';
+    document.getElementById('opVideoReq').style.display = 'inline';
+    document.getElementById('opThumbEditHint').style.display = 'none';
+    document.getElementById('opVideoEditHint').style.display = 'none';
+    document.getElementById('opSubmitBtn').innerHTML = '<i class="bi bi-check-lg"></i> Add Video';
+    document.getElementById('opCancelEditBtn').style.display = 'none';
+
+    removeOpThumb({ stopPropagation(){} });
+    removeOpVideo({ stopPropagation(){} });
+
+    document.querySelectorAll('#operation_form .field-error').forEach(el => el.remove());
+    document.querySelectorAll('#operation_form .input-error').forEach(el => el.classList.remove('input-error'));
+}
+
 function submitOperationForm() {
     const form = document.getElementById('operation_form');
     const formData = new FormData(form);
-    const submitBtn = document.querySelector('.btn-save');
+    const isEditMode = document.getElementById('opFormMethod').value === 'PUT';
+    const submitBtn = document.getElementById('opSubmitBtn');
+    const originalBtnHtml = submitBtn.innerHTML;
 
-    // clear previous errors
     document.querySelectorAll('.field-error').forEach(el => el.remove());
     document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
 
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving...';
 
-   fetch(form.action, {
-    method: 'POST',
-    body: formData,
-    headers: {
-        'Accept': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest'
-    }
-})
-.then(async (response) => {
-    const data = await response.json().catch(() => null);
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(async (response) => {
+        const data = await response.json().catch(() => null);
 
-    if (response.status === 422 && data && data.errors) {
-        showValidationErrors(data.errors);
-        return; // no popup, inline errors are enough
-    }
+        if (response.status === 422 && data && data.errors) {
+            showValidationErrors(data.errors);
+            return;
+        }
 
-    if (!response.ok) {
-        throw new Error('Request failed');
-    }
+        if (!response.ok) {
+            throw new Error('Request failed');
+        }
 
-    Swal.fire({
-        icon: 'success',
-        title: 'Saved!',
-        text: 'Video added successfully.',
-        confirmButtonColor: '#EF7B2E',
-        timer: 2000,
-        timerProgressBar: true
-    }).then(() => {
-        window.location.reload();
+        Swal.fire({
+            icon: 'success',
+            title: 'Saved!',
+            text: (data && data.message) ? data.message : (isEditMode ? 'Video updated successfully.' : 'Video added successfully.'),
+            confirmButtonColor: '#EF7B2E',
+            timer: 2000,
+            timerProgressBar: true
+        }).then(() => {
+            window.location.reload();
+        });
+    })
+    .catch(() => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Something went wrong. Please try again.',
+            confirmButtonColor: '#D5392F'
+        });
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnHtml;
     });
-})
-.catch(() => {
-    Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Something went wrong. Please try again.',
-        confirmButtonColor: '#D5392F'
-    });
-})
-.finally(() => {
-    submitBtn.disabled = false;
-    submitBtn.innerHTML = '<i class="bi bi-check-lg"></i> Add Video';
-});
 }
 
 function showValidationErrors(errors) {
@@ -427,33 +663,39 @@ function showValidationErrors(errors) {
         }
     }
 
-    function showVideoFileName(input) {
-        const drop = document.getElementById('op-video-drop');
-        const file = input.files && input.files[0];
+   function showVideoFileName(input) {
+    const drop = document.getElementById('op-video-drop');
+    const file = input.files && input.files[0];
 
-        if (!file) return;
+    if (!file) return;
 
-        drop.classList.add('has-file');
+    const videoURL = URL.createObjectURL(file);
+
+    drop.classList.add('has-file', 'filled');
+    drop.innerHTML = `
+        <video src="${videoURL}" controls muted style="width:100%;height:100%;object-fit:cover;"></video>
+        <button type="button" class="remove-img-btn" title="Remove video"><i class="bi bi-x-lg"></i></button>
+    `;
+
+    drop.querySelector('.remove-img-btn').onclick = function (ev) {
+        ev.stopPropagation();
+
+        const videoEl = drop.querySelector('video');
+        if (videoEl && videoEl.src.startsWith('blob:')) {
+            URL.revokeObjectURL(videoEl.src);
+        }
+
+        input.value = '';
+        drop.classList.remove('has-file', 'filled', 'input-error');
         drop.innerHTML = `
-            <div class="ico-circle"><i class="bi bi-check-circle" style="color:var(--green,#12875A);font-size:18px;"></i></div>
-            <div class="drop-title">${file.name}</div>
-            <div class="drop-sub">${(file.size / (1024 * 1024)).toFixed(2)} MB</div>
-            <button type="button" class="remove-img-btn" title="Remove video"><i class="bi bi-x-lg"></i></button>
+            <div class="preview-placeholder" id="op-video-preview">
+                <div class="ico-circle"><i class="bi bi-camera-video" style="color:#AEB4C4;font-size:18px;"></i></div>
+                <div class="drop-title">Click to upload</div>
+                <div class="drop-sub">or drag &amp; drop</div>
+            </div>
         `;
-
-        drop.querySelector('.remove-img-btn').onclick = function (ev) {
-            ev.stopPropagation();
-            input.value = '';
-            drop.classList.remove('has-file', 'input-error');
-            drop.innerHTML = `
-                <div class="preview-placeholder" id="op-video-preview">
-                    <div class="ico-circle"><i class="bi bi-camera-video" style="color:#AEB4C4;font-size:18px;"></i></div>
-                    <div class="drop-title">Click to upload</div>
-                    <div class="drop-sub">or drag &amp; drop</div>
-                </div>
-            `;
-        };
-    }
+    };
+}
 
     // ===== Delete confirmation (matches Service Cards / Certificates pattern) =====
     document.addEventListener('click', function (e) {

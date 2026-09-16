@@ -87,12 +87,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('regional-footprint', [AboutController::class, 'regionalFootprint'])->name('about.regional-footprint');
         Route::post('regional-footprint', [AboutController::class, 'storeRegionalLocation'])->name('about.regional-footprint.store');
+       
         Route::post('regional-footprint/{location}/offices', [AboutController::class, 'storeRegionalOffice'])->name('about.regional-footprint.offices.store');
+       Route::put('regional-footprint/offices/{office}', [AboutController::class, 'updateRegionalOffice'])->name('about.regional-footprint.offices.update');
         Route::delete('regional-footprint/{location}', [AboutController::class, 'destroyRegionalLocation'])->name('about.regional-footprint.destroy');
         Route::delete('regional-footprint/offices/{office}', [AboutController::class, 'destroyRegionalOffice'])->name('about.regional-footprint.offices.destroy');
 
         Route::get('operation', [AboutController::class, 'operation'])->name('about.operation');
         Route::post('operation/videos', [AboutController::class, 'storeOperationVideo'])->name('about.operation.videos.store');
+        Route::put('operation/videos/{video}', [AboutController::class, 'updateOperationVideo'])->name('about.operation.videos.update');
         Route::delete('operation/videos/{video}', [AboutController::class, 'destroyOperationVideo'])->name('about.operation.videos.destroy');
 
         Route::get('service/banner', [ServicePageController::class, 'banner'])->name('service.banner');
@@ -106,6 +109,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('about/certificates', [CertificateController::class, 'index'])->name('about.certificates');
         Route::post('about/certificates', [CertificateController::class, 'store'])->name('about.certificates.store');
+        Route::put('about/certificates/{certificate}', [CertificateController::class, 'update'])->name('about.certificates.update');
         Route::delete('about/certificates/{certificate}', [CertificateController::class, 'destroy'])->name('about.certificates.destroy');
 
     });
