@@ -87,9 +87,9 @@
                         </td>
                         <td class="title-cell">
                             {{ $service->banner_title }}
-                            @if ($service->show_on_home ?? false)
+                            <!-- @if ($service->show_on_home ?? false)
                                 <span class="status-pill">Live</span>
-                            @endif
+                            @endif -->
                         </td>
                         <td class="desc-cell">
                             <div class="desc-clamp">{{ Str::limit($service->banner_description, 90) ?: '—' }}</div>
