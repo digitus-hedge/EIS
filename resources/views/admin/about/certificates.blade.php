@@ -63,7 +63,7 @@
         <input type="hidden" name="_method" id="certFormMethod" value="POST">
 
         <div class="field">
-            <div class="field-top"><label class="field-label">Certificate Title<span class="req">*</span></label></div>
+            <div class="field-top"><label class="field-label">Certificate Title <span class="req">*</span></label></div>
             <input type="text" name="title" id="certTitleInput" value="{{ old('title') }}"
                    class="{{ $errors->has('title') ? 'input-error' : '' }}"
                    placeholder="e.g. ISO 9001:2015">
@@ -73,7 +73,7 @@
         </div>
 
         <div class="field" style="margin-top:18px;">
-            <div class="field-top"><label class="field-label">Certificate Image<span class="req" id="certImageReq">*</span></label></div>
+            <div class="field-top"><label class="field-label">Certificate Image <span class="req" id="certImageReq">*</span></label></div>
 
             <div class="notice caution">
                 <i class="bi bi-exclamation-triangle" style="margin-top:1px;"></i>

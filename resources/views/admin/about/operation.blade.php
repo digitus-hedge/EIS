@@ -146,7 +146,7 @@
         <input type="hidden" name="_method" id="opFormMethod" value="POST">
 
         <div class="field">
-            <div class="field-top"><label class="field-label">Title<span class="req">*</span></label></div>
+            <div class="field-top"><label class="field-label">Title <span class="req">*</span></label></div>
             <input type="text" name="title" id="opTitleInput" value="{{ old('title') }}"
                    class="{{ $errors->has('title') ? 'input-error' : '' }}"
                    placeholder="Enter video title">
@@ -156,7 +156,7 @@
         </div>
 
         <div class="field" style="margin-top:16px;">
-            <div class="field-top"><label class="field-label">Description<span class="req">*</span></label></div>
+            <div class="field-top"><label class="field-label">Description <span class="req">*</span></label></div>
             <textarea name="description" id="opDescInput" rows="3"
                       class="{{ $errors->has('description') ? 'input-error' : '' }}"
                       placeholder="Enter video description">{{ old('description') }}</textarea>
@@ -167,7 +167,7 @@
 
         <div class="op-two-col">
             <div class="field">
-                <div class="field-top"><label class="field-label">Thumbnail Image<span class="req" id="opThumbReq">*</span></label></div>
+                <div class="field-top"><label class="field-label">Thumbnail Image <span class="req" id="opThumbReq">*</span></label></div>
                 <div class="notice caution">
                     <i class="bi bi-exclamation-triangle" style="margin-top:1px;"></i>
                     <p><b>Recommended Size:</b>280 × 220px ·JPG, PNG, WEBP &middot; up to 10MB.</p>
@@ -190,7 +190,7 @@
             </div>
 
             <div class="field">
-                <div class="field-top"><label class="field-label">Video File<span class="req" id="opVideoReq">*</span></label></div>
+                <div class="field-top"><label class="field-label">Video File <span class="req" id="opVideoReq">*</span></label></div>
                 <div class="notice caution">
                     <i class="bi bi-exclamation-triangle" style="margin-top:1px;"></i>
                     <p><b>Featured Size:</b>1920 × 1080px,  MP4, MOV, WEBM &middot; up to 20MB.</p>

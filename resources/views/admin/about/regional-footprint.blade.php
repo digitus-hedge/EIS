@@ -260,11 +260,11 @@
     <div class="rf-office-row">
         <button type="button" class="rf-remove-office" title="Remove"><i class="bi bi-trash3"></i></button>
         <div class="field">
-            <div class="field-top"><label class="field-label">Office Title</label><span class="req">*</span></div>
+            <div class="field-top"><label class="field-label">Office Title</label> <span class="req">*</span></div>
             <input type="text" name="offices[__INDEX__][title]">
         </div>
         <div class="field" style="margin-top:12px;">
-            <div class="field-top"><label class="field-label">Description</label><span class="req">*</span></div>
+            <div class="field-top"><label class="field-label">Description </label> <span class="req">*</span></div>
             <textarea name="offices[__INDEX__][description]" rows="2"></textarea>
         </div>
         <!-- <div class="field" style="margin-top:12px; margin-bottom:0;">
@@ -278,7 +278,7 @@
                 <i class="bi bi-exclamation-triangle" style="margin-top:1px;"></i>
                 <p><b>Recommended size:</b> {{ $imageWidth ?? 320 }} &times; {{ $imageHeight ?? 220 }}px &middot; JPG, PNG, WEBP &middot; up to 10MB.</p>
             </div>
-    <div class="field-top"><label class="field-label">Image</label><span class="req">*</span></div>
+    <div class="field-top"><label class="field-label">Image</label> <span class="req">*</span></div>
     <div class="image-slot" style="max-width:220px;">
         <div class="drop img-slot" data-file-input="rf-office-image-__INDEX__" onclick="handleDropClick(this)">
             <div class="preview-placeholder" id="rf-office-preview-__INDEX__">
