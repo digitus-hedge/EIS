@@ -14,7 +14,7 @@ class ServicePageController extends Controller
 {
     protected int $imageWidth = 1200;
     protected int $imageHeight = 600;
-    protected int $compressQuality = 70;
+    protected int $compressQuality = 100;
 
     /**
      * Show the Service page Banner form.

@@ -12,9 +12,9 @@ use Intervention\Image\Drivers\Gd\Driver;
 
 class CertificateController extends Controller
 {
-    protected int $imageWidth = 700;
-    protected int $imageHeight = 900;
-    protected int $compressQuality = 75;
+    // protected int $imageWidth = 700;
+    // protected int $imageHeight = 900;
+    protected int $compressQuality = 100;
 
     public function index()
     {
@@ -123,17 +123,20 @@ class CertificateController extends Controller
         return back()->with('success', 'Certificate removed.');
     }
 
-    private function processAndStoreImage($file): string
+     private function processAndStoreImage($file): string
     {
         $filename = 'about/certificates/' . Str::random(20) . '.webp';
-
+ 
         $manager = new ImageManager(new Driver());
+ 
         $image = $manager->read($file->getPathname());
-        $image->cover($this->imageWidth, $this->imageHeight);
+ 
+        // No cropping  keeps the image's original aspect ratio and dimensions.
         $encoded = $image->toWebp(quality: $this->compressQuality);
-
+ 
         Storage::disk('public')->put($filename, (string) $encoded);
-
+ 
         return $filename;
     }
+
 }

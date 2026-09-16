@@ -12,8 +12,8 @@ use Intervention\Image\Drivers\Gd\Driver;
 class ContactController extends Controller
 {
     protected int $imageWidth = 1200;
-    protected int $imageHeight = 500;
-    protected int $compressQuality = 70;
+    protected int $imageHeight = 600;
+    protected int $compressQuality = 100;
 
     public function edit()
     {

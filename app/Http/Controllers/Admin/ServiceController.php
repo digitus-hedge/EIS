@@ -21,7 +21,7 @@ class ServiceController extends Controller
     protected int $iconWidth = 120;
     protected int $iconHeight = 120;
 
-    protected int $compressQuality = 70;
+    protected int $compressQuality = 100;
 
     public function index(Request $request)
     {

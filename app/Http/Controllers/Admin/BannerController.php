@@ -15,7 +15,7 @@ class BannerController extends Controller
 {
     protected int $imageWidth = 1200;
     protected int $imageHeight = 600;
-    protected int $compressQuality = 70;
+    protected int $compressQuality = 100;
 
     /**
      * SHOW FORM — always the single banner (or empty model if none exists yet)

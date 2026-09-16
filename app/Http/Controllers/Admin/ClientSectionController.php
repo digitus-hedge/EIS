@@ -15,7 +15,7 @@ use Intervention\Image\Format;
 class ClientSectionController extends Controller
 {
    
-    protected int $compressQuality = 70;
+    protected int $compressQuality = 100;
 
     /**
      * SHOW FORM — always the single Client section (or empty model if none exists yet)
