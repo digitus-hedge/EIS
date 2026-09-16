@@ -33,6 +33,7 @@ class ServiceController extends Controller
                 $query->where('banner_title', 'like', "%{$search}%")
                     ->orWhere('banner_description', 'like', "%{$search}%");
             })
+            ->orderByDesc('id')
             ->paginate($perPage)
             ->withQueryString();
 
