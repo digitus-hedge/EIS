@@ -189,6 +189,40 @@
 
 
 
+<div class="card">
+            <div class="section-title">
+                <h2><span class="icon"><i class="bi bi-search"></i></span> SEO Meta</h2>
+            </div>
+            <p class="section-sub" style="margin:0 0 16px;">Used for search engine results and social share previews.</p>
+
+            <div class="field">
+                <div class="field-top">
+                    <label class="field-label">Meta Title</label>
+                    <span class="field-hint">Recommended under 60 chars</span>
+                </div>
+                <input type="text" name="meta_title" value="{{ old('meta_title', $servicePage->meta_title) }}" maxlength="60"
+                       class="{{ $errors->has('meta_title') ? 'input-error' : '' }}"
+                       placeholder="Enter meta title">
+                @error('meta_title')
+                    <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                @enderror
+            </div>
+
+            <div class="field">
+                <div class="field-top">
+                    <label class="field-label">Meta Description</label>
+                    <span class="field-hint">Recommended under 160 chars</span>
+                </div>
+                <textarea name="meta_description" rows="3" maxlength="160"
+                          class="{{ $errors->has('meta_description') ? 'input-error' : '' }}"
+                          placeholder="Enter meta description">{{ old('meta_description', $servicePage->meta_description) }}</textarea>
+                @error('meta_description')
+                    <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                @enderror
+            </div>
+        </div>
+
+
         <div class="savebar">
             <div class="savebar-inner">
                 <span class="savebar-status">All changes save to the live Service page</span>
@@ -338,6 +372,48 @@
     pointer-events:none;
 }
 .drop{ height:190px; }
+
+ input[type=text], textarea{
+        width:100%; border:1px solid var(--input-border,#DBDFEA); border-radius:10px;
+        padding:11px 14px; font-size:14px; font-family:inherit; color: var(--ink,#171B2C);
+        outline:none; transition:box-shadow .15s, border-color .15s;
+    }
+    input[type=text]:focus, textarea:focus{
+        border-color: var(--orange,#EF7B2E);
+        box-shadow: 0 0 0 4px var(--orange-tint-strong,#FFE9D8);
+    }
+
+    .section-sub {
+    font-size: 12px;
+    color: var(--faint, #9AA1B2);
+    margin: 0 0 16px;
+}
+
+.field-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.field-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink, #171B2C);
+}
+.field-hint {
+    font-size: 11.5px;
+    color: var(--faint, #9AA1B2);
+}
+.field:last-child {
+    margin-bottom: 0;
+}
+.field {
+    margin-bottom: 28px;
+}
 </style>
 
 <script>

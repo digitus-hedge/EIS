@@ -16,5 +16,7 @@ class Banner extends Model
         'image_2',
         'image_3',
         'video',
+                'meta_title',
+        'meta_description'
     ];
 }

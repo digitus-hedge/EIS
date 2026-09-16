@@ -24,6 +24,9 @@ class BannerRequest extends FormRequest
             'image_3' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:10240',
 
             'video'   => 'nullable|mimes:mp4,mov,avi,wmv,webm|max:20480',
+
+             'meta_title'       => 'nullable|string|max:60',
+            'meta_description' => 'nullable|string|max:160',
         ];
     }
 
@@ -51,6 +54,9 @@ class BannerRequest extends FormRequest
 
             'video.mimes'          => 'Video must be a file of type: MP4, MOV, AVI, WMV, or WEBM.',
             'video.max'            => 'Video must not exceed 20MB.',
+
+                'meta_title.max'       => 'Meta title cannot exceed :max characters.',
+            'meta_description.max' => 'Meta description cannot exceed :max characters.',
         ];
     }
 

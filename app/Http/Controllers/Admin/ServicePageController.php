@@ -41,6 +41,10 @@ class ServicePageController extends Controller
         'banner_video' => 'nullable|mimes:mp4,mov,webm|max:20480',
         'remove_banner' => 'nullable|boolean',
         'remove_banner_video' => 'nullable|boolean',
+
+              'meta_title'       => 'nullable|string|max:60',
+            'meta_description' => 'nullable|string|max:160',
+
     ], [
         'banner_title.required' => 'Please enter a banner title.',
         'banner_title.max'      => 'Title must not exceed 100 characters.',
@@ -78,6 +82,8 @@ class ServicePageController extends Controller
 
     try {
         $servicePage->banner_title = $request->banner_title;
+           $servicePage->meta_title = $request->meta_title;
+    $servicePage->meta_description = $request->meta_description;
 
         // ----- Banner Image -----
         if ($request->hasFile('banner')) {

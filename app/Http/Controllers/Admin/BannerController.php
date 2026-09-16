@@ -39,7 +39,8 @@ class BannerController extends Controller
             $banner = Banner::first() ?? new Banner();
             $banner->title = $data['title'];
             $banner->description = $data['description'] ?? null;
-
+       $banner->meta_title        = $data['meta_title'] ?? null;
+        $banner->meta_description  = $data['meta_description'] ?? null;
             $hasNewVideo = $request->hasFile('video');
             $hasNewImage = collect(['image_1', 'image_2', 'image_3'])
                 ->contains(fn ($field) => $request->hasFile($field));
