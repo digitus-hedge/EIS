@@ -46,7 +46,7 @@
 
 <div class="wrap">
     <div class="crumbs">
-        <span onclick="window.location='{{ route('admin.home.services') }}'">Service Cards</span>
+        <span onclick="window.location='{{ route('admin.home.services') }}'">Services</span>
         <span>&rsaquo;</span>
         <b>{{ $service->exists ? 'Edit Service' : 'Add Service' }}</b>
     </div>
@@ -125,7 +125,7 @@
             </div>
         </div>
 
-        <div class="card">
+        <!-- <div class="card">
             <div class="section-title">
                 <h2><span class="icon"><i class="bi bi-image"></i></span> Banner Image<span class="req">*</span></h2>
             </div>
@@ -162,7 +162,80 @@
             @error('banner_image')
                 <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
             @enderror
+        </div> -->
+
+
+
+        <div class="card">
+    <div class="section-title">
+        <h2><span class="icon"><i class="bi bi-image"></i></span> Banner Image or Video<span class="req">*</span></h2>
+    </div>
+
+    <div class="notice caution">
+        <i class="bi bi-exclamation-triangle" style="margin-top:1px;"></i>
+        <p><b>Image:</b> 1200 &times; 600px &middot; JPG, PNG, WEBP &middot; up to 10MB.
+           <b>Video:</b> MP4, MOV, WEBM &middot; up to 20MB.</p>
+    </div>
+
+    <div class="images-row">
+        {{-- Image slot --}}
+        <div class="image-slot" style="max-width:400px;">
+            <div class="slot-top"><span class="slot-label">Image</span></div>
+            <div class="drop img-slot {{ $service->banner_image ? 'filled' : '' }} {{ $errors->has('banner_image') ? 'input-error' : '' }}"
+                 data-file-input="file-banner-image" id="drop-banner-image" onclick="handleDropClick(this)">
+                @if ($service->banner_image)
+                    <img src="{{ Storage::url($service->banner_image) }}" id="preview-banner-image" alt="Banner image">
+                    <button type="button" class="remove-img-btn" onclick="removeUploadedImage(event, this, 'banner-image', 'preview-banner-image')" title="Remove image">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                    <div class="uploaded-tag"><i class="bi bi-check-circle"></i> Uploaded</div>
+                @else
+                    <div class="preview-placeholder" id="preview-banner-image">
+                        <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:18px;"></i></div>
+                        <div class="drop-title">Click to upload</div>
+                        <div class="drop-sub">or drag &amp; drop</div>
+                    </div>
+                @endif
+            </div>
+            <input type="file" id="file-banner-image" name="banner_image" accept="image/*" hidden
+                   onchange="handleImageChange(this, 'preview-banner-image', MAX_IMAGE_BYTES, 'Banner image', 'banner-image')">
+            <input type="hidden" name="remove_banner_image" id="remove-banner-image" value="0">
+            @if (!$service->banner_image)
+                <button type="button" class="choose-btn" onclick="document.getElementById('file-banner-image').click()">Choose file</button>
+            @endif
+            @error('banner_image')
+                <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+            @enderror
         </div>
+
+        {{-- Video slot --}}
+        <div class="image-slot" style="max-width:400px;">
+            <div class="slot-top"><span class="slot-label">Video</span></div>
+            <div class="video-drop {{ $service->banner_video ? 'has-file filled' : '' }} {{ $errors->has('banner_video') ? 'input-error' : '' }}"
+                 id="drop-banner-video" onclick="handleVideoDropClick(this)">
+                @if ($service->banner_video)
+                    <video src="{{ Storage::url($service->banner_video) }}" muted playsinline preload="metadata"></video>
+                    <button type="button" class="remove-img-btn" onclick="removeUploadedVideo(event)" title="Remove video">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                    <div class="uploaded-tag"><i class="bi bi-camera-video-fill"></i> Uploaded</div>
+                @else
+                    <div class="preview-placeholder" id="preview-banner-video">
+                        <div class="ico-circle"><i class="bi bi-camera-video" style="color:#AEB4C4;font-size:18px;"></i></div>
+                        <div class="drop-title">Click to upload</div>
+                        <div class="drop-sub">or drag &amp; drop</div>
+                    </div>
+                @endif
+            </div>
+            <input type="file" id="file-banner-video" name="banner_video" accept="video/*" hidden
+                   onchange="showBannerVideoFileName(this)">
+            <input type="hidden" name="remove_banner_video" id="remove-banner_video" value="0">
+            @error('banner_video')
+                <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+            @enderror
+        </div>
+    </div>
+</div>
 
         {{-- ================= OVERVIEW SECTION ================= --}}
         <div class="card">
@@ -508,7 +581,7 @@
 
     .video-slot{ position:relative; width:100%; }
     .video-drop{
-        position:relative; height:110px; border-radius:12px;
+        position:relative; border-radius:12px;
         border:2px dashed var(--input-border,#DBDFEA); background:#FAFBFD;
         display:flex; flex-direction:column; align-items:center; justify-content:center;
         cursor:pointer; overflow:hidden; transition:border-color .15s, background .15s; text-align:center;
@@ -602,6 +675,32 @@
     }
     .switch-toggle input:checked + .switch-slider{ background: var(--orange,#EF7B2E); }
     .switch-toggle input:checked + .switch-slider::before{ transform:translateX(20px); }
+
+    .video-drop{
+    position:relative; aspect-ratio:4/3; width:100%; border-radius:12px;
+    border:2px dashed var(--input-border,#DBDFEA); background:#FAFBFD;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    cursor:pointer; overflow:hidden; transition:border-color .15s, background .15s; text-align:center;
+}
+.video-drop:hover{ border-color: var(--orange,#EF7B2E); background: var(--orange-tint,#FFF8F3); }
+.video-drop.filled{ border:2px solid transparent; cursor:default; }
+.video-drop.input-error{ border-color:#E9483F; background:#FFF5F4; }
+.video-drop video{ width:100%; height:100%; object-fit:cover; display:block; background:#0F1220; }
+.video-drop .uploaded-tag{
+    position:absolute; left:0; right:0; bottom:0; padding:8px 12px;
+    background:linear-gradient(to top, rgba(0,0,0,0.55), transparent);
+    color:rgba(255,255,255,0.9); font-size:11px; display:flex; align-items:center; gap:4px; pointer-events:none;
+}
+
+.images-row{ display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start; }
+.slot-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.slot-label{ font-size:12px; font-weight:500; color: var(--muted,#667085); }
+
+.images-row > .image-slot {
+    flex: 1 1 400px;
+    max-width: 400px;
+    width: 100%;
+}
 </style>
 
 @php
@@ -833,66 +932,76 @@
         addProcessRow();
     }
 
-    function wireRowRemove(dropEl, existingInput, placeholderClass, isVideo = false) {
-        const btn = dropEl.querySelector('.remove-img-btn');
-        if (!btn) return;
-        btn.onclick = function (ev) {
-            ev.stopPropagation();
-            const fileInput = dropEl.nextElementSibling;
-            fileInput.value = '';
-            if (existingInput) existingInput.value = '';
+  function wireRowRemove(dropEl, existingInput, placeholderClass, isVideo = false) {
+    const btn = dropEl.querySelector('.remove-img-btn');
+    if (!btn) return;
+    btn.onclick = function (ev) {
+        ev.stopPropagation();
+        const fileInput = dropEl.parentElement.querySelector('input[type="file"]');
+        fileInput.value = '';
+        if (existingInput) existingInput.value = '';
 
-            if (isVideo) {
-                dropEl.classList.remove('has-file');
-                dropEl.innerHTML = `
-                    <div class="ico-circle"><i class="bi bi-camera-video" style="color:#AEB4C4;font-size:16px;"></i></div>
-                    <div class="drop-title">Click to upload</div>
-                `;
-            } else {
-                dropEl.classList.remove('filled');
-                dropEl.innerHTML = `
-                    <div class="preview-placeholder ${placeholderClass}">
-                        <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:16px;"></i></div>
-                        <div class="drop-title">Click to upload</div>
-                    </div>
-                `;
-            }
-        };
-    }
-
-    function previewProcessThumbnail(input) {
-        if (!validateFileSize(input, MAX_IMAGE_BYTES, 'Process thumbnail')) return;
-
-        const dropEl = input.previousElementSibling;
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                dropEl.classList.add('filled');
-                dropEl.innerHTML = `
-                    <img src="${e.target.result}" alt="Thumbnail">
-                    <button type="button" class="remove-img-btn" title="Remove"><i class="bi bi-x-lg"></i></button>
-                `;
-                const existingInput = dropEl.parentElement.querySelector('.existing-thumbnail-input');
-                wireRowRemove(dropEl, existingInput, 'process-thumb-preview');
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
-    function previewProcessVideo(input) {
-        if (!validateFileSize(input, MAX_VIDEO_BYTES, 'Process video')) return;
-
-        const dropEl = input.previousElementSibling;
-        if (input.files && input.files[0]) {
-            dropEl.classList.add('has-file');
+        if (isVideo) {
+            dropEl.classList.remove('has-file');
             dropEl.innerHTML = `
-                <div class="drop-title">${input.files[0].name}</div>
+                <div class="ico-circle"><i class="bi bi-camera-video" style="color:#AEB4C4;font-size:16px;"></i></div>
+                <div class="drop-title">Click to upload</div>
+            `;
+        } else {
+            dropEl.classList.remove('filled');
+            dropEl.innerHTML = `
+                <div class="preview-placeholder ${placeholderClass}">
+                    <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:16px;"></i></div>
+                    <div class="drop-title">Click to upload</div>
+                </div>
+            `;
+        }
+    };
+}
+
+   function previewProcessThumbnail(input) {
+    if (!validateFileSize(input, MAX_IMAGE_BYTES, 'Process thumbnail')) return;
+
+    const wrapper = input.closest('.image-slot');
+    const dropEl = wrapper.querySelector('[data-row-slot="thumbnail"]');
+    const oldError = wrapper.querySelector('.field-error');
+    if (oldError) oldError.remove();
+
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            dropEl.classList.add('filled');
+            dropEl.classList.remove('input-error');
+            dropEl.innerHTML = `
+                <img src="${e.target.result}" alt="Thumbnail">
                 <button type="button" class="remove-img-btn" title="Remove"><i class="bi bi-x-lg"></i></button>
             `;
-            const existingInput = dropEl.parentElement.querySelector('.existing-video-input');
-            wireRowRemove(dropEl, existingInput, null, true);
-        }
+            const existingInput = wrapper.querySelector('.existing-thumbnail-input');
+            wireRowRemove(dropEl, existingInput, 'process-thumb-preview');
+        };
+        reader.readAsDataURL(input.files[0]);
     }
+}
+
+function previewProcessVideo(input) {
+    if (!validateFileSize(input, MAX_VIDEO_BYTES, 'Process video')) return;
+
+    const wrapper = input.closest('.video-slot');
+    const dropEl = wrapper.querySelector('[data-row-slot="video"]');
+    const oldError = wrapper.querySelector('.field-error');
+    if (oldError) oldError.remove();
+
+    if (input.files && input.files[0]) {
+        dropEl.classList.add('has-file');
+        dropEl.classList.remove('input-error');
+        dropEl.innerHTML = `
+            <div class="drop-title">${input.files[0].name}</div>
+            <button type="button" class="remove-img-btn" title="Remove"><i class="bi bi-x-lg"></i></button>
+        `;
+        const existingInput = wrapper.querySelector('.existing-video-input');
+        wireRowRemove(dropEl, existingInput, null, true);
+    }
+}
 
     // ===== Feature rows =====
     const MAX_FEATURES = 4;
@@ -969,25 +1078,81 @@
     } else {
         addFeatureRow();
     }
+    
+
+  function handleVideoDropClick(el) {
+    if (el.classList.contains('filled')) return;
+    document.getElementById('file-banner-video').click();
+}
+
+function showBannerVideoFileName(input) {
+    if (!validateFileSize(input, MAX_VIDEO_BYTES, 'Banner video')) return;
+
+    const drop = document.getElementById('drop-banner-video');
+    const file = input.files && input.files[0];
+    if (!file) return;
+
+    const videoURL = URL.createObjectURL(file);
+
+    drop.classList.add('has-file', 'filled');
+    drop.classList.remove('input-error');
+    drop.innerHTML = `
+        <video src="${videoURL}" muted playsinline preload="metadata"></video>
+        <button type="button" class="remove-img-btn" onclick="removeUploadedVideo(event)" title="Remove video">
+            <i class="bi bi-x-lg"></i>
+        </button>
+        <div class="uploaded-tag"><i class="bi bi-camera-video-fill"></i> Uploaded</div>
+    `;
+    document.getElementById('remove-banner_video').value = '0';
+}
+
+function removeUploadedVideo(event) {
+    event.stopPropagation();
+    const drop = document.getElementById('drop-banner-video');
+    const fileInput = document.getElementById('file-banner-video');
+    const removeInput = document.getElementById('remove-banner_video');
+
+    const existingVideo = drop.querySelector('video');
+    if (existingVideo && existingVideo.src.startsWith('blob:')) {
+        URL.revokeObjectURL(existingVideo.src);
+    }
+
+    if (removeInput) removeInput.value = '1';
+    if (fileInput) fileInput.value = '';
+
+    drop.classList.remove('has-file', 'filled');
+    drop.innerHTML = `
+        <div class="preview-placeholder" id="preview-banner-video">
+            <div class="ico-circle"><i class="bi bi-camera-video" style="color:#AEB4C4;font-size:18px;"></i></div>
+            <div class="drop-title">Click to upload</div>
+            <div class="drop-sub">or drag &amp; drop</div>
+        </div>
+    `;
+}
 
     function previewFeatureIcon(input) {
-        if (!validateFileSize(input, MAX_ICON_BYTES, 'Feature icon')) return;
+    if (!validateFileSize(input, MAX_ICON_BYTES, 'Feature icon')) return;
 
-        const dropEl = input.previousElementSibling;
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                dropEl.classList.add('filled');
-                dropEl.innerHTML = `
-                    <img src="${e.target.result}" alt="Icon">
-                    <button type="button" class="remove-img-btn" title="Remove"><i class="bi bi-x-lg"></i></button>
-                `;
-                const existingInput = dropEl.parentElement.querySelector('.existing-icon-input');
-                wireRowRemove(dropEl, existingInput, 'feature-preview');
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
+    const wrapper = input.closest('.image-slot');
+    const dropEl = wrapper.querySelector('[data-row-slot="icon"]');
+    const oldError = wrapper.querySelector('.field-error');
+    if (oldError) oldError.remove();
+
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            dropEl.classList.add('filled');
+            dropEl.classList.remove('input-error');
+            dropEl.innerHTML = `
+                <img src="${e.target.result}" alt="Icon">
+                <button type="button" class="remove-img-btn" title="Remove"><i class="bi bi-x-lg"></i></button>
+            `;
+            const existingInput = wrapper.querySelector('.existing-icon-input');
+            wireRowRemove(dropEl, existingInput, 'feature-preview');
+        };
+        reader.readAsDataURL(input.files[0]);
     }
+}
 
     // ===== AJAX submit (replaces the old preventDefault-only guard) =====
     document.getElementById('serviceForm').addEventListener('submit', function (e) {
@@ -1076,7 +1241,8 @@
         const topLevelMap = {
             banner_title: f => f.querySelector('[name="banner_title"]'),
             banner_description: f => f.querySelector('[name="banner_description"]'),
-            banner_image: f => document.getElementById('drop-banner-image'),
+       banner_image: f => document.getElementById('drop-banner-image'),
+    banner_video: f => document.getElementById('drop-banner-video'),
             overview_title: f => f.querySelector('[name="overview_title"]'),
             overview_description: f => f.querySelector('[name="overview_description"]'),
             overview_image: f => document.getElementById('drop-overview-image'),

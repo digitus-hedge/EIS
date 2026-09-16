@@ -23,12 +23,12 @@
     <div class="crumbs">
         <span onclick="window.location='{{ route('admin.dashboard') }}'">Home</span>
         <span>&rsaquo;</span>
-        <b>Service Cards</b>
+        <b>Services</b>
     </div>
 
     <div class="page-header">
         <div>
-            <h1>Service Cards</h1>
+            <h1>Services</h1>
             <p>These are the services shown in the Services section of your homepage.</p>
         </div>
         <a href="{{ route('admin.home.services.create') }}" class="btn-primary">

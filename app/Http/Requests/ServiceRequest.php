@@ -14,17 +14,16 @@ class ServiceRequest extends FormRequest
     public function rules(): array
     {
         $service = $this->route('service');
-        $hasExistingBanner   = $service && $service->banner_image;
         $hasExistingOverview = $service && $service->overview_image;
 
         return [
             // Banner
             'banner_title'       => ['required', 'string', 'max:55'],
             'banner_description' => ['required', 'string', 'max:400'],
-            'banner_image'       => $hasExistingBanner
-                ? ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240']
-                : ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
+            'banner_image'       => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
+            'banner_video'       => ['nullable', 'mimes:mp4,mov,webm', 'max:20480'],
             'remove_banner_image' => ['nullable', 'boolean'],
+            'remove_banner_video' => ['nullable', 'boolean'],
 
             'show_on_home' => ['nullable', 'boolean'],
 
@@ -36,11 +35,9 @@ class ServiceRequest extends FormRequest
                 : ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
             'remove_overview_image' => ['nullable', 'boolean'],
 
-
             // Meta
             'meta_title'       => ['nullable', 'string', 'max:80'],
             'meta_description' => ['nullable', 'string', 'max:200'],
-
 
             // Process — thumbnail and video now genuinely required unless an existing one is present
             'process'                       => ['required', 'array', 'min:1'],
@@ -69,10 +66,12 @@ class ServiceRequest extends FormRequest
             'banner_description.required' => 'Please enter a banner description.',
             'banner_description.max'      => 'Banner description must not exceed 400 characters.',
 
-            'banner_image.required' => 'Please upload a banner image.',
-            'banner_image.image'    => 'The banner image must be a valid image.',
-            'banner_image.mimes'    => 'The banner image must be a JPG, PNG, or WEBP file.',
-            'banner_image.max'      => 'The banner image must not exceed 10MB.',
+            'banner_image.image' => 'The banner image must be a valid image.',
+            'banner_image.mimes' => 'The banner image must be a JPG, PNG, or WEBP file.',
+            'banner_image.max'   => 'The banner image must not exceed 10MB.',
+
+            'banner_video.mimes' => 'The banner video must be an MP4, MOV, or WEBM file.',
+            'banner_video.max'   => 'The banner video must not exceed 20MB.',
 
             'overview_title.required'       => 'Please enter an overview title.',
             'overview_title.max'            => 'Overview title must not exceed 30 characters.',
@@ -112,5 +111,35 @@ class ServiceRequest extends FormRequest
             'features.*.icon.mimes'       => 'Feature icon must be a JPG, PNG, or WEBP file.',
             'features.*.icon.max'         => 'Feature icon must not exceed 10MB.',
         ];
+    }
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            $service = $this->route('service');
+
+            // ===== Banner Image OR Video: exactly one required, not both, not neither =====
+            $hasNewBannerImage = $this->hasFile('banner_image');
+            $hasNewBannerVideo = $this->hasFile('banner_video');
+
+            $hasExistingBannerImage = $service
+                && !empty($service->banner_image)
+                && !$this->boolean('remove_banner_image');
+
+            $hasExistingBannerVideo = $service
+                && !empty($service->banner_video)
+                && !$this->boolean('remove_banner_video');
+
+            $willHaveBannerImage = $hasNewBannerImage || $hasExistingBannerImage;
+            $willHaveBannerVideo = $hasNewBannerVideo || $hasExistingBannerVideo;
+
+            if (!$willHaveBannerImage && !$willHaveBannerVideo) {
+                $validator->errors()->add('banner_image', 'Please upload either a Banner Image or a Banner Video.');
+            }
+
+            if ($willHaveBannerImage && $willHaveBannerVideo) {
+                $validator->errors()->add('banner_image', 'Please choose only one — a Banner Image OR a Banner Video, not both.');
+            }
+        });
     }
 }
