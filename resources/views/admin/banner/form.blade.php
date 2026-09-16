@@ -281,7 +281,7 @@ function submitBannerForm() {
             icon: 'success',
             title: 'Saved!',
             text: 'Banner updated successfully.',
-            confirmButtonColor: '#BF0001',
+            confirmButtonColor: '#EF7B2E',
             timer: 2000,
             timerProgressBar: true
         }).then(() => {
@@ -293,7 +293,7 @@ function submitBannerForm() {
             icon: 'error',
             title: 'Error',
             text: 'Something went wrong. Please try again.',
-            confirmButtonColor: '#BF0001'
+            confirmButtonColor: '#EF7B2E'
         });
     })
     .finally(() => {
