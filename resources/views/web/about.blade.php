@@ -1,6 +1,11 @@
 @extends('web.layout.app')
+@section('title', $about->who_we_are_meta_title ?? 'About Us - Energy Inspection Services Ltd')
+@section('meta_description', $about->who_we_are_meta_description ?? 'Learn more about Energy Inspection Services Ltd, a specialized Oil & Gas inspection provider.')
 
 @section('content')
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
 <style>
   :root{
     --orange: #E8792D;
@@ -38,160 +43,157 @@
 
 <style>
 
-  .hero{
-    position:relative;
-    min-height:100vh;
-    min-height:100svh;
-    display:flex;
-    flex-direction:column;
-    background:
-      radial-gradient(ellipse at 70% 25%, rgba(120,190,190,0.35), transparent 20%),
-      linear-gradient(100deg, rgba(10,20,20,0.82) 0%, rgba(10,20,20,0.35) 42%, rgba(60,90,90,0.15) 60%, rgba(10,20,20,0.55) 100%);
-    overflow:hidden;
-    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  }
+ .hero{
+  position:relative;
+  min-height:100vh;
+  min-height:100svh;
+  display:flex;
+  flex-direction:column;
+  background:#0a1414;
+  overflow:hidden;
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+}
 
-  .hero *{ box-sizing:border-box; }
+.hero *{ box-sizing:border-box; }
 
-  .hero-slides{
-    position:absolute;
-    inset:0;
-    z-index:0;
-  }
+.hero-slides{
+  position:absolute;
+  inset:0;
+  z-index:0;
+}
 
-  .hero-slide{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    opacity:0;
-    transition:opacity 1.2s ease;
-  }
+.hero-slide{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center 30%;   /* NEW — pulls focus up slightly so subjects aren't cropped awkwardly */
+  opacity:0;
+  transform:scale(1.06);
+  transition:opacity 1.4s ease, transform 8s ease;
+}
 
-  .hero-slide.active{
-    opacity:1;
-    z-index:1;
-  }
+.hero-slide.active{
+  opacity:1;
+  z-index:1;
+  transform:scale(1);           /* slow Ken-Burns style zoom-out once active */
+}
 
-  /* Video background fills the same space as image slides */
-  .hero-video{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    z-index:1;
-  }
+/* ===== Layered gradient overlay for a premium, cinematic look ===== */
+.hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:2;
+  background:
+    linear-gradient(180deg, rgba(6,14,14,0.35) 0%, rgba(6,14,14,0.08) 30%, rgba(6,14,14,0.2) 65%, rgba(6,14,14,0.62) 100%),
+    linear-gradient(100deg, rgba(8,16,16,0.55) 0%, rgba(8,16,16,0.2) 45%, rgba(20,30,30,0.02) 70%);
+  pointer-events:none;
+}
 
-  .hero-dots{
-    position:absolute;
-    left:60px;
-    bottom:36px;
-    z-index:10;
-    display:flex;
-    gap:10px;
-  }
+.hero::after{
+  content:"";
+  position:absolute;
+  left:-10%;
+  bottom:-20%;
+  width:60%;
+  height:70%;
+  z-index:2;
+  background:radial-gradient(circle, rgba(232,121,45,0.14) 0%, transparent 65%);
+  pointer-events:none;
+}
 
-  .hero-dot{
-    width:11px;
-    height:11px;
-    border-radius:50%;
-    background:rgba(255,255,255,0.45);
-    border:none;
-    padding:0;
-    cursor:pointer;
-    transition:background 0.2s ease, transform 0.2s ease;
-  }
+.hero-vignette{
+  position:absolute;
+  inset:0;
+  z-index:3;
+  box-shadow:inset 0 0 130px rgba(0,0,0,0.35);
+  pointer-events:none;
+}
 
-  .hero-dot.active{
-    background:var(--orange);
-    transform:scale(1.15);
-  }
+.hero .rig-decor{
+  z-index:2;
+}
 
-  .hero .rig-decor{
-    z-index:2;
-  }
+.hero .hero-content{
+  position:relative;
+  z-index:5;
+  flex:1;
+  display:flex;
+  align-items:flex-end;
+  justify-content:flex-start;
+  padding:0 90px 30px;
+}
 
-    .hero .hero-content{
-    position:relative;
-    z-index:5;
-    flex:1;
-    display:flex;
-    align-items:flex-end;
-    justify-content:flex-start;
-    padding:0 90px 30px;
-  }
+.hero .hero-inner{ max-width:760px; }
+.hero.has-video::before,
+.hero.has-video::after{
+  display:none;
+}
 
-  .hero .hero-inner{ max-width:760px; }
+.hero.has-video h1,
+.hero.has-video .eyebrow,
+.hero.has-video .lede{
+  text-shadow: 0 2px 12px rgba(0,0,0,0.75);   /* stronger per-letter shadow instead of a background wash */
+}
+.hero .eyebrow{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  gap:12px;
+  color:var(--cream);
+  font-family:'Cormorant Garamond', 'Segoe UI', serif;
+  font-style:italic;
+  font-weight:600;
+  font-size:20px;
+  letter-spacing:0.4px;
+  text-transform:none;      /* was uppercase — italics read better in normal case */
+  margin-bottom:22px;
+}
+.hero-video{
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  z-index:1;
+  display:block;
+}
+.hero .eyebrow::before{
+  content:"";
+  width:34px;
+  height:2px;
+  background:var(--orange);
+  display:inline-block;
+}
 
-  .hero .eyebrow{
-    color:var(--cream);
-    font-size:19px;
-    font-weight:600;
-    margin-bottom:22px;
-    letter-spacing:0.2px;
-  }
+.hero h1{
+  color:var(--white);
+  font-size:clamp(28px, 4.2vw, 60px);
+  line-height:1.12;
+  font-weight:800;
+  letter-spacing:-0.5px;
+  margin:0 0 26px;
+  text-shadow: 0 4px 32px rgba(0,0,0,0.55);
+  word-break:break-word;
+}
 
-  .hero h1{
-    color:var(--white);
-    font-size:clamp(28px, 4.2vw, 60px);
-    line-height:1.12;
-    font-weight:800;
-    letter-spacing:-0.5px;
-    margin:0 0 26px;
-    text-shadow: 0 2px 24px rgba(0,0,0,0.35);
-    word-break:break-word;
-  }
+.hero .lede{
+  color:rgba(255,255,255,0.92);
+  font-size:clamp(15px, 1.6vw, 19px);
+  line-height:1.55;
+  max-width:640px;
+  margin:0 0 36px;
+}
 
-  .hero .lede{
-    color:rgba(255,255,255,0.92);
-    font-size:clamp(15px, 1.6vw, 19px);
-    line-height:1.55;
-    max-width:640px;
-    margin:0 0 36px;
-  }
-
-  .hero .cta-row{
-    display:flex;
-    gap:18px;
-    flex-wrap:wrap;
-  }
-
-  .hero .btn{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    padding:16px 30px;
-    border-radius:30px;
-    font-size:16px;
-    font-weight:700;
-    text-decoration:none;
-    transition: transform 0.15s ease, background 0.2s ease, color 0.2s ease;
-    cursor:pointer;
-    border:2px solid transparent;
-    white-space:nowrap;
-  }
-
-  .hero .btn-primary{
-    background:var(--orange);
-    color:var(--white);
-  }
-  .hero .btn-primary:hover{
-    background:var(--orange-dark);
-    transform:translateY(-2px);
-  }
-
-  .hero .btn-secondary{
-    background:transparent;
-    border-color:rgba(255,255,255,0.75);
-    color:var(--white);
-  }
-  .hero .btn-secondary:hover{
-    background:rgba(255,255,255,0.12);
-    transform:translateY(-2px);
-  }
-
+@media (prefers-reduced-motion: reduce){
+  .hero-slide{ transition:opacity 1.2s ease; transform:none !important; }
+}
   /* ===== Tablet ===== */
    @media (max-width: 1024px){
     .hero .hero-content{ padding:0 50px 70px; }
@@ -204,34 +206,24 @@
   }
 
   /* ===== Phones ===== */
-  @media (max-width: 600px){
-    .hero{ min-height:auto; }
-    .hero .hero-content{
-      padding:60px 20px 60px;
-      align-items:flex-start;
-    }
-    .hero .eyebrow{ font-size:15px; margin-bottom:14px; }
-    .hero h1{ margin-bottom:18px; }
-    .hero .lede{ margin-bottom:26px; }
-    .hero .cta-row{
-      flex-direction:column;
-      width:100%;
-    }
-    .hero .btn{
-      width:100%;
-      padding:15px 24px;
-    }
-    .hero-dots{ left:20px; bottom:16px; }
-    .hero-dot{ width:9px; height:9px; }
+ @media (max-width: 600px){
+  .hero{
+    min-height:auto;      /* was 100vh/100svh — now sizes to content, like the reference */
   }
-
-  /* ===== Very small phones ===== */
-  @media (max-width: 380px){
-    .hero .hero-content{ padding:48px 16px 48px; }
-    .hero .eyebrow{ font-size:14px; }
-    .hero .btn{ font-size:14px; padding:14px 20px; }
+  .hero .hero-content{
+    padding:110px 20px 40px;
+    align-items:flex-start;   /* content flows naturally instead of being pinned to bottom */
   }
+  .hero .eyebrow{ font-size:19px; margin-bottom:12px; }
+  .hero h1{ margin-bottom:16px; font-size:clamp(26px, 7vw, 34px); }
+  .hero .lede{ margin-bottom:0; }
+  .hero-vignette{ box-shadow:inset 0 0 80px rgba(0,0,0,0.28); }
+}
 
+@media (max-width: 380px){
+  .hero .hero-content{ padding:100px 16px 32px; }
+  .hero .eyebrow{ font-size:17px; }
+}
   @media (prefers-reduced-motion: reduce){
     .hero-slide{ transition:none; }
     .hero .btn{ transition:none; }
@@ -439,7 +431,6 @@
   flex:1;
   min-width:0;
   position:relative;
-  min-height:480px;
 }
 
 .footprint-locations::-webkit-scrollbar{ width:6px; }
@@ -490,9 +481,12 @@
   display:flex;
   flex-direction:column;
   gap:30px;
-  min-height:460px; /* keeps 2-office pages and 1-office pages the same height */
 }
-
+.footprint-empty{
+  color:#8a8a8a;
+  font-size:15px;
+  padding:12px 0 0;
+}
 .footprint-dots{
   display:flex;
   gap:9px;
@@ -1126,10 +1120,21 @@
   .certifications-grid{ grid-template-columns:1fr 1fr; gap:16px; }
 }
 </style>
-<section class="hero">
+<section class="hero @if(!empty($about->banner_video)) has-video @endif">
 @include('web.layout.navbar')
 
-  @if ($about && $about->banner)
+  @if (!empty($about->banner_video))
+   <video
+  class="hero-video"
+  src="{{ asset('storage/' . $about->banner_video) }}"
+  poster="{{ $about->banner ? asset('storage/' . $about->banner) : '' }}"
+  autoplay
+  muted
+  loop
+  playsinline
+  preload="auto"
+></video>
+  @elseif ($about && $about->banner)
     <div class="hero-slides">
       <img
         src="{{ asset('storage/' . $about->banner) }}"
@@ -1139,6 +1144,10 @@
     </div>
   @endif
 
+  @if (empty($about->banner_video))
+    <div class="hero-vignette" aria-hidden="true"></div>
+  @endif
+
   <div class="rig-decor" aria-hidden="true"></div>
   <div class="hero-figure" aria-hidden="true"></div>
 
@@ -1146,6 +1155,9 @@
     <div class="hero-inner">
       <p class="eyebrow">Quality. Safety. Reliability.</p>
       <h1>{{ $about->title ?? '' }}</h1>
+      @if (!empty($about->banner_description))
+        <p class="lede">{{ $about->banner_description }}</p>
+      @endif
     </div>
   </div>
 </section>
@@ -1192,39 +1204,43 @@
       <div class="footprint-locations" id="footprintLocations">
   @forelse ($locations as $index => $location)
     @php $officeChunks = $location->offices->chunk(2)->values(); @endphp
-    <div class="footprint-location-panel{{ $index === 0 ? ' is-active' : '' }}" data-location-id="{{ $location->id }}">
-      <h3 class="footprint-panel-title">{{ $location->title }}</h3>
+   <div class="footprint-location-panel{{ $index === 0 ? ' is-active' : '' }}" data-location-id="{{ $location->id }}">
+  <h3 class="footprint-panel-title">{{ $location->title }}</h3>
 
-      <div class="footprint-offices-viewport">
-        <div class="footprint-offices-track" data-office-track>
-          @foreach ($officeChunks as $chunk)
-            <div class="footprint-office-page">
-              @foreach ($chunk as $office)
-                <div class="footprint-location reveal reveal-right">
-                  <div class="footprint-location-photo">
-                    @if ($office->image)
-                      <img src="{{ asset('storage/' . $office->image) }}" alt="{{ $office->title }}">
-                    @endif
-                  </div>
-                  <div class="footprint-location-text">
-                    <h4 class="footprint-location-title">{{ $office->title }}</h4>
-                    <p class="footprint-location-desc">{{ $office->description }}</p>
-                  </div>
+  @if ($location->offices->isEmpty())
+    <p class="footprint-empty">No offices added for this location yet.</p>
+  @else
+    <div class="footprint-offices-viewport">
+      <div class="footprint-offices-track" data-office-track>
+        @foreach ($officeChunks as $chunk)
+          <div class="footprint-office-page">
+            @foreach ($chunk as $office)
+              <div class="footprint-location reveal reveal-right">
+                <div class="footprint-location-photo">
+                  @if ($office->image)
+                    <img src="{{ asset('storage/' . $office->image) }}" alt="{{ $office->title }}">
+                  @endif
                 </div>
-              @endforeach
-            </div>
-          @endforeach
-        </div>
+                <div class="footprint-location-text">
+                  <h4 class="footprint-location-title">{{ $office->title }}</h4>
+                  <p class="footprint-location-desc">{{ $office->description }}</p>
+                </div>
+              </div>
+            @endforeach
+          </div>
+        @endforeach
       </div>
-
-      @if ($officeChunks->count() > 1)
-        <div class="footprint-dots" data-office-dots>
-          @foreach ($officeChunks as $i => $chunk)
-            <button type="button" class="footprint-dot{{ $i === 0 ? ' active' : '' }}" data-page-index="{{ $i }}" aria-label="Show offices page {{ $i + 1 }}"></button>
-          @endforeach
-        </div>
-      @endif
     </div>
+
+    @if ($officeChunks->count() > 1)
+      <div class="footprint-dots" data-office-dots>
+        @foreach ($officeChunks as $i => $chunk)
+          <button type="button" class="footprint-dot{{ $i === 0 ? ' active' : '' }}" data-page-index="{{ $i }}" aria-label="Show offices page {{ $i + 1 }}"></button>
+        @endforeach
+      </div>
+    @endif
+  @endif
+</div>
   @empty
     <p style="color:#888;">No locations added yet.</p>
   @endforelse

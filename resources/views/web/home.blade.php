@@ -1,4 +1,6 @@
 @extends('web.layout.app')
+@section('title', $banner->meta_title ?? 'Energy Inspection Services Ltd - Quality OCTG Inspection Services')
+@section('meta_description', $banner->meta_description ?? 'Energy Inspection Services Ltd provides quality OCTG inspection services to the oil and gas industry in Kurdistan, Iraq.')
 
 @section('content')
 
@@ -1347,7 +1349,7 @@
       <h2>Trusted expertise for critical energy assets.</h2>
       <p>Professional solutions focused on safety, reliability and operational continuity.</p>
     </div>
-    <a href="{{ url('#') }}" class="about-cta">
+    <a href="{{ url('/services') }}" class="about-cta">
       Request Information <span class="arrow">&#8594;</span>
     </a>
   </div>

@@ -1,6 +1,11 @@
 @extends('web.layout.app')
+@section('title', $service->meta_title ?? $service->banner_title ?? 'Service - Energy Inspection Services Ltd')
+@section('meta_description', $service->meta_description ?? $service->banner_description ?? 'Specialized oil and gas inspection services from Energy Inspection Services Ltd.')
 
 @section('content')
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
     <style>
         :root {
             --orange: #E8792D;
@@ -11,86 +16,149 @@
         }
 
         .hero {
-            position: relative;
-            min-height: 100vh;
-            min-height: 100svh;
-            display: flex;
-            flex-direction: column;
-            background:
-                radial-gradient(ellipse at 70% 25%, rgba(120, 190, 190, 0.35), transparent 20%),
-                linear-gradient(100deg, rgba(10, 20, 20, 0.82) 0%, rgba(10, 20, 20, 0.35) 42%, rgba(60, 90, 90, 0.15) 60%, rgba(10, 20, 20, 0.55) 100%);
-            overflow: hidden;
-            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-        }
+    position: relative;
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    background:#0a1414;
+    overflow: hidden;
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+}
 
-        .hero * {
-            box-sizing: border-box;
-        }
+.hero * {
+    box-sizing: border-box;
+}
 
-        .hero-slides {
-            position: absolute;
-            inset: 0;
-            z-index: 0;
-        }
+.hero-slides {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
 
-        .hero-slide {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0;
-            transition: opacity 1.2s ease;
-        }
+.hero-slide {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position:center 30%;
+    opacity: 0;
+    transform:scale(1.06);
+    transition: opacity 1.4s ease, transform 8s ease;
+}
 
-        .hero-slide.active {
-            opacity: 1;
-            z-index: 1;
-        }
+.hero-slide.active {
+    opacity: 1;
+    z-index: 1;
+    transform:scale(1);
+}
 
-        .hero .rig-decor {
-            z-index: 2;
-        }
+.hero-video{
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  z-index:1;
+  display:block;
+}
 
-       .hero .hero-content {
-        position: relative;
-        z-index: 5;
-        flex: 1;
-        display: flex;
-        align-items: flex-end;      /* was center — now bottom-anchored */
-        justify-content: flex-start;
-        padding: 0 90px 90px;       /* added bottom padding */
-    }
+/* ===== Layered gradient overlay for image banners only ===== */
+.hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:2;
+  background:
+    linear-gradient(180deg, rgba(6,14,14,0.35) 0%, rgba(6,14,14,0.08) 30%, rgba(6,14,14,0.2) 65%, rgba(6,14,14,0.62) 100%),
+    linear-gradient(100deg, rgba(8,16,16,0.55) 0%, rgba(8,16,16,0.2) 45%, rgba(20,30,30,0.02) 70%);
+  pointer-events:none;
+}
 
-    .hero-video{
-      position:absolute;
-      inset:0;
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      z-index:1;
-    }
+.hero::after{
+  content:"";
+  position:absolute;
+  left:-10%;
+  bottom:-20%;
+  width:60%;
+  height:70%;
+  z-index:2;
+  background:radial-gradient(circle, rgba(232,121,45,0.14) 0%, transparent 65%);
+  pointer-events:none;
+}
 
-        .hero .hero-inner {
-            max-width: 760px;
-        }
+.hero-vignette{
+  position:absolute;
+  inset:0;
+  z-index:3;
+  box-shadow:inset 0 0 130px rgba(0,0,0,0.35);
+  pointer-events:none;
+}
 
-        .hero .eyebrow {
-            color: var(--cream);
-            font-size: 19px;
-            font-weight: 600;
-            margin-bottom: 22px;
-            letter-spacing: 0.2px;
-        }
+.hero.has-video::before,
+.hero.has-video::after{
+  display:none;
+}
 
-        .hero h1 {
+.hero.has-video h1,
+.hero.has-video .eyebrow,
+.hero.has-video .lede{
+  text-shadow: 0 2px 12px rgba(0,0,0,0.75);
+}
+
+.hero .rig-decor {
+    z-index: 2;
+}
+
+.hero .hero-content {
+    position: relative;
+    z-index: 5;
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding: 0 90px 90px;
+}
+
+.hero .hero-inner {
+    max-width: 760px;
+}
+
+.hero .eyebrow{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  gap:12px;
+  color: var(--cream);
+  font-family:'Cormorant Garamond', 'Segoe UI', serif;
+  font-style:italic;
+  font-weight:600;
+  font-size:20px;
+  letter-spacing:0.4px;
+  margin-bottom: 22px;
+}
+
+.hero .eyebrow::before{
+  content:"";
+  width:34px;
+  height:2px;
+  background:var(--orange);
+  display:inline-block;
+}
+
+.hero h1 {
     color: var(--white);
     font-size: clamp(28px, 4.2vw, 60px);
     line-height: 1.15;
     font-weight: 800;
     letter-spacing: -0.5px;
     margin: 0 0 20px;
-    text-shadow: 0 2px 24px rgba(0, 0, 0, 0.35);
+    text-shadow: 0 4px 32px rgba(0, 0, 0, 0.55);
     word-break: break-word;
 }
 
@@ -103,57 +171,60 @@
     line-height: 1.55;
 }
 
-        @media (max-width: 1024px) {
-           .hero .hero-content {
-            padding: 0 50px 70px;
-        }
-        }
+@media (max-width: 1024px) {
+   .hero .hero-content {
+    padding: 0 50px 70px;
+}
+}
 
-        @media (max-width: 900px) {
-           .hero .hero-content {
-        padding: 0 24px 56px;
+@media (max-width: 900px) {
+   .hero .hero-content {
+    padding: 0 24px 56px;
+}
+}
+
+@media (max-width: 600px) {
+   .hero {
+    min-height: auto;
+}
+
+    .hero .hero-content {
+    padding: 110px 20px 40px;
+    align-items: flex-start;
+}
+
+.hero .eyebrow {
+    font-size: 19px;
+    margin-bottom: 12px;
+}
+
+.hero h1 {
+    margin-bottom: 16px;
+}
+
+.hero .lede {
+    margin-bottom: 0;
+}
+
+.hero-vignette{ box-shadow:inset 0 0 80px rgba(0,0,0,0.28); }
+}
+
+@media (max-width: 380px) {
+   .hero .hero-content {
+    padding: 100px 16px 32px;
+}
+
+.hero .eyebrow {
+    font-size: 17px;
+}
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-slide {
+        transition: opacity 1.2s ease;
+        transform:none !important;
     }
-        }
-
-        @media (max-width: 600px) {
-           .hero {
-        min-height: auto;
-    }
-
-            .hero .hero-content {
-        padding: 60px 20px 48px;
-        align-items: flex-start;
-    }
-
-    .hero .eyebrow {
-        font-size: 15px;
-        margin-bottom: 14px;
-    }
-
-    .hero h1 {
-        margin-bottom: 18px;
-    }
-
-    .hero .lede {
-        margin-bottom: 26px;
-    }
-        }
-
-        @media (max-width: 380px) {
-           .hero .hero-content {
-        padding: 48px 16px 40px;
-    }
-
-    .hero .eyebrow {
-        font-size: 14px;
-    }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .hero-slide {
-                transition: none;
-            }
-        }
+}
 
         .service-overview {
             position: relative;
@@ -1087,7 +1158,7 @@
 }
     </style>
 
-<section class="hero">
+<section class="hero @if(!empty($service->banner_video)) has-video @endif">
     @include('web.layout.navbar')
 
     @if (!empty($service->banner_video))
@@ -1095,6 +1166,7 @@
         <video
             class="hero-video"
             src="{{ Storage::url($service->banner_video) }}"
+            poster="{{ $service->banner_image ? Storage::url($service->banner_image) : '' }}"
             autoplay
             muted
             loop
@@ -1112,6 +1184,10 @@
         </div>
     @endif
 
+    @if (empty($service->banner_video))
+        <div class="hero-vignette" aria-hidden="true"></div>
+    @endif
+
     <div class="rig-decor" aria-hidden="true"></div>
     <div class="hero-figure" aria-hidden="true"></div>
 
@@ -1125,7 +1201,6 @@
         </div>
     </div>
 </section>
-    </section>
 
     <section class="service-overview">
         <div class="overview-inner">
