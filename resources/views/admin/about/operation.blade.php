@@ -245,16 +245,9 @@
         @endif
     </div>
     <div class="op-video-actions">
-        <form action="{{ route('admin.about.operation.videos.destroy', $video) }}" method="POST"
-              class="delete-form" id="delete-form-{{ $video->id }}" style="display:inline;">
-            @csrf @method('DELETE')
-            <button type="button" class="icon-btn icon-delete btn-delete-trigger"
-                    data-form-id="delete-form-{{ $video->id }}"
-                    data-name="{{ $video->title }}" title="Delete">
-                <i class="bi bi-trash3"></i>
-            </button>
-        </form>
-        <button type="button" class="icon-btn icon-edit op-edit-trigger"
+
+
+      <button type="button" class="icon-btn icon-edit op-edit-trigger"
         data-id="{{ $video->id }}"
         data-title="{{ $video->title }}"
         data-description="{{ $video->description }}"
@@ -265,6 +258,18 @@
         title="Edit">
     <i class="bi bi-pencil"></i>
 </button>
+
+
+        <form action="{{ route('admin.about.operation.videos.destroy', $video) }}" method="POST"
+              class="delete-form" id="delete-form-{{ $video->id }}" style="display:inline;">
+            @csrf @method('DELETE')
+            <button type="button" class="icon-btn icon-delete btn-delete-trigger"
+                    data-form-id="delete-form-{{ $video->id }}"
+                    data-name="{{ $video->title }}" title="Delete">
+                <i class="bi bi-trash3"></i>
+            </button>
+        </form>
+      
     </div>
 </div>
                     <p>{{ $video->description }}</p>
