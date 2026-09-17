@@ -1156,7 +1156,225 @@
   .inspection-cta{ padding:48px 16px 56px; }
   .inspection-cta-photo{ aspect-ratio:4/3; }
 }
-    </style>
+   
+.gallery-section{
+  position:relative;
+  background:#FCEFE3; /* light orange */
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  padding:30px 60px 60px;
+  overflow:hidden;
+}
+
+.gallery-section *{ box-sizing:border-box; }
+
+.gallery-inner{ margin:0 auto; }
+
+.gallery-top{
+  margin-bottom:44px;
+  padding:0 60px;
+}
+
+.gallery-eyebrow{
+  color:var(--orange);
+  font-weight:700;
+  font-size:19px;
+  margin:0 0 12px;
+}
+
+.gallery-heading{
+  font-size:clamp(30px, 3.6vw, 46px);
+  line-height:1.2;
+  font-weight:400;
+  color:#111111;
+  margin:0;
+}
+
+/* ===== Auto-scrolling single row ===== */
+.gallery-marquee{
+  position:relative;
+  width:100%;
+  overflow:hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 60px, #000 calc(100% - 60px), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 60px, #000 calc(100% - 60px), transparent 100%);
+}
+
+.gallery-track{
+  display:flex;
+  gap:24px;
+  width:max-content;
+  animation: galleryScroll var(--gallery-duration, 40s) linear infinite;
+}
+
+.gallery-marquee:hover .gallery-track{
+  animation-play-state:paused;
+}
+
+@keyframes galleryScroll{
+  from{ transform:translateX(0); }
+  to{ transform:translateX(-50%); }
+}
+
+.gallery-item{
+  flex:0 0 auto;
+  width:340px;
+  height:260px;
+  border-radius:16px;
+  overflow:hidden;
+  cursor:pointer;
+  box-shadow:0 10px 26px rgba(0,0,0,0.08);
+  transition:transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s ease;
+  position:relative;
+}
+
+.gallery-item:hover{
+  transform:translateY(-6px);
+  box-shadow:0 22px 44px rgba(0,0,0,0.18);
+  z-index:2;
+}
+
+.gallery-item img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  transition:transform 0.7s cubic-bezier(0.16,1,0.3,1);
+}
+
+.gallery-item:hover img{
+  transform:scale(1.08);
+}
+
+.gallery-item-overlay{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(to top, rgba(20,20,20,0.55) 0%, transparent 45%);
+  opacity:0;
+  transition:opacity 0.35s ease;
+  display:flex;
+  align-items:flex-end;
+  padding:16px;
+}
+
+.gallery-item:hover .gallery-item-overlay{
+  opacity:1;
+}
+
+.gallery-item-zoom{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.95);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--navy);
+  font-size:15px;
+  margin-left:auto;
+  box-shadow:0 6px 16px rgba(0,0,0,0.2);
+}
+
+.gallery-top.reveal{
+  opacity:0;
+  transform:translateY(24px);
+  transition:opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1);
+}
+
+.gallery-top.reveal.in-view{
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* ===== Lightbox ===== */
+.gallery-lightbox{
+  position:fixed;
+  inset:0;
+  background:rgba(10,20,20,0.92);
+  z-index:9999;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:40px;
+}
+
+.gallery-lightbox.active{ display:flex; }
+
+.gallery-lightbox img{
+  max-width:90vw;
+  max-height:85vh;
+  border-radius:10px;
+  box-shadow:0 30px 70px rgba(0,0,0,0.5);
+  animation:lightboxPop 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+@keyframes lightboxPop{
+  0%{ opacity:0; transform:scale(0.92); }
+  100%{ opacity:1; transform:scale(1); }
+}
+
+.gallery-lightbox-close{
+  position:absolute; top:28px; right:36px;
+  width:44px; height:44px; border-radius:50%;
+  background:rgba(255,255,255,0.12);
+  border:1px solid rgba(255,255,255,0.3);
+  color:#fff; font-size:20px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+  transition:background 0.2s ease, transform 0.2s ease;
+}
+
+.gallery-lightbox-close:hover{
+  background:rgba(255,255,255,0.25);
+  transform:rotate(90deg);
+}
+
+.gallery-lightbox-nav{
+  position:absolute; top:50%; transform:translateY(-50%);
+  width:50px; height:50px; border-radius:50%;
+  background:rgba(255,255,255,0.12);
+  border:1px solid rgba(255,255,255,0.3);
+  color:#fff; font-size:20px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+  transition:background 0.2s ease;
+}
+
+.gallery-lightbox-nav:hover{ background:rgba(255,255,255,0.25); }
+.gallery-lightbox-prev{ left:30px; }
+.gallery-lightbox-next{ right:30px; }
+
+/* ===== Responsive ===== */
+@media (max-width: 900px){
+  .gallery-section{ padding:24px 0 70px; }
+  .gallery-top{ padding:0 24px; }
+  .gallery-item{ width:260px; height:200px; }
+}
+
+@media (max-width: 600px){
+  .gallery-heading{ font-size:clamp(24px, 6.5vw, 30px); }
+  .gallery-item{ width:220px; height:170px; border-radius:14px; }
+  .gallery-track{ gap:16px; }
+  .gallery-lightbox-nav{ width:40px; height:40px; font-size:16px; }
+  .gallery-lightbox-prev{ left:12px; }
+  .gallery-lightbox-next{ right:12px; }
+  .gallery-lightbox-close{ top:16px; right:16px; }
+}
+
+@media (max-width: 420px){
+  .gallery-item{ width:180px; height:140px; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .gallery-track{ animation:none !important; }
+  .gallery-marquee{ overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  .gallery-item,
+  .gallery-item img,
+  .gallery-item-overlay,
+  .gallery-lightbox-close,
+  .gallery-top.reveal{ transition:none !important; }
+  .gallery-top.reveal{ opacity:1 !important; transform:none !important; }
+}
+   
+</style>
 
 <section class="hero @if(!empty($service->banner_video)) has-video @endif">
     @include('web.layout.navbar')
@@ -1312,6 +1530,59 @@
     </div>
   </div>
 </section>
+@endif
+@if (!empty($service->gallery))
+@php
+  $galleryImages = collect($service->gallery)->filter(fn($item) => !empty($item['image']))->values();
+@endphp
+
+@if ($galleryImages->count())
+<section class="gallery-section">
+  <div class="gallery-inner">
+    <div class="gallery-top reveal reveal-left">
+      <p class="gallery-eyebrow">Gallery</p>
+      <h2 class="gallery-heading">See the Work in Action</h2>
+    </div>
+
+    <div class="gallery-marquee">
+      <div class="gallery-track" id="galleryTrack">
+        {{-- First pass --}}
+        @foreach ($galleryImages as $index => $item)
+          <div class="gallery-item" data-full="{{ Storage::url($item['image']) }}">
+            <img src="{{ Storage::url($item['image']) }}"
+                 alt="{{ $service->banner_title ?? 'Service gallery image' }} {{ $index + 1 }}"
+                 loading="lazy">
+            <div class="gallery-item-overlay">
+              <span class="gallery-item-zoom">&#9906;</span>
+            </div>
+          </div>
+        @endforeach
+
+        {{-- Duplicate pass for seamless looping (only needed if scrolling) --}}
+        @if ($galleryImages->count() > 1)
+          @foreach ($galleryImages as $index => $item)
+            <div class="gallery-item" data-full="{{ Storage::url($item['image']) }}" aria-hidden="true">
+              <img src="{{ Storage::url($item['image']) }}"
+                   alt=""
+                   loading="lazy">
+              <div class="gallery-item-overlay">
+                <span class="gallery-item-zoom">&#9906;</span>
+              </div>
+            </div>
+          @endforeach
+        @endif
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="gallery-lightbox" id="galleryLightbox">
+  <button type="button" class="gallery-lightbox-close" id="galleryLightboxClose" aria-label="Close">&times;</button>
+  <button type="button" class="gallery-lightbox-nav gallery-lightbox-prev" id="galleryLightboxPrev" aria-label="Previous">&#10094;</button>
+  <img id="galleryLightboxImg" src="" alt="">
+  <button type="button" class="gallery-lightbox-nav gallery-lightbox-next" id="galleryLightboxNext" aria-label="Next">&#10095;</button>
+</div>
+@endif
 @endif
 @if ($relatedServices->count())
 <section class="related-services">
@@ -1485,7 +1756,73 @@
       loadMainProcessVideo(processVideo);
     });
   }
+ document.addEventListener('DOMContentLoaded', function () {
+  const track = document.getElementById('galleryTrack');
+  const lightbox = document.getElementById('galleryLightbox');
+  if (!track || !lightbox) return;
 
+  const allItems = Array.from(track.querySelectorAll('.gallery-item'));
+  const uniqueCount = allItems.filter(el => !el.hasAttribute('aria-hidden')).length;
+
+  // Slower scroll for more images, faster for fewer — tweak the multiplier to taste
+  const duration = Math.max(20, uniqueCount * 6);
+  track.style.setProperty('--gallery-duration', duration + 's');
+
+  // Pause the marquee if there's only one image (nothing to scroll)
+  if (uniqueCount <= 1) {
+    track.style.animation = 'none';
+  }
+
+  const lightboxImg = document.getElementById('galleryLightboxImg');
+  const closeBtn = document.getElementById('galleryLightboxClose');
+  const prevBtn = document.getElementById('galleryLightboxPrev');
+  const nextBtn = document.getElementById('galleryLightboxNext');
+
+  const uniqueUrls = allItems
+    .filter(el => !el.hasAttribute('aria-hidden'))
+    .map(el => el.getAttribute('data-full'));
+
+  let currentIndex = 0;
+
+  function openLightbox(url) {
+    currentIndex = uniqueUrls.indexOf(url);
+    if (currentIndex === -1) currentIndex = 0;
+    lightboxImg.src = uniqueUrls[currentIndex];
+    lightbox.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  function showRelative(offset) {
+    currentIndex = (currentIndex + offset + uniqueUrls.length) % uniqueUrls.length;
+    lightboxImg.src = uniqueUrls[currentIndex];
+  }
+
+  allItems.forEach(function (item) {
+    item.addEventListener('click', function () {
+      openLightbox(item.getAttribute('data-full'));
+    });
+  });
+
+  closeBtn.addEventListener('click', closeLightbox);
+  prevBtn.addEventListener('click', function () { showRelative(-1); });
+  nextBtn.addEventListener('click', function () { showRelative(1); });
+
+  lightbox.addEventListener('click', function (e) {
+    if (e.target === lightbox) closeLightbox();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (!lightbox.classList.contains('active')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') showRelative(-1);
+    if (e.key === 'ArrowRight') showRelative(1);
+  });
+});
   document.querySelectorAll('.process-card').forEach(function (card) {
     card.addEventListener('click', function () {
       loadMainProcessVideo(card);

@@ -54,6 +54,10 @@ class ServiceRequest extends FormRequest
             'features.*.description'   => ['required', 'string', 'max:1000'],
             'features.*.icon'          => ['required_without:features.*.existing_icon', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
             'features.*.existing_icon' => ['nullable', 'string'],
+
+            'gallery' => 'nullable|array',
+            'gallery.*.image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240', // 10MB
+            'gallery.*.existing_image' => 'nullable|string',
         ];
     }
 

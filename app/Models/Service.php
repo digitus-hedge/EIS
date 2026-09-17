@@ -23,6 +23,7 @@ class Service extends Model
     protected $casts = [
         'process'  => 'array',
         'features' => 'array',
+         'gallery' => 'array',
         'show_on_home' => 'boolean',
 
     ];

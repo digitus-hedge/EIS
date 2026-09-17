@@ -366,7 +366,32 @@
             @endif
         </div>
 
+        {{-- ================= GALLERY SECTION ================= --}}
+<div class="card">
+    <div class="section-title">
+        <h2><span class="icon"><i class="bi bi-images"></i></span> Gallery</h2>
+    </div>
+    <p class="field-hint">Add extra images to showcase for this service. Click a tile to upload, use the × to remove.</p>
 
+    <div class="notice caution">
+        <i class="bi bi-exclamation-triangle" style="margin-top:1px;"></i>
+        <p><b>Recommended size:</b> 800 &times; 800px &middot; JPG, PNG, WEBP &middot; up to 10MB each.</p>
+    </div>
+
+    <div class="gallery-grid" id="galleryGrid"></div>
+    <button type="button" id="addGalleryBtn" class="btn-add-row">
+        <i class="bi bi-plus-lg"></i> Add Image
+    </button>
+
+    @error('gallery')
+        <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+    @enderror
+    @if ($errors->has('gallery.*.image'))
+        <span class="field-error">
+            <i class="bi bi-exclamation-circle"></i> Please check each gallery image.
+        </span>
+    @endif
+</div>
 
         {{-- ================= META TITLE ================= --}}
 <div class="card">
@@ -486,7 +511,19 @@
         <button type="button" class="btn-remove-row inspection-remove"><i class="bi bi-trash3"></i></button>
     </div>
 </template>
-
+<template id="galleryRowTemplate">
+    <div class="gallery-tile">
+        <div class="drop img-slot" data-row-slot="gallery-image">
+            <div class="preview-placeholder gallery-preview">
+                <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:16px;"></i></div>
+                <div class="drop-title">Click to upload</div>
+            </div>
+        </div>
+        <input type="file" name="gallery[__INDEX__][image]" accept="image/*" hidden
+               onchange="previewGalleryImage(this)">
+        <input type="hidden" name="gallery[__INDEX__][existing_image]" class="existing-gallery-input" value="">
+    </div>
+</template>
 <style>
     .crumbs{ display:flex; align-items:center; gap:8px; font-size:13px; color: var(--faint,#9AA1B2); margin-bottom:10px; }
     .crumbs b{ color: var(--ink,#171B2C); font-weight:600; }
@@ -715,6 +752,18 @@
     object-fit: cover !important;
     display: block;
 }
+.gallery-grid{
+    display:flex; flex-wrap:wrap; gap:14px; margin-bottom:12px;
+}
+.gallery-tile{
+    position:relative; width:140px;
+}
+.gallery-tile .drop.img-slot{
+    aspect-ratio:1/1; height:140px; width:140px; border-radius:12px;
+}
+.gallery-tile .remove-img-btn{
+    position:absolute; top:6px; right:6px;
+}
 </style>
 
 @php
@@ -760,6 +809,24 @@
         })
         ->values()
         ->toArray();
+
+        $galleryForJs = collect(old('gallery', $service->gallery ?? []))
+    ->values()
+    ->map(function ($row, $i) use ($errors) {
+        $row = is_array($row) ? $row : [];
+
+        if (!empty($row['image'])) {
+            $row['image_url'] = Storage::url($row['image']);
+        }
+
+        $row['errors'] = [
+            'image' => $errors->first("gallery.$i.image"),
+        ];
+
+        return $row;
+    })
+    ->values()
+    ->toArray();
 @endphp
 <script>
     // ===== Size limits (must match ServiceRequest validation rules) =====
@@ -1263,8 +1330,8 @@ function removeUploadedVideo(event) {
         const topLevelMap = {
             banner_title: f => f.querySelector('[name="banner_title"]'),
             banner_description: f => f.querySelector('[name="banner_description"]'),
-       banner_image: f => document.getElementById('drop-banner-image'),
-    banner_video: f => document.getElementById('drop-banner-video'),
+            banner_image: f => document.getElementById('drop-banner-image'),
+            banner_video: f => document.getElementById('drop-banner-video'),
             overview_title: f => f.querySelector('[name="overview_title"]'),
             overview_description: f => f.querySelector('[name="overview_description"]'),
             overview_image: f => document.getElementById('drop-overview-image'),
@@ -1336,7 +1403,111 @@ function removeUploadedVideo(event) {
         if (firstErrorField) {
             firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
+
+        m = field.match(/^gallery\.(\d+)\.(\w+)$/);
+if (m) {
+    const [, idx, sub] = m;
+    const input = form.querySelector(`[name="gallery[${idx}][${sub}]"]`);
+    if (!input) return;
+    const target = sub === 'image' ? input.previousElementSibling : input;
+    target.classList.add('input-error');
+    const errorEl = document.createElement('span');
+    errorEl.className = 'field-error';
+    errorEl.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+    target.insertAdjacentElement('afterend', errorEl);
+    return;
+}
+
+if (field === 'gallery') {
+    const container = document.getElementById('galleryGrid');
+    const errorEl = document.createElement('span');
+    errorEl.className = 'field-error';
+    errorEl.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+    container.insertAdjacentElement('afterend', errorEl);
+    return;
+}
     }
+    // ===== Gallery rows =====
+const existingGallery = @json($galleryForJs);
+const galleryGrid = document.getElementById('galleryGrid');
+const galleryTemplate = document.getElementById('galleryRowTemplate');
+let galleryIndex = 0;
+
+function addGalleryRow(data = {}) {
+    const clone = galleryTemplate.content.cloneNode(true);
+    const tile = clone.querySelector('.gallery-tile');
+
+    tile.querySelectorAll('input').forEach(field => {
+        field.name = field.name.replace('__INDEX__', galleryIndex);
+    });
+
+    const dropEl = tile.querySelector('[data-row-slot="gallery-image"]');
+    const fileInput = tile.querySelector('input[type="file"]');
+    const existingInput = tile.querySelector('.existing-gallery-input');
+
+    dropEl.addEventListener('click', () => {
+        if (!dropEl.classList.contains('filled')) fileInput.click();
+    });
+
+    if (data.image) {
+        dropEl.classList.add('filled');
+        dropEl.innerHTML = `
+            <img src="${data.image_url ?? data.image}" alt="Gallery image">
+            <button type="button" class="remove-img-btn" title="Remove"><i class="bi bi-x-lg"></i></button>
+        `;
+        existingInput.value = data.image;
+        wireGalleryRemove(dropEl, existingInput, tile);
+    }
+
+    if (data.errors && data.errors.image) {
+        setFieldError(dropEl, data.errors.image, false);
+    }
+
+    galleryGrid.appendChild(tile);
+    galleryIndex++;
+}
+
+function wireGalleryRemove(dropEl, existingInput, tile) {
+    const btn = dropEl.querySelector('.remove-img-btn');
+    if (!btn) return;
+    btn.onclick = function (ev) {
+        ev.stopPropagation();
+        // Removing a gallery tile entirely removes the row (unlike single-image slots)
+        tile.remove();
+    };
+}
+
+function previewGalleryImage(input) {
+    if (!validateFileSize(input, MAX_IMAGE_BYTES, 'Gallery image')) return;
+
+    const tile = input.closest('.gallery-tile');
+    const dropEl = tile.querySelector('[data-row-slot="gallery-image"]');
+    const oldError = tile.querySelector('.field-error');
+    if (oldError) oldError.remove();
+
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            dropEl.classList.add('filled');
+            dropEl.classList.remove('input-error');
+            dropEl.innerHTML = `
+                <img src="${e.target.result}" alt="Gallery image">
+                <button type="button" class="remove-img-btn" title="Remove"><i class="bi bi-x-lg"></i></button>
+            `;
+            const existingInput = tile.querySelector('.existing-gallery-input');
+            wireGalleryRemove(dropEl, existingInput, tile);
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+document.getElementById('addGalleryBtn').addEventListener('click', () => addGalleryRow());
+
+if (existingGallery.length > 0) {
+    existingGallery.forEach(row => addGalleryRow(row));
+}
+
+    
 </script>
 
 <style>

@@ -10,7 +10,7 @@ class Enquiry extends Model
         'full_name',
         'email',
         'address',
-        'town_city',
+        'phone_number',
         'country',
         'comments',
     ];

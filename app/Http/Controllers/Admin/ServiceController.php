@@ -141,7 +141,11 @@ class ServiceController extends Controller
                 Storage::disk('public')->delete($row['icon']);
             }
         }
-
+        foreach ($service->gallery ?? [] as $row) {
+            if (!empty($row['image'])) {
+                Storage::disk('public')->delete($row['image']);
+            }
+        }
         $service->delete();
 
         return redirect()
@@ -427,6 +431,47 @@ class ServiceController extends Controller
     }
 
     $service->features = count($processedFeatures) > 0 ? array_values($processedFeatures) : null;
+
+    // ===== Gallery: unlimited repeatable images =====
+$galleryInput = $data['gallery'] ?? [];
+$oldGallery = $service->gallery ?? [];
+$processedGallery = [];
+
+foreach ($galleryInput as $index => $row) {
+    $hasNewImage = $request->hasFile("gallery.$index.image");
+
+    if (!$hasNewImage && empty($row['existing_image'])) {
+        continue;
+    }
+
+    $imagePath = $row['existing_image'] ?? null;
+
+    if ($hasNewImage) {
+        if (!empty($oldGallery[$index]['image'])) {
+            Storage::disk('public')->delete($oldGallery[$index]['image']);
+        }
+        $imagePath = $this->processAndStoreImage(
+            $request->file("gallery.$index.image"),
+            $this->imageWidth,
+            $this->imageHeight,
+            'services/gallery'
+        );
+    }
+
+    $processedGallery[] = [
+        'image' => $imagePath,
+    ];
+}
+
+// Clean up any old images whose rows were dropped entirely (removed in the UI)
+$keptImages = collect($processedGallery)->pluck('image')->filter()->all();
+foreach ($oldGallery as $old) {
+    if (!empty($old['image']) && !in_array($old['image'], $keptImages, true)) {
+        Storage::disk('public')->delete($old['image']);
+    }
+}
+
+$service->gallery = count($processedGallery) > 0 ? array_values($processedGallery) : null;
 }
 
 

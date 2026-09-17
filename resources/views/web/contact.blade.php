@@ -7,6 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
     :root{
         --orange: #E8792D;
@@ -184,7 +186,11 @@
     .hero .hero-content{ padding:100px 16px 32px; }
     .hero .eyebrow{ font-size:17px; }
 }
-
+@media (max-width: 340px){
+    .hero h1{ font-size:22px; }
+    .hero .lede{ font-size:14px; }
+    .enquiry-card{ padding:18px 14px; }
+}
 @media (prefers-reduced-motion: reduce){
     .hero-slide{ transition:opacity 1.2s ease; transform:none !important; }
 }
@@ -261,9 +267,11 @@
     }
 
     @media (max-width: 480px){
-        .contact-info{ padding:44px 16px 50px; }
-        .contact-card{ padding:28px 22px; }
-    }
+    .contact-info{ padding:44px 16px 50px; }
+    .contact-card{ padding:28px 22px; }
+    .contact-icon{ width:46px; height:46px; font-size:19px; margin-bottom:16px; }
+    .contact-card-value{ font-size:17px; }
+}
 
     /* ===== Reveal animation ===== */
     .reveal{
@@ -423,6 +431,164 @@
         .get-in-touch-heading{ font-size:26px; }
     }
 
+    /* ===== Find Us / Map section ===== */
+.find-us{
+    position:relative;
+    background:#ffffff;
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    padding:60px 60px 40px;
+}
+
+.find-us *{ box-sizing:border-box; }
+
+.find-us-inner{
+    max-width:1400px;
+    margin:0 auto;
+}
+
+.find-us-top{
+    text-align:center;
+    margin-bottom:44px;
+}
+
+.find-us-eyebrow{
+    color:var(--orange);
+    font-weight:700;
+    font-size:15px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    margin:0 0 14px;
+}
+
+.find-us-heading{
+    font-size:clamp(28px, 3.6vw, 42px);
+    line-height:1.2;
+    font-weight:700;
+    color:#111111;
+    margin:0 0 16px;
+}
+
+.find-us-sub{
+    font-size:15.5px;
+    line-height:1.6;
+    color:#666666;
+    margin:0 auto;
+    max-width:560px;
+}
+
+.find-us-map-wrap{
+    position:relative;
+    max-width:1200px;
+    margin:0 auto;
+    border-radius:28px;
+    overflow:hidden;
+    background:linear-gradient(165deg, #FFF3E7 0%, #FFEAD6 100%);
+    padding:14px;
+    box-shadow:
+        0 30px 70px rgba(0,0,0,0.08),
+        0 4px 14px rgba(0,0,0,0.04),
+        0 0 0 1px rgba(232,121,45,0.08);
+    border:1px solid #F0D8BE;
+}
+
+#contactMap{
+    width:100%;
+    height:560px;
+    display:block;
+    border-radius:18px;
+    overflow:hidden;
+}
+
+/* Floating address card over the map */
+.find-us-card{
+    position:absolute;
+    top:38px;
+    left:38px;
+    z-index:5;
+    background:#ffffff;
+    border-radius:16px;
+    padding:20px 24px;
+    box-shadow:0 18px 36px rgba(0,0,0,0.16);
+    max-width:280px;
+}
+
+.find-us-card-icon{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    background:rgba(232,121,45,0.12);
+    color:var(--orange);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:18px;
+    margin-bottom:12px;
+}
+
+.find-us-card-title{
+    font-size:13px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.4px;
+    color:#888;
+    margin:0 0 6px;
+}
+
+.find-us-card-value{
+    font-size:15px;
+    font-weight:600;
+    color:#111111;
+    line-height:1.5;
+    margin:0 0 14px;
+}
+
+.find-us-card-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:13.5px;
+    font-weight:700;
+    color:var(--orange);
+    text-decoration:none;
+    transition:color 0.2s ease, gap 0.2s ease;
+}
+.find-us-card-btn:hover{
+    color:var(--orange-dark);
+    gap:9px;
+}
+
+/* Custom pin marker */
+.contact-pin{
+    width:34px; height:48px;
+    display:flex; align-items:center; justify-content:center;
+    filter: drop-shadow(0 8px 12px rgba(0,0,0,0.35));
+    animation: pinDrop 0.6s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes pinDrop{
+    from{ transform:translateY(-24px); opacity:0; }
+    to{ transform:translateY(0); opacity:1; }
+}
+
+@media (max-width: 900px){
+    .find-us{ padding:56px 24px 24px; }
+    .find-us-top{ margin-bottom:32px; }
+    .find-us-map-wrap{ max-width:none; border-radius:22px; padding:10px; }
+    #contactMap{ height:440px; border-radius:14px; }
+    .find-us-card{
+        position:static;
+        max-width:none;
+        margin:0 0 12px;
+        border-radius:14px;
+    }
+}
+
+@media (max-width: 480px){
+    .find-us{ padding:44px 16px 16px; }
+    .find-us-heading{ font-size:clamp(22px, 6.5vw, 28px); }
+    .find-us-map-wrap{ padding:8px; }
+    #contactMap{ height:360px; border-radius:12px; }
+    .find-us-card{ padding:16px 18px; }
+}
    .enquiry{
     position:relative;
     background:#ffffff;
@@ -747,6 +913,38 @@
     .enquiry-field textarea{ padding:16px 16px 16px 42px; font-size:14px; }
     .enquiry-field-icon{ font-size:14px; left:16px; top:17px; }
 }
+
+.field-invalid{
+    border-color:#e0554a !important;
+    background:#fff8f7 !important;
+}
+.field-invalid:focus{
+    box-shadow:0 0 0 4px rgba(224,85,74,0.12) !important;
+}
+
+.field-error{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    color:#c0392b;
+    font-size:12.5px;
+    margin-top:7px;
+    font-weight:600;
+}
+
+.leaflet-popup-content-wrapper{
+    border-radius:10px;
+    box-shadow:0 12px 28px rgba(0,0,0,0.18);
+}
+.leaflet-popup-content{
+    margin:10px 14px;
+    font-family:'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    font-size:14px;
+    color:#111111;
+}
+.leaflet-popup-tip{
+    box-shadow:none;
+}
 </style>
 
 <section class="hero @if(!empty($contact->banner_video)) has-video @endif">
@@ -839,7 +1037,30 @@
              style="background-image:url('{{ $contact && $contact->contact_image ? Storage::url($contact->contact_image) : asset('images/hero_image.jpeg') }}')"></div>
     </div>
 </section>
+<section class="find-us">
+    <div class="find-us-inner">
+        <div class="find-us-top reveal">
+            <p class="find-us-eyebrow">Our Location</p>
+            <h2 class="find-us-heading">Find us on the map</h2>
+            <p class="find-us-sub">Visit our office or get directions straight from the map below.</p>
+        </div>
 
+        <div class="find-us-map-wrap reveal reveal-delay-1">
+            @if ($contact && $contact->address)
+                <div class="find-us-card">
+                    <div class="find-us-card-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                    <p class="find-us-card-title">Address</p>
+                    <p class="find-us-card-value">{{ $contact->address }}</p>
+                    <a href="https://www.google.com/maps/dir/?api=1&destination={{ $contact->latitude ?? '36.1911' }},{{ $contact->longitude ?? '43.9877' }}"
+                       target="_blank" rel="noopener" class="find-us-card-btn">
+                        Get directions <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            @endif
+            <div id="contactMap"></div>
+        </div>
+    </div>
+</section>
 <section class="enquiry">
     <div class="enquiry-inner">
 
@@ -874,33 +1095,56 @@
                 <div class="enquiry-row">
                     <div class="enquiry-field">
                         <i class="bi bi-person enquiry-field-icon"></i>
-                        <input type="text" id="fullName" name="full_name" value="{{ old('full_name') }}" placeholder=" ">
-                        <label for="fullName">Full name</label>
+                        <input type="text" id="fullName" name="full_name"
+                            value="{{ old('full_name') }}" placeholder=" "
+                            class="{{ $errors->has('full_name') ? 'field-invalid' : '' }}" required>
+                        <label for="fullName">Full name <span class="required-star">*</span></label>
+                        @error('full_name')
+                            <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                        @enderror
                     </div>
                     <div class="enquiry-field">
                         <i class="bi bi-envelope enquiry-field-icon"></i>
-                        <input type="email" id="emailAddress" name="email" value="{{ old('email') }}" placeholder=" ">
-                        <label for="emailAddress">Email address</label>
+                        <input type="email" id="emailAddress" name="email"
+                            value="{{ old('email') }}" placeholder=" "
+                            class="{{ $errors->has('email') ? 'field-invalid' : '' }}" required>
+                        <label for="emailAddress">Email address <span class="required-star">*</span></label>
+                        @error('email')
+                            <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                        @enderror
                     </div>
                 </div>
 
                 <div class="enquiry-row enquiry-row-single">
                     <div class="enquiry-field">
                         <i class="bi bi-geo-alt enquiry-field-icon"></i>
-                        <input type="text" id="address" name="address" value="{{ old('address') }}" placeholder=" " required>
+                        <input type="text" id="address" name="address"
+                            value="{{ old('address') }}" placeholder=" "
+                            class="{{ $errors->has('address') ? 'field-invalid' : '' }}" required>
                         <label for="address">Address</label>
+                        @error('address')
+                            <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                        @enderror
                     </div>
                 </div>
 
                 <div class="enquiry-row">
                     <div class="enquiry-field">
-                        <i class="bi bi-building enquiry-field-icon"></i>
-                        <input type="text" id="townCity" name="town_city" value="{{ old('town_city') }}" placeholder=" ">
-                        <label for="townCity">Town/City</label>
+                        <i class="bi bi-telephone enquiry-field-icon"></i>
+                        <input type="tel" id="phoneNumber" name="phone_number"
+                            value="{{ old('phone_number') }}" placeholder=" "
+                            class="{{ $errors->has('phone_number') ? 'field-invalid' : '' }}"
+                            inputmode="tel" pattern="[0-9+\-\s()]*"
+                            required>
+                        <label for="phoneNumber">Phone number <span class="required-star">*</span></label>
+                        @error('phone_number')
+                            <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                        @enderror
                     </div>
                     <div class="enquiry-field">
                         <i class="bi bi-flag enquiry-field-icon"></i>
-                        <input type="text" id="country" name="country" value="{{ old('country') }}" placeholder=" ">
+                        <input type="text" id="country" name="country"
+                            value="{{ old('country') }}" placeholder=" ">
                         <label for="country">Country</label>
                     </div>
                 </div>
@@ -924,8 +1168,42 @@
     </div>
 </section>
 @include('web.layout.footer')
-
 <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const mapEl = document.getElementById('contactMap');
+    if (!mapEl) return;
+
+    const lat = {{ $contact->latitude ?? 36.1901 }};
+    const lng = {{ $contact->longitude ?? 44.0091 }};
+
+    const map = L.map('contactMap', { scrollWheelZoom: false }).setView([lat, lng], 15);
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    maxZoom: 20,
+    subdomains: 'abcd',
+}).addTo(map);
+
+    const pinIcon = L.divIcon({
+        className: '',
+        html: '<div class="contact-pin">' +
+            '<svg width="34" height="48" viewBox="0 0 30 42" xmlns="http://www.w3.org/2000/svg">' +
+            '<path d="M15 0C6.7 0 0 6.7 0 15c0 11.25 15 27 15 27s15-15.75 15-27C30 6.7 23.3 0 15 0z" fill="#E8792D"/>' +
+            '<circle cx="15" cy="15" r="6" fill="#fff"/>' +
+            '</svg></div>',
+        iconSize: [34, 48],
+        iconAnchor: [17, 48],
+    });
+
+    L.marker([lat, lng], { icon: pinIcon })
+    .addTo(map)
+    .bindPopup('<strong>Erbil, Iraq</strong>')
+    .openPopup();
+
+    // Re-check size in case the map rendered while its container was hidden/animating
+    setTimeout(function () { map.invalidateSize(); }, 300);
+});
+
     document.addEventListener('DOMContentLoaded', function () {
         const revealEls = document.querySelectorAll('.reveal');
         if ('IntersectionObserver' in window && revealEls.length) {
@@ -942,6 +1220,38 @@
         } else {
             revealEls.forEach(function (el) { el.classList.add('in-view'); });
         }
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const phoneInput = document.getElementById('phoneNumber');
+        if (!phoneInput) return;
+
+        // Allow only digits, spaces, +, -, ( ) while typing
+        phoneInput.addEventListener('input', function () {
+            const cleaned = phoneInput.value.replace(/[^0-9+\-\s()]/g, '');
+            if (cleaned !== phoneInput.value) {
+                phoneInput.value = cleaned;
+            }
+        });
+
+        // Also block obviously invalid keys as they're pressed (belt-and-suspenders)
+        phoneInput.addEventListener('keypress', function (e) {
+            const allowedChar = /[0-9+\-\s()]/;
+            if (!allowedChar.test(e.key)) {
+                e.preventDefault();
+            }
+        });
+
+        // Handle pasted text too (e.g. pasting "+964 (750) 123-abc4")
+        phoneInput.addEventListener('paste', function (e) {
+            e.preventDefault();
+            const pasted = (e.clipboardData || window.clipboardData).getData('text');
+            const cleaned = pasted.replace(/[^0-9+\-\s()]/g, '');
+            const start = phoneInput.selectionStart;
+            const end = phoneInput.selectionEnd;
+            phoneInput.value = phoneInput.value.slice(0, start) + cleaned + phoneInput.value.slice(end);
+            phoneInput.dispatchEvent(new Event('input'));
+        });
     });
 </script>
 @endsection
