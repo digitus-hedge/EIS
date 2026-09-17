@@ -254,12 +254,12 @@
     --navy: #050505;
   }
 
-  .services-intro{
-    position:relative;
-    background:#ffffff;
-    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-    padding:60px 30px 90px 60px;
-  }
+.services-intro{
+  position:relative;
+  background:#ffffff;
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  padding:90px 60px 30px;
+}
 
   .services-intro *{ box-sizing:border-box; }
 
@@ -377,7 +377,7 @@
     position:relative;
     background:#ffffff;
     font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-    padding:80px 60px 100px;
+    padding:80px 60px 30px;
   }
 
   .inspect *{ box-sizing:border-box; }
@@ -607,11 +607,11 @@
     .inspect-pagination{ margin-top:40px; gap:8px; flex-wrap:wrap; }
   }
 
-  .presence{
+.presence{
   position:relative;
   background:#ffffff;
   font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  padding:10px 60px 100px;
+  padding:90px 60px 100px;
   overflow:hidden;
 }
 

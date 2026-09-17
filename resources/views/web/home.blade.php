@@ -537,6 +537,7 @@
   overflow-x:hidden;
   scrollbar-width:none;
   -ms-overflow-style:none;
+  background:transparent;
 }
 
 .services-left::-webkit-scrollbar{
@@ -594,7 +595,7 @@
 }
 
 .service-photo{
-  width:80%;
+  width:100%;
   aspect-ratio: 16 / 9;
   height:170px;
   border-radius:20px;   /* was 24px — now matches .service-card */
@@ -1118,33 +1119,74 @@
   .why-panel-link:hover{ gap:14px; color:var(--orange); }
   .why-panel-link:hover .arrow{ transform:translateX(3px); }
 
-    .why-panel-photo{
+   /* ===== Why Choose Us - Right Image ===== */
+.why-panel-photo{
     position:relative;
     flex:1;
     min-width:0;
     max-width:none;
     height:400px;
-    border-radius:20px;
-    overflow:hidden;
-    background: linear-gradient(165deg, #d9a441 0%, #b97a2e 35%, #5c4326 65%, #2a2016 100%);
-    box-shadow:0 24px 50px rgba(0,0,0,0.16);
-    transition:transform 0.5s cubic-bezier(0.16,1,0.3,1), box-shadow 0.5s ease;
-  }
 
-  .why-panel-photo::after{
+    /* Smooth rounded image */
+    border-radius:28px;
+    overflow:hidden;
+
+    /* Premium image background */
+    background-color:#e8e8e8;
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+
+    /* Soft depth */
+    box-shadow:
+        0 18px 40px rgba(0,0,0,0.12),
+        0 6px 18px rgba(0,0,0,0.06);
+
+    transition:
+        transform 0.5s cubic-bezier(0.16,1,0.3,1),
+        box-shadow 0.5s ease;
+}
+
+/* Dark gradient over bottom of image */
+.why-panel-photo::after{
     content:"";
     position:absolute;
     inset:0;
-    background:linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,0.35) 100%);
-    pointer-events:none;
-    border-radius:20px;
-  }
+    border-radius:28px;
 
-  .why-panel-photo:hover{
-    transform:translateY(-6px);
-    box-shadow:0 32px 60px rgba(0,0,0,0.22);
-    border-radius:20px;
-  }
+    background:
+        linear-gradient(
+            180deg,
+            rgba(0,0,0,0) 45%,
+            rgba(10,20,20,0.08) 65%,
+            rgba(10,20,20,0.55) 100%
+        );
+
+    pointer-events:none;
+}
+
+/* Orange accent behind image */
+.why-panel-photo::before{
+    content:"";
+    position:absolute;
+    z-index:-1;
+
+    top:18px;
+    right:-14px;
+    width:100%;
+    height:100%;
+
+    border-radius:28px;
+    background:rgba(232,121,45,0.14);
+}
+
+/* Image hover */
+.why-panel-photo:hover{
+    transform:translateY(-7px);
+    box-shadow:
+        0 28px 55px rgba(0,0,0,0.18),
+        0 10px 25px rgba(232,121,45,0.10);
+}
 
   .why-panel-badge{
     position:absolute;

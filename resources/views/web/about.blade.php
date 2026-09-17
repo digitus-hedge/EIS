@@ -280,7 +280,6 @@
   .about-intro-right{
     flex:1;
     min-width:0;
-    padding-left:70px;
   }
 
   .about-intro-right p{
@@ -308,10 +307,11 @@
 
 .who-we-are *{ box-sizing:border-box; }
 
+/* center the two columns against each other */
 .who-we-are-inner{
   position:relative;
   display:flex;
-  align-items:flex-start;
+  align-items:center;
   gap:70px;
   margin:0 auto;
 }
@@ -337,34 +337,71 @@
   line-height:1.25;
   font-weight:700;
   color:#111111;
-  margin:0 0 30px;
+  margin:0 0 22px;
+  position:relative;
+  padding-bottom:16px;
+}
+.who-we-are-heading::after{
+  content:"";
+  position:absolute;
+  left:0;
+  bottom:0;
+  width:56px;
+  height:3px;
+  border-radius:2px;
+  background:var(--orange);
 }
 
 .who-we-are-left p{
   font-size:17px;
-  line-height:1.65;
-  color:#333333;
-  margin:0 0 24px;
+  line-height:1.75;
+  color:#3d3d3d;
+  margin:0 0 20px;
 }
 .who-we-are-left p:last-child{ margin-bottom:0; }
 
+/* ===== Photo: proper layered shadow + hover animation ===== */
 .who-we-are-photo{
+  position:relative;
   flex:1;
   min-width:0;
   height:450px;
   border-radius:10px;
   overflow:hidden;
-  box-shadow:0 24px 48px rgba(0,0,0,0.16);
-  transition:box-shadow 0.3s ease;
-  background:
-    linear-gradient(120deg, rgba(30,30,35,0.4), rgba(30,30,35,0.1) 55%, rgba(232,121,45,0.25)),
-    url('{{ asset('images/who_we_are.jpeg') }}');
+  box-shadow:
+    0 2px 6px rgba(0,0,0,0.08),
+    0 20px 40px rgba(0,0,0,0.14),
+    0 8px 50px rgba(232,121,45,0.14);
+  transition:
+    opacity 0.8s cubic-bezier(0.16,1,0.3,1),
+    transform 0.5s cubic-bezier(0.16,1,0.3,1),
+    box-shadow 0.45s ease;
+}
+
+.who-we-are-photo-img{
+  position:absolute;
+  inset:0;
   background-position:center;
   background-size:cover;
+  transform:scale(1.04);
+  transition:transform 1.1s cubic-bezier(0.16,1,0.3,1);
+}
+
+.who-we-are-photo-overlay{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(120deg, rgba(30,30,35,0.4), rgba(30,30,35,0.1) 55%, rgba(232,121,45,0.25));
 }
 
 .who-we-are-photo:hover{
-  box-shadow:0 28px 56px rgba(0,0,0,0.22);
+  transform:translateY(-6px);
+  box-shadow:
+    0 4px 8px rgba(0,0,0,0.1),
+    0 28px 56px rgba(0,0,0,0.2),
+    0 12px 70px rgba(232,121,45,0.24);
+}
+.who-we-are-photo:hover .who-we-are-photo-img{
+  transform:scale(1.12);
 }
 
 @media (max-width: 900px){
@@ -373,6 +410,7 @@
   .who-we-are-inner::before{ display:none; }
   .who-we-are-left{ flex-basis:auto; max-width:none; }
   .who-we-are-photo{ height:auto; aspect-ratio:4/3; width:100%; }
+.who-we-are-photo:hover{ transform:none; }  /* skip the lift on touch/small screens */
 }
 .footprint{
   position:relative;
@@ -544,7 +582,7 @@
   position:relative;
   background:#ffffff;
   font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  padding:20px 60px 30px;
+  padding:20px 60px 60px;
 }
 
 .operation *{ box-sizing:border-box; }
@@ -620,15 +658,12 @@
   top:50%;
   left:50%;
   transform:translate(-50%, -50%) scale(1);
-  width:48px;
-  height:48px;
+  width:60px;
+  height:50px;
   border-radius:50%;
-  background:rgba(255,255,255,0.95);
   display:flex;
   align-items:center;
   justify-content:center;
-  box-shadow:0 8px 20px rgba(0,0,0,0.25);
-  transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1), background 0.2s ease;
   z-index:2;
 }
 
@@ -736,6 +771,7 @@
   overflow:hidden;
    max-width:900px;   /* NEW — constrains overall carousel width */
   margin:0 auto; 
+  background: #ffffff;
 }
 
 .operation-track{
@@ -845,108 +881,299 @@
   .operation-play-ring{ animation:none; }
   .operation-video img, .operation-card img{ transition:none; }
 }
+body.cert-lightbox-open .cert-nav{
+  display:none;
+}
 .certifications{
   position:relative;
-  background:#ffffff;
+  background:linear-gradient(180deg, #FFF6EC 0%, #FFEEDD 100%);   /* light orange wash */
   font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  padding:60px 60px 30px;
+  padding:60px 60px 60px;
+  overflow:hidden;
 }
-
 .certifications *{ box-sizing:border-box; }
-
 .certifications-inner{ max-width:1300px; margin:0 auto; }
-
-.certifications-top{ margin-bottom:48px; }
+.certifications-top{ margin-bottom:56px; }
 
 .certifications-eyebrow{
   color:var(--orange);
   font-weight:700;
   font-size:19px;
+  letter-spacing:0.3px;
   margin:0 0 14px;
+  display:inline-flex;
+  align-items:center;
+  gap:12px;
+}
+.certifications-eyebrow::before{
+  content:"";
+  width:34px;
+  height:2px;
+  background:var(--orange);
+  display:inline-block;
 }
 
 .certifications-heading{
   font-size:clamp(28px, 3.6vw, 46px);
   line-height:1.2;
-  font-weight:400;
+  font-weight:700;
   color:#111111;
   margin:0;
 }
 
-.certifications-grid{
-  display:grid;
-  grid-template-columns:repeat(4, 1fr);
-  gap:28px;
+/* ===== Carousel shell ===== */
+.cert-carousel{
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:20px;
+}
+
+.cert-track-wrap{
+  flex:1;
+  overflow:hidden;
+}
+
+.cert-track{
+  display:flex;
+  gap:48px;   /* was 32px — more breathing room between cards */
+  transition:transform 0.6s cubic-bezier(0.16,1,0.3,1);
 }
 
 .cert-item{
+   flex:0 0 calc((100% - 3*48px) / 4);
   display:flex;
   flex-direction:column;
   align-items:center;
   text-align:center;
+  cursor:pointer;
 }
 
+/* ===== Card: shows the WHOLE certificate, never crops it ===== */
 .cert-photo{
+  position:relative;
   width:100%;
   aspect-ratio: 3 / 4;
-  border-radius:14px;
+  border-radius:16px;
   overflow:hidden;
-  background:#f4f4f4;
-  box-shadow:0 12px 28px rgba(0,0,0,0.1);
-  transition:transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s ease;
-  margin-bottom:16px;
-}
-
-.cert-photo:hover{
-  transform:translateY(-6px);
-  box-shadow:0 22px 44px rgba(0,0,0,0.16);
+  background:#ffffff;
+  border:1px solid #ececec;
+  box-shadow:
+    0 2px 4px rgba(0,0,0,0.04),
+    0 16px 32px rgba(0,0,0,0.08);
+  transition:
+    transform 0.5s cubic-bezier(0.16,1,0.3,1),
+    box-shadow 0.5s cubic-bezier(0.16,1,0.3,1),
+    border-color 0.4s ease;
+  margin-bottom:20px;
+  padding:14px;
 }
 
 .cert-photo img{
   width:100%;
   height:100%;
-  object-fit:cover;
+  object-fit:contain;   /* KEY FIX — full document visible, nothing cropped */
   display:block;
+  transition:transform 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+
+.cert-zoom-hint{
+  position:absolute;
+  top:12px; right:12px;
+  width:36px; height:36px;
+  border-radius:50%;
+  background:rgba(20,20,20,0.6);
+  display:flex; align-items:center; justify-content:center;
+  opacity:0;
+  transform:scale(0.8);
+  transition:opacity 0.3s ease, transform 0.3s ease;
+  pointer-events:none;
+}
+.cert-item:hover .cert-zoom-hint{ opacity:1; transform:scale(1); }
+
+.cert-shine{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(115deg, transparent 40%, rgba(255,255,255,0.5) 50%, transparent 60%);
+  transform:translateX(-120%);
+  pointer-events:none;
+}
+.cert-item:hover .cert-photo{
+  transform:translateY(-10px);
+  border-color:rgba(232,121,45,0.4);
+  box-shadow:
+    0 4px 10px rgba(0,0,0,0.06),
+    0 28px 48px rgba(0,0,0,0.14),
+    0 10px 40px rgba(232,121,45,0.18);
+}
+.cert-item:hover .cert-photo img{ transform:scale(1.04); }
+.cert-item:hover .cert-shine{ animation: certShineSweep 1s ease forwards; }
+@keyframes certShineSweep{
+  from{ transform:translateX(-120%); }
+  to{ transform:translateX(120%); }
 }
 
 .cert-title{
   font-size:15px;
   font-weight:600;
   color:#111111;
-  margin:0;
+  margin:0 0 10px;
   line-height:1.4;
   word-break:break-word;
+  transition:color 0.3s ease;
+}
+.cert-item:hover .cert-title{ color:var(--orange-dark); }
+
+.cert-underline{
+  display:block;
+  width:0;
+  height:2px;
+  border-radius:2px;
+  background:var(--orange);
+  transition:width 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+.cert-item:hover .cert-underline{ width:32px; }
+
+/* ===== Nav arrows ===== */
+.cert-nav{
+  flex:0 0 auto;
+  width:48px; height:48px;
+  border-radius:50%;
+  background:#ffffff;
+  border:1px solid #e6e6e6;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+  color:#111111;
+  font-size:18px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.06);
+  transition:background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+.cert-nav:hover{
+  background:var(--orange);
+  border-color:var(--orange);
+  color:var(--white);
+  transform:translateY(-2px);
+}
+.cert-nav:disabled{ opacity:0.35; cursor:default; pointer-events:none; }
+
+/* ===== Dots (mobile) ===== */
+.cert-dots{
+  display:none;
+  justify-content:center;
+  gap:9px;
+  margin-top:28px;
+}
+.cert-dot{
+  width:9px; height:9px; border-radius:50%;
+  background:#e0e0e0; border:none; padding:0; cursor:pointer;
+  transition:background 0.2s ease, transform 0.2s ease;
+}
+.cert-dot.active{ background:var(--orange); transform:scale(1.25); }
+
+/* ===== Lightbox: view original-size certificate ===== */
+.cert-lightbox{
+  position:fixed; inset:0;
+  background:rgba(10,10,10,0.92);
+  display:none;
+  align-items:center; justify-content:center;
+  z-index:9999;
+  padding:40px;
+  opacity:0;
+  transition:opacity 0.3s ease;
+}
+.cert-lightbox.is-open{ display:flex; opacity:1; }
+
+.cert-lightbox-content{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:18px;
+  max-width:92vw;
+  max-height:92vh;
+  width:auto;
+  height:auto;
 }
 
-/* ===== Responsive breakpoints ===== */
+.cert-lightbox-img{
+  display:block;
+  width:auto;
+  height:auto;
+  max-width:92vw;
+  max-height:82vh;
+  object-fit:contain;
+  object-position:center;
+  border-radius:8px;
+  box-shadow:0 30px 80px rgba(0,0,0,0.5);
+  transform:scale(0.96);
+  transition:transform 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+.cert-lightbox.is-open .cert-lightbox-img{ transform:scale(1); }
+
+.cert-lightbox-title{
+  color:#fff;
+  font-size:17px;
+  font-weight:600;
+  text-align:center;
+  margin:0;
+  opacity:0.92;
+}
+
+.cert-lightbox-close{
+  position:absolute; top:24px; right:32px;
+  width:44px; height:44px; border-radius:50%;
+  background:rgba(255,255,255,0.1);
+  border:1px solid rgba(255,255,255,0.25);
+  color:#fff; font-size:26px; line-height:1;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+  transition:background 0.2s ease;
+}
+.cert-lightbox-close:hover{ background:rgba(255,255,255,0.2); }
+/* ===== Responsive: 4 → 3 → 2 → 1 (with dots + autoplay) ===== */
 @media (max-width: 1200px){
-  .certifications-grid{ grid-template-columns:repeat(3, 1fr); gap:24px; }
+  .cert-item{ flex:0 0 calc((100% - 2*36px) / 3); }
+  .cert-track{ gap:36px; }
 }
-
 @media (max-width: 900px){
-  .certifications{ padding:56px 24px 64px; }
-  .certifications-grid{ grid-template-columns:repeat(2, 1fr); gap:20px; }
+  .certifications{ padding:72px 24px 80px; }
+  .certifications-top{ margin-bottom:40px; }
+  .cert-item{ flex:0 0 calc((100% - 28px) / 2); }
+  .cert-track{ gap:28px; }
+  .cert-nav{ width:40px; height:40px; }
 }
-
 @media (max-width: 600px){
-  .certifications{ padding:48px 20px 56px; }
+  .certifications{ padding:56px 20px 64px; }
   .certifications-heading{ font-size:clamp(22px, 6.5vw, 30px); }
-  .certifications-top{ margin-bottom:36px; }
+  .certifications-eyebrow{ font-size:16px; }
+  .cert-item{ flex:0 0 100%; }
+  .cert-track{ gap:0; }
+  .cert-nav{ display:none; }
+  .cert-dots{ display:flex; }
+  .cert-photo{ border-radius:12px; margin-bottom:14px; padding:10px; }
+  .cert-title{ font-size:13.5px; }
+  .cert-lightbox{ padding:16px; }
+  .cert-lightbox-close{ top:14px; right:14px; }
 }
-
-@media (max-width: 480px){
-  .certifications{ padding:40px 16px 48px; }
-  .certifications-grid{ grid-template-columns:repeat(2, 1fr); gap:14px; }
-  .cert-title{ font-size:13px; }
+@media (hover: none){
+  .cert-item:hover .cert-photo{ transform:none; box-shadow:0 2px 4px rgba(0,0,0,0.04), 0 16px 32px rgba(0,0,0,0.08); }
+  .cert-item:hover .cert-photo img{ transform:none; }
+  .cert-shine{ display:none; }
+  .cert-zoom-hint{ opacity:1; transform:scale(1); }
 }
-
-@media (max-width: 360px){
-  .certifications-grid{ grid-template-columns:1fr; }
-  .cert-photo{ aspect-ratio:4/3; }
-}
-
 @media (prefers-reduced-motion: reduce){
-  .cert-photo{ transition:none; }
+  .cert-photo, .cert-photo img, .cert-underline, .cert-track{ transition:none; }
+  .cert-shine{ display:none; }
+}
+.cert-lightbox-content .cert-lightbox-img{
+  aspect-ratio:auto !important;
+  object-fit:contain !important;
+  padding:0 !important;
+  background:none !important;
+  border:none !important;
+  width:auto !important;
+  height:auto !important;
+  max-width:92vw !important;
+  max-height:82vh !important;
 }
 .cta-support{
   position:relative;
@@ -1031,94 +1258,6 @@
   .cta-support-inner{ flex-direction:column; gap:36px; }
   .cta-support-photo{ flex-basis:auto; width:100%; max-width:none; }
 }
-.certifications{
-  position:relative;
-  background:#ffffff;
-  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  padding:60px 60px 100px;
-}
-
-.certifications *{ box-sizing:border-box; }
-
-.certifications-inner{ margin:0 auto; }
-
-.certifications-top{ margin-bottom:48px; }
-
-.certifications-eyebrow{
-  color:var(--orange);
-  font-weight:700;
-  font-size:19px;
-  margin:0 0 14px;
-}
-
-.certifications-heading{
-  font-size:clamp(30px, 3.6vw, 46px);
-  line-height:1.2;
-  font-weight:400;
-  color:#111111;
-  margin:0;
-}
-
-.certifications-grid{
-  display:grid;
-  grid-template-columns:repeat(4, 1fr);
-  gap:28px;
-}
-
-.cert-item{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  text-align:center;
-}
-
-.cert-photo{
-  width:100%;
-  aspect-ratio: 3 / 4;
-  border-radius:14px;
-  overflow:hidden;
-  background:#f4f4f4;
-  box-shadow:0 12px 28px rgba(0,0,0,0.1);
-  transition:transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s ease;
-  margin-bottom:16px;
-}
-
-.cert-photo:hover{
-  transform:translateY(-6px);
-  box-shadow:0 22px 44px rgba(0,0,0,0.16);
-}
-
-.cert-photo img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block;
-}
-
-.cert-title{
-  font-size:15px;
-  font-weight:600;
-  color:#111111;
-  margin:0;
-}
-
-@media (max-width: 1100px){
-  .certifications-grid{ grid-template-columns:repeat(3, 1fr); }
-}
-
-@media (max-width: 900px){
-  .certifications{ padding:56px 24px 64px; }
-  .certifications-grid{ grid-template-columns:repeat(2, 1fr); gap:22px; }
-}
-
-@media (max-width: 600px){
-  .certifications-heading{ font-size:clamp(24px, 6.5vw, 30px); }
-}
-
-@media (max-width: 480px){
-  .certifications{ padding:44px 16px 56px; }
-  .certifications-grid{ grid-template-columns:1fr 1fr; gap:16px; }
-}
 </style>
 <section class="hero @if(!empty($about->banner_video)) has-video @endif">
 @include('web.layout.navbar')
@@ -1182,8 +1321,11 @@
     </div>
 
     <div class="who-we-are-photo reveal reveal-right reveal-delay-1"
-         style="background-image: linear-gradient(120deg, rgba(30,30,35,0.4), rgba(30,30,35,0.1) 55%, rgba(232,121,45,0.25)), url('{{ $about && $about->image ? asset('storage/' . $about->image) : '' }}');"
-         role="img" aria-label="EIS inspectors reviewing plans on site"></div>
+     role="img" aria-label="EIS inspectors reviewing plans on site">
+  <div class="who-we-are-photo-img"
+       style="background-image: url('{{ $about && $about->image ? asset('storage/' . $about->image) : '' }}');"></div>
+  <div class="who-we-are-photo-overlay"></div>
+</div>
   </div>
 </section>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -1318,18 +1460,42 @@
       <h2 class="certifications-heading">EIS Accredited Certifications</h2>
     </div>
 
-    <div class="certifications-grid">
-      @foreach ($certificates as $index => $certificate)
-        <div class="cert-item reveal reveal-delay-{{ min($index, 3) }}">
-          <div class="cert-photo">
-            <img src="{{ Storage::url($certificate->image) }}" alt="{{ $certificate->title }}" loading="lazy">
-          </div>
-          <p class="cert-title">{{ $certificate->title }}</p>
+    <div class="cert-carousel reveal reveal-delay-1">
+      <button type="button" class="cert-nav" id="certPrev" aria-label="Previous">&#10094;</button>
+
+      <div class="cert-track-wrap">
+        <div class="cert-track" id="certTrack">
+          @foreach ($certificates as $certificate)
+            <div class="cert-item" data-full="{{ Storage::url($certificate->image) }}" data-title="{{ $certificate->title }}">
+              <div class="cert-photo">
+                <img src="{{ Storage::url($certificate->image) }}" alt="{{ $certificate->title }}" loading="lazy">
+                <div class="cert-shine" aria-hidden="true"></div>
+                <div class="cert-zoom-hint" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2"/>
+                    <path d="M21 21l-4.3-4.3" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          @endforeach
         </div>
-      @endforeach
+      </div>
+
+      <button type="button" class="cert-nav" id="certNext" aria-label="Next">&#10095;</button>
     </div>
+
+    <div class="cert-dots" id="certDots"></div>
   </div>
 </section>
+
+<div class="cert-lightbox" id="certLightbox" aria-hidden="true">
+  <button type="button" class="cert-lightbox-close" id="certLightboxClose" aria-label="Close">&times;</button>
+  <div class="cert-lightbox-content">
+    <img src="" alt="" id="certLightboxImg" class="cert-lightbox-img">
+    <p class="cert-lightbox-title" id="certLightboxTitle"></p>
+  </div>
+</div>
 @endif
 <section class="cta-support">
   <div class="cta-support-inner">
@@ -1628,6 +1794,150 @@ initOfficeCarousels();
 
     activeId = id;
 }
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const track = document.getElementById('certTrack');
+  const prevBtn = document.getElementById('certPrev');
+  const nextBtn = document.getElementById('certNext');
+  const dotsWrap = document.getElementById('certDots');
+  const carousel = document.querySelector('.cert-carousel');
+  if (!track) return;
+
+  const items = Array.from(track.children);
+  let visibleCount = 4;
+  let index = 0;
+  let autoplayTimer = null;
+
+  function getVisibleCount() {
+    if (window.innerWidth <= 600) return 1;
+    if (window.innerWidth <= 900) return 2;
+    if (window.innerWidth <= 1200) return 3;
+    return 4;
+  }
+
+  function maxIndex() {
+    return Math.max(0, items.length - visibleCount);
+  }
+
+  function buildDots() {
+    dotsWrap.innerHTML = '';
+    if (visibleCount !== 1) return; // dots only used in one-at-a-time mobile mode
+    items.forEach(function (_, i) {
+      const dot = document.createElement('button');
+      dot.type = 'button';
+      dot.className = 'cert-dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', 'Show certificate ' + (i + 1));
+      dot.addEventListener('click', function () {
+        index = i;
+        update();
+        restartAutoplay();
+      });
+      dotsWrap.appendChild(dot);
+    });
+  }
+
+  function updateDots() {
+    dotsWrap.querySelectorAll('.cert-dot').forEach(function (dot, i) {
+      dot.classList.toggle('active', i === index);
+    });
+  }
+
+  function update() {
+    const newVisible = getVisibleCount();
+    if (newVisible !== visibleCount) {
+      visibleCount = newVisible;
+      index = Math.min(index, maxIndex());
+      buildDots();
+    }
+    index = Math.min(index, maxIndex());
+    const cardWidth = items[0].getBoundingClientRect().width;
+    const gap = parseFloat(getComputedStyle(track).gap) || 0;
+    track.style.transform = 'translateX(' + (-(cardWidth + gap) * index) + 'px)';
+    if (prevBtn) prevBtn.disabled = index === 0;
+    if (nextBtn) nextBtn.disabled = index >= maxIndex();
+    updateDots();
+  }
+
+  function goNext() {
+    index = index >= maxIndex() ? 0 : index + 1; // loop back to start
+    update();
+  }
+  function goPrev() {
+    index = index <= 0 ? maxIndex() : index - 1;
+    update();
+  }
+
+  function startAutoplay() {
+    stopAutoplay();
+    if (items.length <= visibleCount) return;
+    autoplayTimer = setInterval(goNext, 4000);
+  }
+  function stopAutoplay() {
+    if (autoplayTimer) clearInterval(autoplayTimer);
+    autoplayTimer = null;
+  }
+  function restartAutoplay() { startAutoplay(); }
+
+  if (prevBtn) prevBtn.addEventListener('click', function () { goPrev(); restartAutoplay(); });
+  if (nextBtn) nextBtn.addEventListener('click', function () { goNext(); restartAutoplay(); });
+
+  if (carousel) {
+    carousel.addEventListener('mouseenter', stopAutoplay);
+    carousel.addEventListener('mouseleave', startAutoplay);
+    carousel.addEventListener('touchstart', stopAutoplay, { passive: true });
+    carousel.addEventListener('touchend', startAutoplay, { passive: true });
+  }
+
+  window.addEventListener('resize', update);
+  buildDots();
+  update();
+  startAutoplay();
+
+  // ===== Lightbox: view original-size certificate =====
+  const lightbox = document.getElementById('certLightbox');
+  const lightboxImg = document.getElementById('certLightboxImg');
+  const lightboxClose = document.getElementById('certLightboxClose');
+
+  function openLightbox(src, alt, title) {
+  lightboxImg.src = src;
+  lightboxImg.alt = alt || '';
+  document.getElementById('certLightboxTitle').textContent = title || '';
+  lightbox.classList.add('is-open');
+  lightbox.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('cert-lightbox-open');   
+  document.body.style.overflow = 'hidden';
+  stopAutoplay();
+}
+
+function closeLightbox() {
+  lightbox.classList.remove('is-open');
+  lightbox.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('cert-lightbox-open');
+  document.body.style.overflow = '';
+  startAutoplay();
+}
+
+  items.forEach(function (item) {
+  item.addEventListener('click', function () {
+    const full = item.getAttribute('data-full');
+    const title = item.getAttribute('data-title');
+    const img = item.querySelector('img');
+    openLightbox(full, img ? img.alt : '', title);
+  });
+});
+
+  if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
+  if (lightbox) {
+    lightbox.addEventListener('click', function (e) {
+      if (e.target === lightbox) closeLightbox();
+    });
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeLightbox();
+  });
 });
 </script>
 @endsection

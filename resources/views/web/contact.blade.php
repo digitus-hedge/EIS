@@ -194,7 +194,7 @@
         position:relative;
         background:#ffffff;
         font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-        padding:80px 60px 100px;
+        padding:80px 60px 60px;
     }
 
     .contact-info *{ box-sizing:border-box; }
@@ -283,7 +283,7 @@
         position:relative;
         background:#ffffff;
         font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-        padding:30px 60px 40px;
+        padding:90px 60px 40px;
     }
 
     .get-in-touch *{ box-sizing:border-box; }
@@ -425,7 +425,7 @@
 
    .enquiry{
     position:relative;
-    background:none;
+    background:#ffffff;
     font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
     padding:80px 60px 110px;
     overflow:hidden;
@@ -441,7 +441,19 @@
     width:380px;
     height:380px;
     border-radius:50%;
-    background:radial-gradient(circle, rgba(232,121,45,0.07) 0%, transparent 70%);
+    background:radial-gradient(circle, rgba(232,121,45,0.06) 0%, transparent 70%);
+    pointer-events:none;
+}
+
+.enquiry::after{
+    content:"";
+    position:absolute;
+    bottom:-180px;
+    left:-140px;
+    width:340px;
+    height:340px;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(232,121,45,0.05) 0%, transparent 70%);
     pointer-events:none;
 }
 
@@ -520,11 +532,14 @@
 /* ===== Card wrapper ===== */
 .enquiry-card{
     position:relative;
-    background:#ffffff;
+    background:linear-gradient(165deg, #FFF3E7 0%, #FFEAD6 100%);
     border-radius:28px;
     padding:48px 50px;
-    box-shadow:0 30px 70px rgba(0,0,0,0.08), 0 4px 14px rgba(0,0,0,0.04);
-    border:1px solid #f0f0f0;
+    box-shadow:
+        0 30px 70px rgba(0,0,0,0.08),
+        0 4px 14px rgba(0,0,0,0.04),
+        0 0 0 1px rgba(232,121,45,0.08);
+    border:1px solid #F0D8BE;
 }
 
 .enquiry-form{
@@ -581,7 +596,7 @@
 .enquiry-field textarea{
     width:100%;
     padding:18px 18px 18px 46px;
-    border:1.5px solid #e2e2e2;
+    border:1.5px solid #EAD5BC;
     border-radius:12px;
     font-size:15px;
     font-family:inherit;
