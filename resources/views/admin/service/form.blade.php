@@ -1038,10 +1038,10 @@
     //     };
     // }
 
-    function toYoutubeEmbedUrl(url) {
-        const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
-        return match ? `https://www.youtube.com/embed/${match[1]}` : url;
-    }
+function toYoutubeEmbedUrl(url) {
+    const match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    return match ? `https://www.youtube.com/embed/${match[1]}` : url;
+}
 
     function markVideoDropAsLinked(videoDrop, videoInput, linkInput) {
         const embedUrl = toYoutubeEmbedUrl(linkInput.value.trim());
