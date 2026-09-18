@@ -13,7 +13,7 @@ use App\Models\RegionalLocation;
 use App\Models\RegionalOffice;
 use Illuminate\Support\Facades\DB;
 use App\Models\OperationVideo;
-
+use Illuminate\Validation\Rule;
 class AboutController extends Controller
 {
     protected int $imageWidth = 1200;
@@ -527,13 +527,29 @@ public function operation()
 /**
  * Store a new operation video (main hero video or a carousel clip).
  */
+
+
+
 public function storeOperationVideo(Request $request)
 {
     $request->validate([
         'title'       => 'required|string|max:50',
         'description' => 'required|string|max:120',
         'thumbnail'   => 'required|image|mimes:jpg,jpeg,png,webp|max:10240',
-        'video'       => 'required|mimes:mp4,mov,webm|max:20480',
+        'video'       => [
+            Rule::requiredIf(fn () => !$request->filled('vedio_link')),
+            'nullable',
+            'prohibits:vedio_link',
+            'mimes:mp4,mov,webm',
+            'max:20480',
+        ],
+        'vedio_link'  => [
+            Rule::requiredIf(fn () => !$request->hasFile('video')),
+            'nullable',
+            'prohibits:video',
+            'url',
+            'regex:/^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)[a-zA-Z0-9_-]{11}(&.*)?$/',
+        ],
     ], [
         'title.required'       => 'Please enter a title.',
         'title.max'            => 'Title must not exceed 50 characters.',
@@ -546,23 +562,38 @@ public function storeOperationVideo(Request $request)
         'thumbnail.mimes'    => 'The thumbnail must be a JPG, PNG, or WEBP file.',
         'thumbnail.max'      => 'The thumbnail must not exceed 10MB.',
 
-        'video.required' => 'Please upload a video file.',
+        'video.required' => 'Please upload a video file or provide a YouTube link.',
+        'video.prohibits' => 'Please provide either a video file OR a YouTube link, not both.',
         'video.mimes'    => 'The video must be an MP4, MOV, or WEBM file.',
         'video.max'      => 'The video must not exceed 20MB.',
+
+        'vedio_link.required' => 'Please upload a video file or provide a YouTube link.',
+        'vedio_link.prohibits' => 'Please provide either a video file OR a YouTube link, not both.',
+        'vedio_link.url'      => 'Please enter a valid URL.',
+        'vedio_link.regex'    => 'Please enter a valid YouTube video URL.',
     ]);
 
     try {
         $thumbnailPath = $this->processAndStoreImage($request->file('thumbnail'), 'operation/thumbnails');
-        $videoPath = $request->file('video')->store('operation/videos', 'public');
+
+        $videoPath = null;
+        if ($request->hasFile('video')) {
+            $videoPath = $request->file('video')->store('operation/videos', 'public');
+        }
 
         OperationVideo::create([
             'title'       => $request->title,
             'description' => $request->description,
             'thumbnail'   => $thumbnailPath,
             'video'       => $videoPath,
+            'vedio_link'  => $request->filled('vedio_link') ? $this->normalizeYoutubeUrl($request->vedio_link) : null,
         ]);
 
         gc_collect_cycles();
+
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Video added successfully.']);
+        }
 
         return redirect()
             ->route('admin.about.operation')
@@ -575,10 +606,13 @@ public function storeOperationVideo(Request $request)
             'line'    => $e->getLine(),
         ]);
 
+        if ($request->wantsJson()) {
+            return response()->json(['message' => 'Something went wrong.'], 500);
+        }
+
         return back()->withInput()->with('error', 'Something went wrong: ' . $e->getMessage());
     }
 }
-
 
 public function updateOperationVideo(Request $request, OperationVideo $video)
 {
@@ -586,7 +620,18 @@ public function updateOperationVideo(Request $request, OperationVideo $video)
         'title'       => 'required|string|max:50',
         'description' => 'required|string|max:120',
         'thumbnail'   => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
-        'video'       => 'nullable|mimes:mp4,mov,webm|max:20480',
+        'video'       => [
+            'nullable',
+            'prohibits:vedio_link',
+            'mimes:mp4,mov,webm',
+            'max:20480',
+        ],
+        'vedio_link'  => [
+            'nullable',
+            'prohibits:video',
+            'url',
+            'regex:/^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)[a-zA-Z0-9_-]{11}(&.*)?$/',
+        ],
     ], [
         'title.required'       => 'Please enter a title.',
         'title.max'            => 'Title must not exceed 50 characters.',
@@ -598,8 +643,13 @@ public function updateOperationVideo(Request $request, OperationVideo $video)
         'thumbnail.mimes' => 'The thumbnail must be a JPG, PNG, or WEBP file.',
         'thumbnail.max'   => 'The thumbnail must not exceed 10MB.',
 
+        'video.prohibits' => 'Please provide either a video file OR a YouTube link, not both.',
         'video.mimes' => 'The video must be an MP4, MOV, or WEBM file.',
         'video.max'   => 'The video must not exceed 20MB.',
+
+        'vedio_link.prohibits' => 'Please provide either a video file OR a YouTube link, not both.',
+        'vedio_link.url'   => 'Please enter a valid URL.',
+        'vedio_link.regex' => 'Please enter a valid YouTube video URL.',
     ]);
 
     try {
@@ -613,11 +663,22 @@ public function updateOperationVideo(Request $request, OperationVideo $video)
             $video->thumbnail = $this->processAndStoreImage($request->file('thumbnail'), 'operation/thumbnails');
         }
 
+        // If a new video file is uploaded, it takes over from any existing YouTube link
         if ($request->hasFile('video')) {
             if ($video->video) {
                 Storage::disk('public')->delete($video->video);
             }
             $video->video = $request->file('video')->store('operation/videos', 'public');
+            $video->vedio_link = null;
+        }
+
+        // If a YouTube link is given/changed, it takes over from any existing uploaded file
+        if ($request->filled('vedio_link')) {
+            if ($video->video) {
+                Storage::disk('public')->delete($video->video);
+                $video->video = null;
+            }
+            $video->vedio_link = $this->normalizeYoutubeUrl($request->vedio_link);
         }
 
         $video->save();
@@ -648,6 +709,19 @@ public function updateOperationVideo(Request $request, OperationVideo $video)
 
         return back()->withInput()->with('error', 'Something went wrong: ' . $e->getMessage());
     }
+}
+
+private function normalizeYoutubeUrl(string $url): string
+{
+    preg_match(
+        '/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/',
+        $url,
+        $matches
+    );
+
+    $videoId = $matches[1] ?? null;
+
+    return $videoId ? "https://www.youtube.com/watch?v={$videoId}" : $url;
 }
 
 public function destroyOperationVideo(OperationVideo $video)

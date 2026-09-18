@@ -51,90 +51,9 @@
     <div class="header">
         <div>
             <h1>Operations</h1>
-            <p>Add and manage operation videos with a title, description, thumbnail, and video file.</p>
+            <p>Add and manage operation videos with a title, description, thumbnail, and video file or YouTube link.</p>
         </div>
     </div>
-
-    <!-- <div class="card">
-        <div class="section-title">
-            <h2><span class="icon"><i class="bi bi-camera-video"></i></span> Add New Video</h2>
-        </div>
-
-        <form action="{{ route('admin.about.operation.videos.store') }}" id="operation_form" method="POST" enctype="multipart/form-data">
-            @csrf
-
-            <div class="field">
-                <div class="field-top"><label class="field-label">Title<span class="req">*</span></label></div>
-                <input type="text"  name="title" value="{{ old('title') }}"
-                       class="{{ $errors->has('title') ? 'input-error' : '' }}"
-                       placeholder="Enter video title">
-                @error('title')
-                    <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
-                @enderror
-            </div>
-
-            <div class="field" style="margin-top:16px;">
-                <div class="field-top"><label class="field-label">Description<span class="req">*</span></label></div>
-                <textarea name="description" rows="3"
-                          class="{{ $errors->has('description') ? 'input-error' : '' }}"
-                          placeholder="Enter video description">{{ old('description') }}</textarea>
-                @error('description')
-                    <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
-                @enderror
-            </div>
-
-            <div class="op-two-col">
-                <div class="field">
-                    <div class="field-top"><label class="field-label">Thumbnail Image<span class="req">*</span></label></div>
-                    <div class="notice caution">
-                        <i class="bi bi-exclamation-triangle" style="margin-top:1px;"></i>
-                        <p><b>Recommended Size:</b>280 × 220px ·JPG, PNG, WEBP &middot; up to 10MB.</p>
-                    </div>
-                    <div class="image-slot" style="max-width:100%;">
-<div class="drop img-slot {{ $errors->has('thumbnail') ? 'input-error' : '' }}"
-     id="op-thumb-drop"
-     data-file-input="op-thumb-input" onclick="handleDropClick(this)">
-                    <div class="preview-placeholder" id="op-thumb-preview">
-                                <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:18px;"></i></div>
-                                <div class="drop-title">Click to upload</div>
-                                <div class="drop-sub">or drag &amp; drop</div>
-                            </div>
-                        </div>
-                        <input type="file" id="op-thumb-input" name="thumbnail" accept="image/*" hidden
-                               onchange="previewImage(this, 'op-thumb-preview')">
-                    </div>
-                    @error('thumbnail')
-                        <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
-                    @enderror
-                </div>
-
-                <div class="field">
-                    <div class="field-top"><label class="field-label">Video File<span class="req">*</span></label></div>
-                    <div class="notice caution">
-                        <i class="bi bi-exclamation-triangle" style="margin-top:1px;"></i>
-                        <p><b>Featured Size:</b>1920 × 1080px,  MP4, MOV, WEBM &middot; up to 20MB.</p>
-                    </div>
-                    <div class="video-drop {{ $errors->has('video') ? 'input-error' : '' }}" onclick="document.getElementById('op-video-input').click()" id="op-video-drop">
-                        <div class="preview-placeholder" id="op-video-preview">
-                            <div class="ico-circle"><i class="bi bi-camera-video" style="color:#AEB4C4;font-size:18px;"></i></div>
-                            <div class="drop-title">Click to upload</div>
-                            <div class="drop-sub">or drag &amp; drop</div>
-                        </div>
-                    </div>
-                    <input type="file" id="op-video-input" name="video" accept="video/*" hidden
-                           onchange="showVideoFileName(this)">
-                    @error('video')
-                        <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
-                    @enderror
-                </div>
-            </div>
-
-            <button type="button" class="btn-save" onclick="validateForm();" style="margin-top:20px;">
-                <i class="bi bi-check-lg"></i> Add Video
-            </button>
-        </form>
-    </div> -->
-
 
     <div class="card">
     <div class="section-title">
@@ -211,6 +130,17 @@
             </div>
         </div>
 
+        <div class="field">
+            <div class="field-top" style="margin-top:15px;"><label class="field-label">YouTube Video Link</label></div>
+            <input type="text" name="vedio_link" id="vedio_link" value="{{ old('vedio_link') }}"
+                   class="{{ $errors->has('vedio_link') ? 'input-error' : '' }}"
+                   placeholder="Enter YouTube Link (e.g. https://www.youtube.com/watch?v=xxxxxxxxxxx)">
+            @error('vedio_link')
+                <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+            @enderror
+            <span class="field-hint" style="display:block; margin-top:6px;">Provide either a video file above OR a YouTube link.</span>
+        </div>
+
         <div style="display:flex; gap:10px; margin-top:20px;">
             <button type="button" class="btn-save" id="opSubmitBtn" onclick="validateForm();">
                 <i class="bi bi-check-lg"></i> Add Video
@@ -240,6 +170,8 @@
         <strong>{{ $video->title }}</strong>
         @if ($video->video)
             <span class="op-video-tag ok"><i class="bi bi-camera-video-fill"></i> Video attached</span>
+        @elseif ($video->vedio_link)
+            <span class="op-video-tag ok"><i class="bi bi-youtube"></i> YouTube link: <a href="{{ $video->vedio_link }}" target="_blank" rel="noopener">{{ $video->vedio_link }}</a></span>
         @else
             <span class="op-video-tag error"><i class="bi bi-exclamation-circle"></i> No video file uploaded</span>
         @endif
@@ -254,6 +186,7 @@
         data-thumbnail="{{ $video->thumbnail ? asset('storage/'.$video->thumbnail) : '' }}"
         data-video-name="{{ $video->video ? basename($video->video) : '' }}"
         data-video-url="{{ $video->video ? asset('storage/'.$video->video) : '' }}"
+        data-vedio-link="{{ $video->vedio_link ?? '' }}"
         data-url="{{ route('admin.about.operation.videos.update', $video) }}"
         title="Edit">
     <i class="bi bi-pencil"></i>
@@ -391,8 +324,9 @@
   .op-video-top strong{ display:block; font-size:14px; color: var(--ink,#171B2C); margin-bottom:4px; }
     .op-video-card .body p{ font-size:12.5px; color: var(--muted,#667085); margin:0; }
 
-    .op-video-tag{ display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:600; }
+    .op-video-tag{ display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:600; max-width:100%; flex-wrap:wrap; }
     .op-video-tag.ok{ color: var(--green,#12875A); }
+    .op-video-tag.ok a{ color: var(--green,#12875A); text-decoration:underline; word-break:break-all; }
     .op-video-tag.error{ color:#D5392F; }
 
     /* ===== Icon delete button (matches Service Cards / Certificates pattern) ===== */
@@ -450,6 +384,7 @@ function enterOpEditMode(btn) {
     document.getElementById('opFormHeading').textContent = 'Edit Video';
     document.getElementById('opTitleInput').value = btn.dataset.title;
     document.getElementById('opDescInput').value = btn.dataset.description;
+    document.getElementById('vedio_link').value = btn.dataset.vedioLink || '';
     document.getElementById('opThumbReq').style.display = 'none';
     document.getElementById('opVideoReq').style.display = 'none';
     document.getElementById('opThumbEditHint').style.display = 'block';
@@ -478,6 +413,15 @@ if (btn.dataset.videoName) {
             <i class="bi bi-x-lg"></i>
         </button>
     `;
+} else if (btn.dataset.vedioLink) {
+    const embedUrl = toYoutubeEmbedUrl(btn.dataset.vedioLink);
+    videoDrop.classList.add('has-file', 'filled');
+    videoDrop.innerHTML = `
+        <iframe src="${embedUrl}" style="width:100%;height:100%;border:0;" allowfullscreen></iframe>
+        <button type="button" class="remove-img-btn" onclick="removeOpVideo(event)" title="Remove video">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    `;
 }
     document.getElementById('op-video-input').value = '';
 
@@ -485,6 +429,11 @@ if (btn.dataset.videoName) {
     document.querySelectorAll('#operation_form .input-error').forEach(el => el.classList.remove('input-error'));
 
     document.getElementById('operation_form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function toYoutubeEmbedUrl(url) {
+    const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
+    return match ? `https://www.youtube.com/embed/${match[1]}` : url;
 }
 
 function removeOpThumb(event) {
@@ -504,6 +453,7 @@ function removeOpThumb(event) {
 function removeOpVideo(event) {
     event.stopPropagation();
     document.getElementById('op-video-input').value = '';
+    document.getElementById('vedio_link').value = '';
 
     const drop = document.getElementById('op-video-drop');
     const videoEl = drop.querySelector('video');
@@ -528,6 +478,7 @@ function cancelOpEdit() {
     document.getElementById('opFormHeading').textContent = 'Add New Video';
     document.getElementById('opTitleInput').value = '';
     document.getElementById('opDescInput').value = '';
+    document.getElementById('vedio_link').value = '';
     document.getElementById('opThumbReq').style.display = 'inline';
     document.getElementById('opVideoReq').style.display = 'inline';
     document.getElementById('opThumbEditHint').style.display = 'none';
@@ -606,6 +557,7 @@ function showValidationErrors(errors) {
         description: form => form.querySelector('[name="description"]'),
         thumbnail: form => document.getElementById('op-thumb-drop'),
         video: form => document.getElementById('op-video-drop'),
+        vedio_link: form => form.querySelector('[name="vedio_link"]'),
     };
 
     const form = document.getElementById('operation_form');
@@ -673,6 +625,9 @@ function showValidationErrors(errors) {
     const file = input.files && input.files[0];
 
     if (!file) return;
+
+    // Uploading a file overrides any YouTube link previously set
+    document.getElementById('vedio_link').value = '';
 
     const videoURL = URL.createObjectURL(file);
 

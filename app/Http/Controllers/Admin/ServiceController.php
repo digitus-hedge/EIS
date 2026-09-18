@@ -349,6 +349,7 @@ class ServiceController extends Controller
     }
 
     // ===== Process: repeatable description + video rows (unlimited) =====
+  // ===== Process: repeatable description + (video OR YouTube link) rows (unlimited) =====
     $processInput = $data['process'] ?? [];
     $oldProcess = $service->process ?? [];
     $processedRows = [];
@@ -357,20 +358,15 @@ class ServiceController extends Controller
         $description = trim($row['description'] ?? '');
         $hasNewVideo = $request->hasFile("process.$index.video");
         $hasNewThumbnail = $request->hasFile("process.$index.thumbnail");
+        $vedioLink = trim($row['vedio_link'] ?? '');
 
-        if ($description === '' && !$hasNewVideo && empty($row['existing_video']) && !$hasNewThumbnail && empty($row['existing_thumbnail'])) {
+        if ($description === '' && !$hasNewVideo && empty($row['existing_video']) && $vedioLink === ''
+            && !$hasNewThumbnail && empty($row['existing_thumbnail'])) {
             continue;
         }
 
         $videoPath = $row['existing_video'] ?? null;
         $thumbnailPath = $row['existing_thumbnail'] ?? null;
-
-        if ($hasNewVideo) {
-            if (!empty($oldProcess[$index]['video'])) {
-                Storage::disk('public')->delete($oldProcess[$index]['video']);
-            }
-            $videoPath = $this->storeVideo($request->file("process.$index.video"));
-        }
 
         if ($hasNewThumbnail) {
             if (!empty($oldProcess[$index]['thumbnail'])) {
@@ -384,9 +380,26 @@ class ServiceController extends Controller
             );
         }
 
+        if ($hasNewVideo) {
+            // A newly uploaded file always takes precedence over a link
+            if (!empty($oldProcess[$index]['video'])) {
+                Storage::disk('public')->delete($oldProcess[$index]['video']);
+            }
+            $videoPath = $this->storeVideo($request->file("process.$index.video"));
+            $vedioLink = ''; // uploaded file wins; drop any link
+        } elseif ($vedioLink !== '') {
+            // A YouTube link was provided/kept: it replaces any stored video file
+            if (!empty($oldProcess[$index]['video'])) {
+                Storage::disk('public')->delete($oldProcess[$index]['video']);
+            }
+            $videoPath = null;
+            $vedioLink = $this->normalizeYoutubeUrl($vedioLink);
+        }
+
         $processedRows[] = [
             'description' => $description,
             'video'       => $videoPath,
+            'vedio_link'  => $vedioLink !== '' ? $vedioLink : null,
             'thumbnail'   => $thumbnailPath,
         ];
     }
@@ -488,6 +501,19 @@ $service->gallery = count($processedGallery) > 0 ? array_values($processedGaller
         Storage::disk('public')->put($filename, (string) $encoded);
 
         return $filename;
+    }
+
+    private function normalizeYoutubeUrl(string $url): string
+    {
+        preg_match(
+            '/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/',
+            $url,
+            $matches
+        );
+
+        $videoId = $matches[1] ?? null;
+
+        return $videoId ? "https://www.youtube.com/watch?v={$videoId}" : $url;
     }
 
     private function storeVideo($file): string

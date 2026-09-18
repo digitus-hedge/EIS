@@ -83,15 +83,15 @@
     <div class="stats-row-wrapper">
         <div class="stats-row">
             <div class="input-group-cell">
-                <input type="text" name="items[__INDEX__][value]" maxlength="8" placeholder="e.g. 100K">
+                <input type="text" name="items[__INDEX__][value]"  placeholder="e.g. 100K">
                 <span class="field-error error-value" style="display: none;"><i class="bi bi-exclamation-circle"></i> <span class="error-msg"></span></span>
             </div>
             <div class="input-group-cell">
-                <input type="text" name="items[__INDEX__][label]" maxlength="20" placeholder="e.g. LICENSES">
+                <input type="text" name="items[__INDEX__][label]"  placeholder="e.g. LICENSES">
                 <span class="field-error error-label" style="display: none;"><i class="bi bi-exclamation-circle"></i> <span class="error-msg"></span></span>
             </div>
             <div class="input-group-cell">
-                <input type="text" name="items[__INDEX__][description]" maxlength="20" placeholder="e.g. Held & managed">
+                <input type="text" name="items[__INDEX__][description]"  placeholder="e.g. Held & managed">
                 <span class="field-error error-description" style="display: none;"><i class="bi bi-exclamation-circle"></i> <span class="error-msg"></span></span>
             </div>
             <button type="button" class="action-btn delete btn-remove-row" title="Remove stat"><i class="bi bi-trash3"></i></button>

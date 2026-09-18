@@ -310,8 +310,7 @@
             <div class="section-title">
                 <h2><span class="icon"><i class="bi bi-camera-reels"></i></span> Process <span class="req">*</span></h2>
             </div>
-            <p class="field-hint">Detail page &mdash; step-by-step process, each with a description and a video. Add as many as needed.</p>
-
+<p class="field-hint">Detail page &mdash; step-by-step process, each with a description and a video file OR a YouTube link. Add as many as needed.</p>
             <div id="processRows"></div>
             <button type="button" id="addProcessBtn" class="btn-add-row">
                 <i class="bi bi-plus-lg"></i> Add Row
@@ -464,8 +463,7 @@
                     <input type="hidden" name="process[__INDEX__][existing_thumbnail]" class="existing-thumbnail-input" value="">
                 </div>
             </div>
-
-            <div class="field">
+<div class="field">
                 <div class="field-top"><label class="field-label">Video</label></div>
                 <div class="video-slot" id="video-drop-wrap">
                     <div class="video-drop" data-row-slot="video">
@@ -475,6 +473,10 @@
                     <input type="file" name="process[__INDEX__][video]" accept="video/*" hidden
                            onchange="previewProcessVideo(this)">
                     <input type="hidden" name="process[__INDEX__][existing_video]" class="existing-video-input" value="">
+                </div>
+                <div class="field" style="margin-top:8px;">
+                    <input type="text" name="process[__INDEX__][vedio_link]" class="process-vedio-link-input"
+                           placeholder="Or paste a YouTube link" oninput="onProcessLinkInput(this)">
                 </div>
             </div>
         </div>
@@ -677,7 +679,10 @@
         position:relative; padding-right:56px;
     }
 
+    /* .inspection-row-fields{ flex:1; display:grid; grid-template-columns:1fr 200px 220px; gap:16px; align-items:start; } */
+
     .inspection-row-fields{ flex:1; display:grid; grid-template-columns:1fr 200px 220px; gap:16px; align-items:start; }
+
     .feature-row-fields{ grid-template-columns:140px 1fr 1fr; }
 
     .inspection-row-fields textarea{ min-height:110px; }
@@ -980,31 +985,182 @@
             wireRowRemove(thumbDrop, row.querySelector('.existing-thumbnail-input'), 'process-thumb-preview');
         }
 
-       const videoDrop = row.querySelector('[data-row-slot="video"]');
-const videoInput = row.querySelector('input[type="file"][name$="[video]"]');
-videoDrop.addEventListener('click', () => {
-    if (!videoDrop.classList.contains('filled')) videoInput.click();
-});
+        const videoDrop = row.querySelector('[data-row-slot="video"]');
+        const videoInput = row.querySelector('input[type="file"][name$="[video]"]');
+        const linkInput = row.querySelector('.process-vedio-link-input');
 
-       if (data.video) {
-    videoDrop.classList.add('has-file', 'filled');
-    videoDrop.innerHTML = `
-        <video src="${data.video_url ?? data.video}" controls muted style="width:100%;height:100%;object-fit:cover;"></video>
-        <button type="button" class="remove-img-btn" title="Remove"><i class="bi bi-x-lg"></i></button>
-    `;
-    row.querySelector('.existing-video-input').value = data.video;
-    wireRowRemove(videoDrop, row.querySelector('.existing-video-input'), null, true);
-}
+        videoDrop.addEventListener('click', () => {
+            if (!videoDrop.classList.contains('filled')) videoInput.click();
+        });
+
+        if (data.video) {
+            videoDrop.classList.add('has-file', 'filled');
+            videoDrop.innerHTML = `
+                <video src="${data.video_url ?? data.video}" controls muted style="width:100%;height:100%;object-fit:cover;"></video>
+                <button type="button" class="remove-img-btn" title="Remove"><i class="bi bi-x-lg"></i></button>
+            `;
+            row.querySelector('.existing-video-input').value = data.video;
+            wireRowRemove(videoDrop, row.querySelector('.existing-video-input'), null, true);
+        } else if (data.vedio_link) {
+            linkInput.value = data.vedio_link;
+            markVideoDropAsLinked(videoDrop, videoInput, linkInput);
+        }
 
         if (data.errors) {
             if (data.errors.description) setFieldError(descField, data.errors.description, false);
             if (data.errors.video) setFieldError(videoDrop, data.errors.video, false);
+            if (data.errors.vedio_link) setFieldError(linkInput, data.errors.vedio_link, false);
         }
 
         row.querySelector('.inspection-remove').addEventListener('click', () => row.remove());
 
         processContainer.appendChild(row);
         processIndex++;
+    }
+
+    // function markVideoDropAsLinked(videoDrop, videoInput, linkInput) {
+    //     videoDrop.classList.add('has-file', 'filled');
+    //     videoDrop.innerHTML = `
+    //         <div class="drop-title" style="padding:10px; display:flex; align-items:center; gap:6px;">
+    //             <i class="bi bi-youtube"></i> YouTube link set
+    //         </div>
+    //         <button type="button" class="remove-img-btn" title="Remove link"><i class="bi bi-x-lg"></i></button>
+    //     `;
+    //     videoDrop.querySelector('.remove-img-btn').onclick = function (ev) {
+    //         ev.stopPropagation();
+    //         linkInput.value = '';
+    //         videoInput.value = '';
+    //         videoDrop.classList.remove('has-file', 'filled');
+    //         videoDrop.innerHTML = `
+    //             <div class="ico-circle"><i class="bi bi-camera-video" style="color:#AEB4C4;font-size:16px;"></i></div>
+    //             <div class="drop-title">Click to upload</div>
+    //         `;
+    //     };
+    // }
+
+    function toYoutubeEmbedUrl(url) {
+        const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
+        return match ? `https://www.youtube.com/embed/${match[1]}` : url;
+    }
+
+    function markVideoDropAsLinked(videoDrop, videoInput, linkInput) {
+        const embedUrl = toYoutubeEmbedUrl(linkInput.value.trim());
+
+        videoDrop.classList.add('has-file', 'filled');
+        videoDrop.innerHTML = `
+            <iframe src="${embedUrl}" style="width:100%; height:100%; border:0;" allowfullscreen></iframe>
+            <button type="button" class="remove-img-btn" title="Remove link"><i class="bi bi-x-lg"></i></button>
+        `;
+        videoDrop.querySelector('.remove-img-btn').onclick = function (ev) {
+            ev.stopPropagation();
+            linkInput.value = '';
+            videoInput.value = '';
+            videoDrop.classList.remove('has-file', 'filled');
+            videoDrop.innerHTML = `
+                <div class="ico-circle"><i class="bi bi-camera-video" style="color:#AEB4C4;font-size:16px;"></i></div>
+                <div class="drop-title">Click to upload</div>
+            `;
+        };
+    }
+
+    function onProcessLinkInput(linkInput) {
+        const wrapper = linkInput.closest('.inspection-row-fields') || linkInput.closest('.field').parentElement;
+        const videoDrop = wrapper.querySelector('[data-row-slot="video"]');
+        const videoInput = wrapper.querySelector('input[type="file"][name$="[video]"]');
+        const existingVideoInput = wrapper.querySelector('.existing-video-input');
+
+        if (linkInput.value.trim() !== '') {
+            videoInput.value = '';
+            if (existingVideoInput) existingVideoInput.value = '';
+            markVideoDropAsLinked(videoDrop, videoInput, linkInput);
+        } else {
+            videoDrop.classList.remove('has-file', 'filled');
+            videoDrop.innerHTML = `
+                <div class="ico-circle"><i class="bi bi-camera-video" style="color:#AEB4C4;font-size:16px;"></i></div>
+                <div class="drop-title">Click to upload</div>
+            `;
+        }
+    }
+
+    function wireRowRemove(dropEl, existingInput, placeholderClass, isVideo = false) {
+        const btn = dropEl.querySelector('.remove-img-btn');
+        if (!btn) return;
+        btn.onclick = function (ev) {
+            ev.stopPropagation();
+            const fileInput = dropEl.parentElement.querySelector('input[type="file"]');
+            fileInput.value = '';
+            if (existingInput) existingInput.value = '';
+
+            if (isVideo) {
+                const videoEl = dropEl.querySelector('video');
+                if (videoEl && videoEl.src.startsWith('blob:')) {
+                    URL.revokeObjectURL(videoEl.src);
+                }
+                dropEl.classList.remove('has-file', 'filled');
+                dropEl.innerHTML = `
+                    <div class="ico-circle"><i class="bi bi-camera-video" style="color:#AEB4C4;font-size:16px;"></i></div>
+                    <div class="drop-title">Click to upload</div>
+                `;
+            } else {
+                dropEl.classList.remove('filled');
+                dropEl.innerHTML = `
+                    <div class="preview-placeholder ${placeholderClass}">
+                        <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:16px;"></i></div>
+                        <div class="drop-title">Click to upload</div>
+                    </div>
+                `;
+            }
+        };
+    }
+
+    function previewProcessThumbnail(input) {
+        if (!validateFileSize(input, MAX_IMAGE_BYTES, 'Process thumbnail')) return;
+
+        const wrapper = input.closest('.image-slot');
+        const dropEl = wrapper.querySelector('[data-row-slot="thumbnail"]');
+        const oldError = wrapper.querySelector('.field-error');
+        if (oldError) oldError.remove();
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                dropEl.classList.add('filled');
+                dropEl.classList.remove('input-error');
+                dropEl.innerHTML = `
+                    <img src="${e.target.result}" alt="Thumbnail">
+                    <button type="button" class="remove-img-btn" title="Remove"><i class="bi bi-x-lg"></i></button>
+                `;
+                const existingInput = wrapper.querySelector('.existing-thumbnail-input');
+                wireRowRemove(dropEl, existingInput, 'process-thumb-preview');
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function previewProcessVideo(input) {
+        if (!validateFileSize(input, MAX_VIDEO_BYTES, 'Process video')) return;
+
+        const wrapper = input.closest('.video-slot');
+        const dropEl = wrapper.querySelector('[data-row-slot="video"]');
+        const oldError = wrapper.querySelector('.field-error');
+        if (oldError) oldError.remove();
+
+        const row = wrapper.closest('.inspection-row');
+        const linkInput = row ? row.querySelector('.process-vedio-link-input') : null;
+        if (linkInput) linkInput.value = '';
+
+        if (input.files && input.files[0]) {
+            const videoURL = URL.createObjectURL(input.files[0]);
+
+            dropEl.classList.add('has-file', 'filled');
+            dropEl.classList.remove('input-error');
+            dropEl.innerHTML = `
+                <video src="${videoURL}" controls muted style="width:100%;height:100%;object-fit:cover;"></video>
+                <button type="button" class="remove-img-btn" title="Remove"><i class="bi bi-x-lg"></i></button>
+            `;
+            const existingInput = wrapper.querySelector('.existing-video-input');
+            wireRowRemove(dropEl, existingInput, null, true);
+        }
     }
 
     document.getElementById('addProcessBtn').addEventListener('click', () => addProcessRow());
@@ -1014,83 +1170,6 @@ videoDrop.addEventListener('click', () => {
     } else {
         addProcessRow();
     }
-
- function wireRowRemove(dropEl, existingInput, placeholderClass, isVideo = false) {
-    const btn = dropEl.querySelector('.remove-img-btn');
-    if (!btn) return;
-    btn.onclick = function (ev) {
-        ev.stopPropagation();
-        const fileInput = dropEl.parentElement.querySelector('input[type="file"]');
-        fileInput.value = '';
-        if (existingInput) existingInput.value = '';
-
-        if (isVideo) {
-            const videoEl = dropEl.querySelector('video');
-            if (videoEl && videoEl.src.startsWith('blob:')) {
-                URL.revokeObjectURL(videoEl.src);
-            }
-            dropEl.classList.remove('has-file', 'filled');
-            dropEl.innerHTML = `
-                <div class="ico-circle"><i class="bi bi-camera-video" style="color:#AEB4C4;font-size:16px;"></i></div>
-                <div class="drop-title">Click to upload</div>
-            `;
-        } else {
-            dropEl.classList.remove('filled');
-            dropEl.innerHTML = `
-                <div class="preview-placeholder ${placeholderClass}">
-                    <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:16px;"></i></div>
-                    <div class="drop-title">Click to upload</div>
-                </div>
-            `;
-        }
-    };
-}
-
-   function previewProcessThumbnail(input) {
-    if (!validateFileSize(input, MAX_IMAGE_BYTES, 'Process thumbnail')) return;
-
-    const wrapper = input.closest('.image-slot');
-    const dropEl = wrapper.querySelector('[data-row-slot="thumbnail"]');
-    const oldError = wrapper.querySelector('.field-error');
-    if (oldError) oldError.remove();
-
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            dropEl.classList.add('filled');
-            dropEl.classList.remove('input-error');
-            dropEl.innerHTML = `
-                <img src="${e.target.result}" alt="Thumbnail">
-                <button type="button" class="remove-img-btn" title="Remove"><i class="bi bi-x-lg"></i></button>
-            `;
-            const existingInput = wrapper.querySelector('.existing-thumbnail-input');
-            wireRowRemove(dropEl, existingInput, 'process-thumb-preview');
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
-}
-
-function previewProcessVideo(input) {
-    if (!validateFileSize(input, MAX_VIDEO_BYTES, 'Process video')) return;
-
-    const wrapper = input.closest('.video-slot');
-    const dropEl = wrapper.querySelector('[data-row-slot="video"]');
-    const oldError = wrapper.querySelector('.field-error');
-    if (oldError) oldError.remove();
-
-    if (input.files && input.files[0]) {
-        const videoURL = URL.createObjectURL(input.files[0]);
-
-        dropEl.classList.add('has-file', 'filled');
-        dropEl.classList.remove('input-error');
-        dropEl.innerHTML = `
-            <video src="${videoURL}" controls muted style="width:100%;height:100%;object-fit:cover;"></video>
-            <button type="button" class="remove-img-btn" title="Remove"><i class="bi bi-x-lg"></i></button>
-        `;
-        const existingInput = wrapper.querySelector('.existing-video-input');
-        wireRowRemove(dropEl, existingInput, null, true);
-    }
-}
 
     // ===== Feature rows =====
     const MAX_FEATURES = 4;
@@ -1140,7 +1219,6 @@ function previewProcessVideo(input) {
                 <button type="button" class="remove-img-btn" title="Remove"><i class="bi bi-x-lg"></i></button>
             `;
             existingIconInput.value = data.icon;
-            // FIXED: was passing iconInput + truthy string into placeholderClass/isVideo slots
             wireRowRemove(iconDrop, existingIconInput, 'feature-preview');
         }
 
@@ -1167,83 +1245,83 @@ function previewProcessVideo(input) {
     } else {
         addFeatureRow();
     }
-    
-
-  function handleVideoDropClick(el) {
-    if (el.classList.contains('filled')) return;
-    document.getElementById('file-banner-video').click();
-}
-
-function showBannerVideoFileName(input) {
-    if (!validateFileSize(input, MAX_VIDEO_BYTES, 'Banner video')) return;
-
-    const drop = document.getElementById('drop-banner-video');
-    const file = input.files && input.files[0];
-    if (!file) return;
-
-    const videoURL = URL.createObjectURL(file);
-
-    drop.classList.add('has-file', 'filled');
-    drop.classList.remove('input-error');
-    drop.innerHTML = `
-        <video src="${videoURL}" muted playsinline preload="metadata"></video>
-        <button type="button" class="remove-img-btn" onclick="removeUploadedVideo(event)" title="Remove video">
-            <i class="bi bi-x-lg"></i>
-        </button>
-        <div class="uploaded-tag"><i class="bi bi-camera-video-fill"></i> Uploaded</div>
-    `;
-    document.getElementById('remove-banner_video').value = '0';
-}
-
-function removeUploadedVideo(event) {
-    event.stopPropagation();
-    const drop = document.getElementById('drop-banner-video');
-    const fileInput = document.getElementById('file-banner-video');
-    const removeInput = document.getElementById('remove-banner_video');
-
-    const existingVideo = drop.querySelector('video');
-    if (existingVideo && existingVideo.src.startsWith('blob:')) {
-        URL.revokeObjectURL(existingVideo.src);
-    }
-
-    if (removeInput) removeInput.value = '1';
-    if (fileInput) fileInput.value = '';
-
-    drop.classList.remove('has-file', 'filled');
-    drop.innerHTML = `
-        <div class="preview-placeholder" id="preview-banner-video">
-            <div class="ico-circle"><i class="bi bi-camera-video" style="color:#AEB4C4;font-size:18px;"></i></div>
-            <div class="drop-title">Click to upload</div>
-            <div class="drop-sub">or drag &amp; drop</div>
-        </div>
-    `;
-}
 
     function previewFeatureIcon(input) {
-    if (!validateFileSize(input, MAX_ICON_BYTES, 'Feature icon')) return;
+        if (!validateFileSize(input, MAX_ICON_BYTES, 'Feature icon')) return;
 
-    const wrapper = input.closest('.image-slot');
-    const dropEl = wrapper.querySelector('[data-row-slot="icon"]');
-    const oldError = wrapper.querySelector('.field-error');
-    if (oldError) oldError.remove();
+        const wrapper = input.closest('.image-slot');
+        const dropEl = wrapper.querySelector('[data-row-slot="icon"]');
+        const oldError = wrapper.querySelector('.field-error');
+        if (oldError) oldError.remove();
 
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            dropEl.classList.add('filled');
-            dropEl.classList.remove('input-error');
-            dropEl.innerHTML = `
-                <img src="${e.target.result}" alt="Icon">
-                <button type="button" class="remove-img-btn" title="Remove"><i class="bi bi-x-lg"></i></button>
-            `;
-            const existingInput = wrapper.querySelector('.existing-icon-input');
-            wireRowRemove(dropEl, existingInput, 'feature-preview');
-        };
-        reader.readAsDataURL(input.files[0]);
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                dropEl.classList.add('filled');
+                dropEl.classList.remove('input-error');
+                dropEl.innerHTML = `
+                    <img src="${e.target.result}" alt="Icon">
+                    <button type="button" class="remove-img-btn" title="Remove"><i class="bi bi-x-lg"></i></button>
+                `;
+                const existingInput = wrapper.querySelector('.existing-icon-input');
+                wireRowRemove(dropEl, existingInput, 'feature-preview');
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
     }
-}
 
-    // ===== AJAX submit (replaces the old preventDefault-only guard) =====
+    // ===== Banner video =====
+    function handleVideoDropClick(el) {
+        if (el.classList.contains('filled')) return;
+        document.getElementById('file-banner-video').click();
+    }
+
+    function showBannerVideoFileName(input) {
+        if (!validateFileSize(input, MAX_VIDEO_BYTES, 'Banner video')) return;
+
+        const drop = document.getElementById('drop-banner-video');
+        const file = input.files && input.files[0];
+        if (!file) return;
+
+        const videoURL = URL.createObjectURL(file);
+
+        drop.classList.add('has-file', 'filled');
+        drop.classList.remove('input-error');
+        drop.innerHTML = `
+            <video src="${videoURL}" muted playsinline preload="metadata"></video>
+            <button type="button" class="remove-img-btn" onclick="removeUploadedVideo(event)" title="Remove video">
+                <i class="bi bi-x-lg"></i>
+            </button>
+            <div class="uploaded-tag"><i class="bi bi-camera-video-fill"></i> Uploaded</div>
+        `;
+        document.getElementById('remove-banner_video').value = '0';
+    }
+
+    function removeUploadedVideo(event) {
+        event.stopPropagation();
+        const drop = document.getElementById('drop-banner-video');
+        const fileInput = document.getElementById('file-banner-video');
+        const removeInput = document.getElementById('remove-banner_video');
+
+        const existingVideo = drop.querySelector('video');
+        if (existingVideo && existingVideo.src.startsWith('blob:')) {
+            URL.revokeObjectURL(existingVideo.src);
+        }
+
+        if (removeInput) removeInput.value = '1';
+        if (fileInput) fileInput.value = '';
+
+        drop.classList.remove('has-file', 'filled');
+        drop.innerHTML = `
+            <div class="preview-placeholder" id="preview-banner-video">
+                <div class="ico-circle"><i class="bi bi-camera-video" style="color:#AEB4C4;font-size:18px;"></i></div>
+                <div class="drop-title">Click to upload</div>
+                <div class="drop-sub">or drag &amp; drop</div>
+            </div>
+        `;
+    }
+
+    // ===== AJAX submit =====
     document.getElementById('serviceForm').addEventListener('submit', function (e) {
         e.preventDefault();
         submitServiceForm();
@@ -1287,29 +1365,29 @@ function removeUploadedVideo(event) {
                 'X-Requested-With': 'XMLHttpRequest'
             }
         })
-       .then(async (response) => {
-    const data = await response.json().catch(() => null);
+        .then(async (response) => {
+            const data = await response.json().catch(() => null);
 
-    if (response.status === 422 && data && data.errors) {
-        showServiceValidationErrors(data.errors);
-        return;
-    }
+            if (response.status === 422 && data && data.errors) {
+                showServiceValidationErrors(data.errors);
+                return;
+            }
 
-    if (!response.ok) {
-        throw new Error('Request failed');
-    }
+            if (!response.ok) {
+                throw new Error('Request failed');
+            }
 
-    Swal.fire({
-        icon: 'success',
-        title: 'Saved!',
-        text: (data && data.message) ? data.message : 'Service page updated successfully.',
-        confirmButtonColor: '#EF7B2E',
-        timer: 2000,
-        timerProgressBar: true
-    }).then(() => {
-        window.location.href = (data && data.redirect) ? data.redirect : "{{ route('admin.home.services') }}";
-    });
-})
+            Swal.fire({
+                icon: 'success',
+                title: 'Saved!',
+                text: (data && data.message) ? data.message : 'Service page updated successfully.',
+                confirmButtonColor: '#EF7B2E',
+                timer: 2000,
+                timerProgressBar: true
+            }).then(() => {
+                window.location.href = (data && data.redirect) ? data.redirect : "{{ route('admin.home.services') }}";
+            });
+        })
         .catch(() => {
             Swal.fire({
                 icon: 'error',
@@ -1349,7 +1427,9 @@ function removeUploadedVideo(event) {
                 const [, idx, sub] = m;
                 const input = form.querySelector(`[name="process[${idx}][${sub}]"]`);
                 if (!input) return;
-                const target = (sub === 'thumbnail' || sub === 'video') ? input.previousElementSibling : input;
+                const target = (sub === 'thumbnail' || sub === 'video')
+                    ? input.previousElementSibling
+                    : input;
                 target.classList.add('input-error');
                 const errorEl = document.createElement('span');
                 errorEl.className = 'field-error';
@@ -1364,6 +1444,20 @@ function removeUploadedVideo(event) {
                 const input = form.querySelector(`[name="features[${idx}][${sub}]"]`);
                 if (!input) return;
                 const target = sub === 'icon' ? input.previousElementSibling : input;
+                target.classList.add('input-error');
+                const errorEl = document.createElement('span');
+                errorEl.className = 'field-error';
+                errorEl.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+                target.insertAdjacentElement('afterend', errorEl);
+                return;
+            }
+
+            m = field.match(/^gallery\.(\d+)\.(\w+)$/);
+            if (m) {
+                const [, idx, sub] = m;
+                const input = form.querySelector(`[name="gallery[${idx}][${sub}]"]`);
+                if (!input) return;
+                const target = sub === 'image' ? input.previousElementSibling : input;
                 target.classList.add('input-error');
                 const errorEl = document.createElement('span');
                 errorEl.className = 'field-error';
@@ -1388,6 +1482,14 @@ function removeUploadedVideo(event) {
                 container.insertAdjacentElement('afterend', errorEl);
                 return;
             }
+            if (field === 'gallery') {
+                const container = document.getElementById('galleryGrid');
+                const errorEl = document.createElement('span');
+                errorEl.className = 'field-error';
+                errorEl.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+                container.insertAdjacentElement('afterend', errorEl);
+                return;
+            }
 
             const target = topLevelMap[field] ? topLevelMap[field](form) : null;
             if (!target) return;
@@ -1403,111 +1505,86 @@ function removeUploadedVideo(event) {
         if (firstErrorField) {
             firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
-
-        m = field.match(/^gallery\.(\d+)\.(\w+)$/);
-if (m) {
-    const [, idx, sub] = m;
-    const input = form.querySelector(`[name="gallery[${idx}][${sub}]"]`);
-    if (!input) return;
-    const target = sub === 'image' ? input.previousElementSibling : input;
-    target.classList.add('input-error');
-    const errorEl = document.createElement('span');
-    errorEl.className = 'field-error';
-    errorEl.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
-    target.insertAdjacentElement('afterend', errorEl);
-    return;
-}
-
-if (field === 'gallery') {
-    const container = document.getElementById('galleryGrid');
-    const errorEl = document.createElement('span');
-    errorEl.className = 'field-error';
-    errorEl.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
-    container.insertAdjacentElement('afterend', errorEl);
-    return;
-}
     }
+
     // ===== Gallery rows =====
-const existingGallery = @json($galleryForJs);
-const galleryGrid = document.getElementById('galleryGrid');
-const galleryTemplate = document.getElementById('galleryRowTemplate');
-let galleryIndex = 0;
+    const existingGallery = @json($galleryForJs);
+    const galleryGrid = document.getElementById('galleryGrid');
+    const galleryTemplate = document.getElementById('galleryRowTemplate');
+    let galleryIndex = 0;
 
-function addGalleryRow(data = {}) {
-    const clone = galleryTemplate.content.cloneNode(true);
-    const tile = clone.querySelector('.gallery-tile');
+    function addGalleryRow(data = {}) {
+        const clone = galleryTemplate.content.cloneNode(true);
+        const tile = clone.querySelector('.gallery-tile');
 
-    tile.querySelectorAll('input').forEach(field => {
-        field.name = field.name.replace('__INDEX__', galleryIndex);
-    });
+        tile.querySelectorAll('input').forEach(field => {
+            field.name = field.name.replace('__INDEX__', galleryIndex);
+        });
 
-    const dropEl = tile.querySelector('[data-row-slot="gallery-image"]');
-    const fileInput = tile.querySelector('input[type="file"]');
-    const existingInput = tile.querySelector('.existing-gallery-input');
+        const dropEl = tile.querySelector('[data-row-slot="gallery-image"]');
+        const fileInput = tile.querySelector('input[type="file"]');
+        const existingInput = tile.querySelector('.existing-gallery-input');
 
-    dropEl.addEventListener('click', () => {
-        if (!dropEl.classList.contains('filled')) fileInput.click();
-    });
+        dropEl.addEventListener('click', () => {
+            if (!dropEl.classList.contains('filled')) fileInput.click();
+        });
 
-    if (data.image) {
-        dropEl.classList.add('filled');
-        dropEl.innerHTML = `
-            <img src="${data.image_url ?? data.image}" alt="Gallery image">
-            <button type="button" class="remove-img-btn" title="Remove"><i class="bi bi-x-lg"></i></button>
-        `;
-        existingInput.value = data.image;
-        wireGalleryRemove(dropEl, existingInput, tile);
-    }
-
-    if (data.errors && data.errors.image) {
-        setFieldError(dropEl, data.errors.image, false);
-    }
-
-    galleryGrid.appendChild(tile);
-    galleryIndex++;
-}
-
-function wireGalleryRemove(dropEl, existingInput, tile) {
-    const btn = dropEl.querySelector('.remove-img-btn');
-    if (!btn) return;
-    btn.onclick = function (ev) {
-        ev.stopPropagation();
-        // Removing a gallery tile entirely removes the row (unlike single-image slots)
-        tile.remove();
-    };
-}
-
-function previewGalleryImage(input) {
-    if (!validateFileSize(input, MAX_IMAGE_BYTES, 'Gallery image')) return;
-
-    const tile = input.closest('.gallery-tile');
-    const dropEl = tile.querySelector('[data-row-slot="gallery-image"]');
-    const oldError = tile.querySelector('.field-error');
-    if (oldError) oldError.remove();
-
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
+        if (data.image) {
             dropEl.classList.add('filled');
-            dropEl.classList.remove('input-error');
             dropEl.innerHTML = `
-                <img src="${e.target.result}" alt="Gallery image">
+                <img src="${data.image_url ?? data.image}" alt="Gallery image">
                 <button type="button" class="remove-img-btn" title="Remove"><i class="bi bi-x-lg"></i></button>
             `;
-            const existingInput = tile.querySelector('.existing-gallery-input');
+            existingInput.value = data.image;
             wireGalleryRemove(dropEl, existingInput, tile);
-        };
-        reader.readAsDataURL(input.files[0]);
+        }
+
+        if (data.errors && data.errors.image) {
+            setFieldError(dropEl, data.errors.image, false);
+        }
+
+        galleryGrid.appendChild(tile);
+        galleryIndex++;
     }
-}
 
-document.getElementById('addGalleryBtn').addEventListener('click', () => addGalleryRow());
+    function wireGalleryRemove(dropEl, existingInput, tile) {
+        const btn = dropEl.querySelector('.remove-img-btn');
+        if (!btn) return;
+        btn.onclick = function (ev) {
+            ev.stopPropagation();
+            tile.remove();
+        };
+    }
 
-if (existingGallery.length > 0) {
-    existingGallery.forEach(row => addGalleryRow(row));
-}
+    function previewGalleryImage(input) {
+        if (!validateFileSize(input, MAX_IMAGE_BYTES, 'Gallery image')) return;
 
-    
+        const tile = input.closest('.gallery-tile');
+        const dropEl = tile.querySelector('[data-row-slot="gallery-image"]');
+        const oldError = tile.querySelector('.field-error');
+        if (oldError) oldError.remove();
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                dropEl.classList.add('filled');
+                dropEl.classList.remove('input-error');
+                dropEl.innerHTML = `
+                    <img src="${e.target.result}" alt="Gallery image">
+                    <button type="button" class="remove-img-btn" title="Remove"><i class="bi bi-x-lg"></i></button>
+                `;
+                const existingInput = tile.querySelector('.existing-gallery-input');
+                wireGalleryRemove(dropEl, existingInput, tile);
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    document.getElementById('addGalleryBtn').addEventListener('click', () => addGalleryRow());
+
+    if (existingGallery.length > 0) {
+        existingGallery.forEach(row => addGalleryRow(row));
+    }
 </script>
 
 <style>

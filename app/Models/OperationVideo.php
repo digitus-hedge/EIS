@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 class OperationVideo extends Model
 {
     protected $fillable = [
-        'title', 'description', 'thumbnail', 'video', 'is_main',
+        'title', 'description', 'thumbnail', 'video', 'is_main','vedio_link'
     ];
 
     protected $casts = [

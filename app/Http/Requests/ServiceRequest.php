@@ -39,13 +39,20 @@ class ServiceRequest extends FormRequest
             'meta_title'       => ['nullable', 'string', 'max:80'],
             'meta_description' => ['nullable', 'string', 'max:200'],
 
-            // Process — thumbnail and video now genuinely required unless an existing one is present
+            // Process — thumbnail still required unless an existing one is present.
+            // Video is now EITHER an uploaded file OR a YouTube link (checked in withValidator below,
+            // since "at least one of three possible sources" isn't expressible with required_without alone).
             'process'                       => ['required', 'array', 'min:1'],
             'process.*.description'         => ['required', 'string', 'max:1000'],
             'process.*.thumbnail'           => ['required_without:process.*.existing_thumbnail', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
             'process.*.existing_thumbnail'  => ['nullable', 'string'],
-            'process.*.video'               => ['required_without:process.*.existing_video', 'mimes:mp4,mov,avi,webm', 'max:20480'],
+            'process.*.video'               => ['nullable', 'mimes:mp4,mov,avi,webm', 'max:20480'],
             'process.*.existing_video'      => ['nullable', 'string'],
+            'process.*.vedio_link'          => [
+                'nullable',
+                'url',
+                'regex:/^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)[a-zA-Z0-9_-]{11}(&.*)?$/',
+            ],
 
             // Features — icon now genuinely required unless an existing one is present
             'features_heading'         => ['required', 'string', 'max:60'],
@@ -96,9 +103,10 @@ class ServiceRequest extends FormRequest
             'process.*.thumbnail.image' => 'Process thumbnail must be a valid image.',
             'process.*.thumbnail.mimes' => 'Process thumbnail must be a JPG, PNG, or WEBP file.',
             'process.*.thumbnail.max'   => 'Process thumbnail must not exceed 10MB.',
-            'process.*.video.required_without' => 'Process video is required.',
             'process.*.video.mimes'     => 'Process video must be an MP4, MOV, AVI, or WEBM file.',
             'process.*.video.max'       => 'Process video must not exceed 20MB.',
+            'process.*.vedio_link.url'      => 'Please enter a valid URL.',
+            'process.*.vedio_link.regex'    => 'Please enter a valid YouTube video URL.',
 
             'features_heading.required' => 'Please enter a features heading.',
             'features_heading.max'      => 'Features heading must not exceed 60 characters.',
@@ -143,6 +151,22 @@ class ServiceRequest extends FormRequest
 
             if ($willHaveBannerImage && $willHaveBannerVideo) {
                 $validator->errors()->add('banner_image', 'Please choose only one — a Banner Image OR a Banner Video, not both.');
+            }
+
+            // ===== Process rows: each needs a video source — uploaded file, existing file, OR a YouTube link =====
+            $processRows = $this->input('process', []);
+            foreach ($processRows as $index => $row) {
+                $hasNewVideo = $this->hasFile("process.$index.video");
+                $hasExistingVideo = !empty($row['existing_video'] ?? null);
+                $hasLink = !empty(trim($row['vedio_link'] ?? ''));
+
+                if (!$hasNewVideo && !$hasExistingVideo && !$hasLink) {
+                    $validator->errors()->add("process.$index.video", 'Please upload a process video or provide a YouTube link.');
+                }
+
+                if ($hasNewVideo && $hasLink) {
+                    $validator->errors()->add("process.$index.vedio_link", 'Please provide either a video file OR a YouTube link, not both.');
+                }
             }
         });
     }
