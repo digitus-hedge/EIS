@@ -1398,7 +1398,7 @@ body.cert-lightbox-open .cert-nav{
   @forelse ($locations as $index => $location)
     @php $officeChunks = $location->offices->chunk(2)->values(); @endphp
    <div class="footprint-location-panel{{ $index === 0 ? ' is-active' : '' }}" data-location-id="{{ $location->id }}">
-  <h3 class="footprint-panel-title">{{ $location->title }}</h3>
+  <h3 class="footprint-panel-title"></h3>
 
   @if ($location->offices->isEmpty())
     <p class="footprint-empty">No offices added for this location yet.</p>

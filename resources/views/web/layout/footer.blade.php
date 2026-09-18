@@ -357,7 +357,7 @@
 
     <div class="footer-col">
       <p class="footer-desc">From our roots in Erbil, Iraq, EIS has expanded throughout the Middle East, providing clients with dependable inspection support for critical drilling and oilfield equipment.</p>
-      <a href="{{ url('/human-rights-policy') }}" class="footer-link">Human Rights Policy</a>
+      <a href="{{ url('/') }}" class="footer-link">Human Rights Policy</a>
     </div>
 
     <div class="footer-col contact-col">
