@@ -1451,7 +1451,9 @@
         </div>
     </section>
     @php
-  $processSteps = collect($service->process ?? [])->filter(fn($step) => !empty($step['video']))->values();
+  $processSteps = collect($service->process ?? [])
+    ->filter(fn($step) => !empty($step['video']) || !empty($step['vedio_link']))
+    ->values();
   $mainProcess = $processSteps->first();
   $otherProcesses = $processSteps->slice(1)->values();
 @endphp
@@ -1464,11 +1466,13 @@
       <h2 class="process-heading">Step by step, from<br>inspection to report</h2>
     </div>
 
+    {{-- main video --}}
     <div class="process-video reveal reveal-delay-1"
-         id="processVideo"
-         data-video-url="{{ Storage::url($mainProcess['video']) }}"
-         data-title="Step 1"
-         data-desc="{{ $mainProcess['description'] }}">
+     id="processVideo"
+     data-video-url="{{ !empty($mainProcess['video']) ? Storage::url($mainProcess['video']) : ($mainProcess['vedio_link'] ?? '') }}"
+     data-title="Step 1"
+     data-desc="{{ $mainProcess['description'] }}">
+
       <img src="{{ $mainProcess['thumbnail'] ? Storage::url($mainProcess['thumbnail']) : asset('images/process_placeholder.jpg') }}" alt="Step 1">
       <div class="process-play-ring"></div>
       <div class="process-play" aria-label="Play video"></div>
@@ -1487,10 +1491,11 @@
         <div class="process-track-wrap">
           <div class="process-track" id="processTrack">
             @foreach ($otherProcesses as $index => $step)
+              {{-- carousel cards --}}
               <div class="process-card"
-                   data-video-url="{{ Storage::url($step['video']) }}"
-                   data-title="Step {{ $index + 2 }}"
-                   data-desc="{{ $step['description'] }}">
+                  data-video-url="{{ !empty($step['video']) ? Storage::url($step['video']) : ($step['vedio_link'] ?? '') }}"
+                  data-title="Step {{ $index + 2 }}"
+                  data-desc="{{ $step['description'] }}">
                 <img src="{{ $step['thumbnail'] ? Storage::url($step['thumbnail']) : asset('images/process_placeholder.jpg') }}" alt="Step {{ $index + 2 }}">
                 <div class="process-card-play"></div>
                 <div class="process-card-overlay">
@@ -1719,43 +1724,64 @@
 
   const processVideo = document.getElementById('processVideo');
 
-  function loadMainProcessVideo(source) {
-    if (!processVideo) return;
+ function isYoutubeUrl(url) {
+  return /youtube\.com|youtu\.be/.test(url);
+}
 
-    const videoUrl = source.getAttribute('data-video-url');
-    const title = source.getAttribute('data-title') || '';
-    const desc = source.getAttribute('data-desc') || '';
+function toYoutubeEmbedUrl(url) {
+  const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
+  return match ? `https://www.youtube.com/embed/${match[1]}?autoplay=1` : url;
+}
 
-    const titleEl = processVideo.querySelector('.process-video-title');
-    const descEl = processVideo.querySelector('.process-video-desc');
-    if (titleEl) titleEl.textContent = title;
-    if (descEl) descEl.textContent = desc;
+function loadMainProcessVideo(source) {
+  if (!processVideo) return;
 
-    if (!videoUrl) return;
+  const videoUrl = source.getAttribute('data-video-url');
+  const title = source.getAttribute('data-title') || '';
+  const desc = source.getAttribute('data-desc') || '';
 
-    const videoEl = document.createElement('video');
-    videoEl.src = videoUrl;
-    videoEl.controls = true;
-    videoEl.autoplay = true;
-    videoEl.style.position = 'absolute';
-    videoEl.style.inset = '0';
-    videoEl.style.width = '100%';
-    videoEl.style.height = '100%';
-    videoEl.style.objectFit = 'cover';
-    videoEl.style.zIndex = '1';
+  const titleEl = processVideo.querySelector('.process-video-title');
+  const descEl = processVideo.querySelector('.process-video-desc');
+  if (titleEl) titleEl.textContent = title;
+  if (descEl) descEl.textContent = desc;
 
-    const existingVideo = processVideo.querySelector('video');
-    if (existingVideo) existingVideo.remove();
+  if (!videoUrl) return;
 
-    processVideo.prepend(videoEl);
-    processVideo.classList.add('is-playing');
+  const existingMedia = processVideo.querySelector('video, iframe');
+  if (existingMedia) existingMedia.remove();
 
-    videoEl.addEventListener('ended', function () {
+  let mediaEl;
+  if (isYoutubeUrl(videoUrl)) {
+    mediaEl = document.createElement('iframe');
+    mediaEl.src = toYoutubeEmbedUrl(videoUrl);
+    mediaEl.allow = 'autoplay; encrypted-media; picture-in-picture';
+    mediaEl.allowFullscreen = true;
+    mediaEl.style.border = '0';
+  } else {
+    mediaEl = document.createElement('video');
+    mediaEl.src = videoUrl;
+    mediaEl.controls = true;
+    mediaEl.autoplay = true;
+    mediaEl.style.objectFit = 'cover';
+  }
+
+  mediaEl.style.position = 'absolute';
+  mediaEl.style.inset = '0';
+  mediaEl.style.width = '100%';
+  mediaEl.style.height = '100%';
+  mediaEl.style.zIndex = '1';
+
+  processVideo.prepend(mediaEl);
+  processVideo.classList.add('is-playing');
+
+  if (mediaEl.tagName === 'VIDEO') {
+    mediaEl.addEventListener('ended', function () {
       processVideo.classList.remove('is-playing');
     });
-
-    processVideo.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
+
+  processVideo.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
 
   if (processVideo) {
     processVideo.addEventListener('click', function () {

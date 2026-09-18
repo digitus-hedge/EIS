@@ -1451,11 +1451,11 @@ body.cert-lightbox-open .cert-nav{
 
     @if ($mainVideo)
       <div class="operation-video reveal reveal-delay-1"
-           id="operationVideo"
-           data-video-url="{{ $mainVideo->video ? asset('storage/' . $mainVideo->video) : '' }}"
-           data-thumbnail-url="{{ $mainVideo->thumbnail ? asset('storage/' . $mainVideo->thumbnail) : '' }}"
-           data-title="{{ $mainVideo->title }}"
-           data-desc="{{ $mainVideo->description }}">
+          id="operationVideo"
+          data-video-url="{{ $mainVideo->video ? asset('storage/' . $mainVideo->video) : ($mainVideo->vedio_link ?? '') }}"
+          data-thumbnail-url="{{ $mainVideo->thumbnail ? asset('storage/' . $mainVideo->thumbnail) : '' }}"
+          data-title="{{ $mainVideo->title }}"
+          data-desc="{{ $mainVideo->description }}">
         @if ($mainVideo->thumbnail)
           <img src="{{ asset('storage/' . $mainVideo->thumbnail) }}" alt="{{ $mainVideo->title }}">
         @endif
@@ -1478,10 +1478,10 @@ body.cert-lightbox-open .cert-nav{
           <div class="operation-track" id="operationTrack">
             @foreach ($operationVideos as $clip)
               <div class="operation-card"
-            data-video-url="{{ $clip->video ? asset('storage/' . $clip->video) : '' }}"
-            data-thumbnail-url="{{ $clip->thumbnail ? asset('storage/' . $clip->thumbnail) : '' }}"
-            data-title="{{ $clip->title }}"
-            data-desc="{{ $clip->description }}">
+              data-video-url="{{ $clip->video ? asset('storage/' . $clip->video) : ($clip->vedio_link ?? '') }}"
+              data-thumbnail-url="{{ $clip->thumbnail ? asset('storage/' . $clip->thumbnail) : '' }}"
+              data-title="{{ $clip->title }}"
+              data-desc="{{ $clip->description }}">
           @if ($clip->thumbnail)
             <img src="{{ asset('storage/' . $clip->thumbnail) }}" alt="{{ $clip->title }}">
           @endif
@@ -1599,6 +1599,15 @@ body.cert-lightbox-open .cert-nav{
 
 const operationVideo = document.getElementById('operationVideo');
 
+function isYoutubeUrl(url) {
+  return /youtube\.com|youtu\.be/.test(url);
+}
+
+function toYoutubeEmbedUrl(url) {
+  const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
+  return match ? `https://www.youtube.com/embed/${match[1]}?autoplay=1` : url;
+}
+
 function loadMainVideo(source) {
   if (!operationVideo) return;
 
@@ -1618,26 +1627,38 @@ function loadMainVideo(source) {
 
   if (!videoUrl) return;
 
-  const videoEl = document.createElement('video');
-  videoEl.src = videoUrl;
-  videoEl.controls = true;
-  videoEl.autoplay = true;
-  videoEl.style.position = 'absolute';
-  videoEl.style.inset = '0';
-  videoEl.style.width = '100%';
-  videoEl.style.height = '100%';
-  videoEl.style.objectFit = 'cover';
-  videoEl.style.zIndex = '1';
+  const existingMedia = operationVideo.querySelector('video, iframe');
+  if (existingMedia) existingMedia.remove();
 
-  const existingVideo = operationVideo.querySelector('video');
-  if (existingVideo) existingVideo.remove();
+  let mediaEl;
+  if (isYoutubeUrl(videoUrl)) {
+    mediaEl = document.createElement('iframe');
+    mediaEl.src = toYoutubeEmbedUrl(videoUrl);
+    mediaEl.allow = 'autoplay; encrypted-media; picture-in-picture';
+    mediaEl.allowFullscreen = true;
+    mediaEl.style.border = '0';
+  } else {
+    mediaEl = document.createElement('video');
+    mediaEl.src = videoUrl;
+    mediaEl.controls = true;
+    mediaEl.autoplay = true;
+    mediaEl.style.objectFit = 'cover';
+  }
 
-  operationVideo.prepend(videoEl);
-  operationVideo.classList.add('is-playing');   // NEW — hides the play button
+  mediaEl.style.position = 'absolute';
+  mediaEl.style.inset = '0';
+  mediaEl.style.width = '100%';
+  mediaEl.style.height = '100%';
+  mediaEl.style.zIndex = '1';
 
-  videoEl.addEventListener('ended', function () {
-    operationVideo.classList.remove('is-playing');   // NEW — show play button again once it finishes
-  });
+  operationVideo.prepend(mediaEl);
+  operationVideo.classList.add('is-playing');
+
+  if (mediaEl.tagName === 'VIDEO') {
+    mediaEl.addEventListener('ended', function () {
+      operationVideo.classList.remove('is-playing');
+    });
+  }
 
   operationVideo.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
