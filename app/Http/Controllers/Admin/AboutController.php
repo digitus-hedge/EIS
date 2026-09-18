@@ -40,14 +40,14 @@ class AboutController extends Controller
     $about = AboutUs::first() ?? new AboutUs();
 
     $request->validate([
-        'title'        => 'required|string|max:55',
+        'title'        => 'required|string|max:60',
         'banner'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
         'banner_video' => 'nullable|mimes:mp4,mov,webm|max:20480',
         'remove_banner' => 'nullable|boolean',
         'remove_banner_video' => 'nullable|boolean',
     ], [
         'title.required'  => 'Please enter a title.',
-        'title.max'       => 'Title must not exceed 55 characters.',
+        'title.max'       => 'Title must not exceed 60 characters.',
 
         'banner.image'    => 'The file must be a valid image.',
         'banner.mimes'    => 'The banner image must be a JPG, PNG, or WEBP file.',
