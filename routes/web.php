@@ -107,6 +107,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/contact', [ContactController::class, 'edit'])->name('contact.edit');
         Route::put('/contact', [ContactController::class, 'update'])->name('contact.update');
 
+
+         Route::get('home/enquiries', [EnquiryController::class, 'index'])->name('home.enquiries');
+        Route::get('home/enquiries/{enquiry}', [EnquiryController::class, 'show'])->name('home.enquiries.show');
+        Route::delete('home/enquiries/{enquiry}', [EnquiryController::class, 'destroy'])->name('home.enquiries.destroy');
+        
+
         Route::get('about/certificates', [CertificateController::class, 'index'])->name('about.certificates');
         Route::post('about/certificates', [CertificateController::class, 'store'])->name('about.certificates.store');
         Route::put('about/certificates/{certificate}', [CertificateController::class, 'update'])->name('about.certificates.update');

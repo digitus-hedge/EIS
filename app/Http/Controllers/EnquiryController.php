@@ -34,4 +34,43 @@ class EnquiryController extends Controller
 
     return back()->with('success', 'Thank you — your enquiry has been received. We will get back to you shortly.');
 }
+
+
+  public function index(Request $request)
+    {
+        $perPage = $request->input('per_page', 10);
+        $search = $request->input('search');
+
+        $enquiries = Enquiry::query()
+            ->when($search, function ($query, $search) {
+                $query->where('full_name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('comments', 'like', "%{$search}%");
+            })
+            ->latest()
+            ->paginate($perPage)
+            ->withQueryString();
+
+        return view('admin.enquiry.list', compact('enquiries', 'search', 'perPage'));
+    }
+
+    public function show(Enquiry $enquiry)
+    {
+        if (!$enquiry->is_read) {
+            $enquiry->update(['is_read' => true]);
+        }
+
+        return view('admin.enquiry.show', compact('enquiry'));
+    }
+
+    public function destroy(Enquiry $enquiry)
+    {
+        $enquiry->delete();
+
+        return redirect()
+            ->route('admin.home.enquiries')
+            ->with('success', 'Enquiry deleted successfully.');
+    }
+
+
 }

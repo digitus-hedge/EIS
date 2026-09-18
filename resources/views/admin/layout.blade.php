@@ -425,7 +425,8 @@ $homeOpen = (request()->routeIs('admin.home') || request()->routeIs('admin.home.
     && !request()->routeIs('admin.home.services.store')
     && !request()->routeIs('admin.home.services.edit')
     && !request()->routeIs('admin.home.services.update')
-    && !request()->routeIs('admin.home.services.destroy');
+    && !request()->routeIs('admin.home.services.destroy')
+    && !request()->routeIs('admin.home.enquiries*');
 @endphp
 <div class="nav-group {{ $homeOpen ? 'expanded' : '' }}">
     <a class="nav-item" onclick="toggleSub(this)">
@@ -560,24 +561,30 @@ $homeOpen = (request()->routeIs('admin.home') || request()->routeIs('admin.home.
             </div>
 
             {{-- Contact submenu --}}
-            @php
-            $contactOpen = request()->routeIs('admin.contact') || request()->routeIs('admin.contact.*');
-            @endphp
-            <div class="nav-group {{ $contactOpen ? 'expanded' : '' }}">
-                <a class="nav-item" onclick="toggleSub(this)">
-                    <i class="bi bi-envelope nav-ico"></i>
-                    Contact
-                    <i class="bi bi-chevron-right chev"></i>
-                </a>
-                <ul class="submenu">
-                    <li>
-                        <a class="nav-item {{ request()->routeIs('admin.contact.edit') || request()->routeIs('admin.contact.form') ? 'active' : '' }}"
-                            href="{{ route('admin.contact.edit') }}">
-                            <i class="bi bi-file-earmark-text nav-ico"></i> Contact Page
-                        </a>
-                    </li>
-                </ul>
-            </div>
+          @php
+    $contactOpen = request()->routeIs('admin.contact') || request()->routeIs('admin.contact.*') || request()->routeIs('admin.home.enquiries*');
+@endphp
+<div class="nav-group {{ $contactOpen ? 'expanded' : '' }}">
+    <a class="nav-item" onclick="toggleSub(this)">
+        <i class="bi bi-envelope nav-ico"></i>
+        Contact
+        <i class="bi bi-chevron-right chev"></i>
+    </a>
+    <ul class="submenu">
+        <li>
+            <a class="nav-item {{ request()->routeIs('admin.contact.edit') || request()->routeIs('admin.contact.form') ? 'active' : '' }}"
+                href="{{ route('admin.contact.edit') }}">
+                <i class="bi bi-file-earmark-text nav-ico"></i> Contact Page
+            </a>
+        </li>
+        <li>
+            <a class="nav-item {{ request()->routeIs('admin.home.enquiries*') ? 'active' : '' }}"
+                href="{{ route('admin.home.enquiries') }}">
+                <i class="bi bi-chat-left-text nav-ico"></i> Enquiries
+            </a>
+        </li>
+    </ul>
+</div>
 
         </nav>
     </aside>
