@@ -16,7 +16,7 @@ class BannerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title'       => 'required|string|min:3|max:80',
+            'title'       => 'required|string|min:3|max:85',
             'description' => 'required|string|max:500',
 
             'image_1' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:10240',
