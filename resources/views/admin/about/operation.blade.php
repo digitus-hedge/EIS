@@ -132,9 +132,9 @@
 
         <div class="field">
             <div class="field-top" style="margin-top:15px;"><label class="field-label">YouTube Video Link</label></div>
-            <input type="text" name="vedio_link" id="vedio_link" value="{{ old('vedio_link') }}"
-                   class="{{ $errors->has('vedio_link') ? 'input-error' : '' }}"
-                   placeholder="Enter YouTube Link (e.g. https://www.youtube.com/watch?v=xxxxxxxxxxx)">
+           <input type="text" name="vedio_link" id="vedio_link" value="{{ old('vedio_link') }}"
+       class="{{ $errors->has('vedio_link') ? 'input-error' : '' }}"
+       placeholder="Enter YouTube Link (e.g. https://www.youtube.com/watch?v=xxxxxxxxxxx)">
             @error('vedio_link')
                 <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
             @enderror
@@ -432,7 +432,7 @@ if (btn.dataset.videoName) {
 }
 
 function toYoutubeEmbedUrl(url) {
-    const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
+    const match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
     return match ? `https://www.youtube.com/embed/${match[1]}` : url;
 }
 

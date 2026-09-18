@@ -48,12 +48,11 @@ class ServiceRequest extends FormRequest
             'process.*.existing_thumbnail'  => ['nullable', 'string'],
             'process.*.video'               => ['nullable', 'mimes:mp4,mov,avi,webm', 'max:20480'],
             'process.*.existing_video'      => ['nullable', 'string'],
-          'process.*.vedio_link' => [
+      'process.*.vedio_link' => [
     'nullable',
     'url',
-    'regex:/^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/|shorts\/)|youtu\.be\/)[a-zA-Z0-9_-]{11}(&.*)?$/',
+    'regex:/^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/|shorts\/)|youtu\.be\/)[a-zA-Z0-9_-]{11}([?&].*)?$/',
 ],
-
             // Features — icon now genuinely required unless an existing one is present
             'features_heading'         => ['required', 'string', 'max:60'],
             'features'                 => ['required', 'array', 'min:1', 'max:4'],

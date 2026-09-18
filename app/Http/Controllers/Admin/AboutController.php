@@ -548,7 +548,7 @@ public function storeOperationVideo(Request $request)
             'nullable',
             'prohibits:video',
             'url',
-            'regex:/^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)[a-zA-Z0-9_-]{11}(&.*)?$/',
+    'regex:/^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/|shorts\/)|youtu\.be\/)[a-zA-Z0-9_-]{11}([?&].*)?$/',
         ],
     ], [
         'title.required'       => 'Please enter a title.',
@@ -630,7 +630,7 @@ public function updateOperationVideo(Request $request, OperationVideo $video)
             'nullable',
             'prohibits:video',
             'url',
-            'regex:/^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)[a-zA-Z0-9_-]{11}(&.*)?$/',
+    'regex:/^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/|shorts\/)|youtu\.be\/)[a-zA-Z0-9_-]{11}([?&].*)?$/',
         ],
     ], [
         'title.required'       => 'Please enter a title.',
@@ -714,7 +714,7 @@ public function updateOperationVideo(Request $request, OperationVideo $video)
 private function normalizeYoutubeUrl(string $url): string
 {
     preg_match(
-        '/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/',
+        '/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/',
         $url,
         $matches
     );
