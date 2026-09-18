@@ -41,8 +41,7 @@
     inset: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    object-position:center 30%;
+    object-fit: fill;      /* was cover — now never crops */
     opacity: 0;
     transform:scale(1.06);
     transition: opacity 1.4s ease, transform 8s ease;
@@ -281,17 +280,17 @@
         }
 
         .overview-photo{
-            width:100%;
-            aspect-ratio: 760 / 500; /* wider, same height as before */
-            border-radius:20px;
-            background-color:#e8e8e8;
-            background-position:center;
-            background-size:cover;
-            background-repeat:no-repeat;
-            box-shadow:0 20px 44px rgba(0,0,0,0.14);
-            transition:transform 0.6s cubic-bezier(0.16,1,0.3,1), box-shadow 0.6s ease;
-            margin-top:30px;
-            }
+          width:100%;
+          aspect-ratio: 760 / 500;
+          border-radius:20px;
+          background-color:#e8e8e8;
+          background-position:center;
+          background-size:100% 100%;   /* was cover — stretches to fill, no cropping */
+          background-repeat:no-repeat;
+          box-shadow:0 20px 44px rgba(0,0,0,0.14);
+          transition:transform 0.6s cubic-bezier(0.16,1,0.3,1), box-shadow 0.6s ease;
+          margin-top:30px;
+      }
 
         .overview-photo:hover {
             transform: translateY(-6px);
@@ -416,7 +415,7 @@
   display:block;
   width:100%;
   height:100%;
-  object-fit:cover;
+  object-fit:fill;
   transition:transform 0.8s cubic-bezier(0.16,1,0.3,1);
 }
 
@@ -932,14 +931,18 @@
 .related-card-photo{
   width:100%;
   aspect-ratio: 4 / 3;
-  background-color:#e8e8e8;
-  background-position:center;
-  background-size:cover;
-  background-repeat:no-repeat;
+  overflow:hidden;
+}
+
+.related-card-photo-img{
+  width:100%;
+  height:100%;
+  object-fit: fill;
+  display:block;
   transition:transform 0.7s cubic-bezier(0.16,1,0.3,1);
 }
 
-.related-card:hover .related-card-photo{
+.related-card:hover .related-card-photo-img{
   transform:scale(1.08);
 }
 
@@ -1602,9 +1605,12 @@
     <div class="related-grid">
       @foreach ($relatedServices as $index => $related)
         <a href="{{ route('service.details', $related->slug) }}"
-           class="related-card reveal reveal-delay-{{ min($index, 3) }}">
-          <div class="related-card-photo"
-               style="background-image:url('{{ $related->banner_image ? Storage::url($related->banner_image) : asset('images/hero_image.jpeg') }}')"></div>
+          class="related-card reveal reveal-delay-{{ min($index, 3) }}">
+          <div class="related-card-photo">
+            <img src="{{ $related->banner_image ? Storage::url($related->banner_image) : asset('images/hero_image.jpeg') }}"
+                alt="{{ $related->banner_title }}"
+                class="related-card-photo-img">
+          </div>
           <div class="related-card-body">
             <h3 class="related-card-title">{{ $related->banner_title }}</h3>
             <p class="related-card-desc">{{ Str::limit($related->banner_description, 90) }}</p>

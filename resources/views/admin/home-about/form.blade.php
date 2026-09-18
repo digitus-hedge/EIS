@@ -67,7 +67,7 @@
 
             <div class="notice caution">
                 <i class="bi bi-exclamation-triangle" style="margin-top:1px;"></i>
-                <p><b>Recommended size:</b> {{ $imageWidth ?? 550 }} &times; {{ $imageHeight ?? 560 }}px &middot; JPG, PNG, WEBP &middot; up to 10MB.</p>
+                <p><b>Recommended size:</b> {{ $imageWidth ?? 1200 }} &times; {{ $imageHeight ?? 1080 }}px &middot; JPG, PNG, WEBP &middot; up to 10MB.</p>
             </div>
 
             <div class="image-slot" style="max-width:300px;">
@@ -433,7 +433,8 @@ function showAboutValidationErrors(errors) {
     .notice.caution p b{ color:#6B4A0E; font-weight:700; }
 
     .drop{
-        position:relative; aspect-ratio:4/3; border-radius:12px;
+         position:relative;
+        aspect-ratio: 1200 / 1080; border-radius:12px;
         border:2px dashed var(--input-border,#DBDFEA); background:#FAFBFD;
         display:flex; flex-direction:column; align-items:center; justify-content:center;
         cursor:pointer; overflow:hidden; transition:border-color .15s, background .15s; text-align:center;

@@ -14,7 +14,7 @@ use Intervention\Image\Format;
 class HomeAboutController extends Controller
 {
     protected int $imageWidth = 1200;
-    protected int $imageHeight = 700;
+    protected int $imageHeight = 1080;
     protected int $compressQuality = 100;
 
     /**
@@ -23,9 +23,13 @@ class HomeAboutController extends Controller
     public function index()
     {
         $about = HomeAbout::first() ?? new HomeAbout();
-        return view('admin.home-about.form', compact('about'));
-    }
 
+        return view('admin.home-about.form', compact('about'))
+            ->with([
+                'imageWidth'  => $this->imageWidth,
+                'imageHeight' => $this->imageHeight,
+            ]);
+    }
     /**
      * STORE — creates the About section if none exists, otherwise updates the existing one
      */
@@ -51,25 +55,17 @@ class HomeAboutController extends Controller
             ->with('success', 'About section saved successfully.');
     }
 
- private function processAndStoreImage($file): string
-{
-    $filename = 'home-about/' . Str::random(20) . '.webp';
+    private function processAndStoreImage($file): string
+    {
+        $filename = 'home-about/' . Str::random(20) . '.webp';
 
-    // Intervention Image v3
-    $manager = new ImageManager(new Driver());
+        $manager = new ImageManager(new Driver());
+        $image = $manager->read($file->getPathname());
 
-    // Read uploaded image
-    $image = $manager->read($file->getPathname());
+        // No cover(), no contain() — save as-is, just convert format
+        $encoded = $image->toWebp(quality: $this->compressQuality);
+        Storage::disk('public')->put($filename, (string) $encoded);
 
-    // Crop/resize to required dimensions
-    $image->cover($this->imageWidth, $this->imageHeight);
-
-    // Encode as WEBP (v3 syntax)
-    $encoded = $image->toWebp(quality: $this->compressQuality);
-
-    // Save to public storage
-    Storage::disk('public')->put($filename, (string) $encoded);
-
-    return $filename;
-}
+        return $filename;
+    }
 }

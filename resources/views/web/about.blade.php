@@ -67,7 +67,7 @@
   inset:0;
   width:100%;
   height:100%;
-  object-fit:cover;
+  object-fit:fill;
   object-position:center 30%;   /* NEW — pulls focus up slightly so subjects aren't cropped awkwardly */
   opacity:0;
   transform:scale(1.06);
@@ -159,7 +159,7 @@
   bottom:0;
   width:100%;
   height:100%;
-  object-fit:cover;
+  object-fit:fill;
   object-position:center;
   z-index:1;
   display:block;
@@ -381,8 +381,9 @@
 .who-we-are-photo-img{
   position:absolute;
   inset:0;
-  background-position:center;
-  background-size:cover;
+  width:100%;
+  height:100%;
+  object-fit:fill;      /* was background-position/background-size — now real fill, no cropping */
   transform:scale(1.04);
   transition:transform 1.1s cubic-bezier(0.16,1,0.3,1);
 }
@@ -561,7 +562,7 @@
   transition:box-shadow 0.3s ease, transform 0.3s ease;
 }
 .footprint-location-photo:hover{ box-shadow:0 20px 40px rgba(232,121,45,0.22); transform:translateY(-4px); }
-.footprint-location-photo img{ display:block; width:100%; height:100%; object-fit:cover; transition:transform 0.6s cubic-bezier(0.16,1,0.3,1); }
+.footprint-location-photo img{ display:block; width:100%; height:100%; object-fit:fill; transition:transform 0.6s cubic-bezier(0.16,1,0.3,1); }
 .footprint-location-photo:hover img{ transform:scale(1.1); }
 
 .footprint-location-text{ flex:1; min-width:0; }
@@ -629,7 +630,7 @@
   display:block;
   width:100%;
   height:100%;
-  object-fit:cover;
+  object-fit:fill;
   transition:transform 0.8s cubic-bezier(0.16,1,0.3,1);
 }
 
@@ -799,7 +800,7 @@
   display:block;
   width:100%;
   height:100%;
-  object-fit:cover;
+  object-fit:fill;
   transition:transform 0.7s cubic-bezier(0.16,1,0.3,1);
 }
 
@@ -1322,12 +1323,62 @@ body.cert-lightbox-open .cert-nav{
 
     <div class="who-we-are-photo reveal reveal-right reveal-delay-1"
      role="img" aria-label="EIS inspectors reviewing plans on site">
-  <div class="who-we-are-photo-img"
-       style="background-image: url('{{ $about && $about->image ? asset('storage/' . $about->image) : '' }}');"></div>
+  @if($about && $about->image)
+    <img src="{{ asset('storage/' . $about->image) }}"
+         alt="{{ $about->title ?? '' }}"
+         class="who-we-are-photo-img">
+  @endif
   <div class="who-we-are-photo-overlay"></div>
 </div>
   </div>
 </section>
+
+@if ($certificates->count())
+<section class="certifications">
+  <div class="certifications-inner">
+    <div class="certifications-top reveal reveal-left">
+      <p class="certifications-eyebrow">Accreditations</p>
+      <h2 class="certifications-heading">EIS Accredited Certifications</h2>
+    </div>
+
+    <div class="cert-carousel reveal reveal-delay-1">
+      <button type="button" class="cert-nav" id="certPrev" aria-label="Previous">&#10094;</button>
+
+      <div class="cert-track-wrap">
+        <div class="cert-track" id="certTrack">
+          @foreach ($certificates as $certificate)
+            <div class="cert-item" data-full="{{ Storage::url($certificate->image) }}" data-title="{{ $certificate->title }}">
+              <div class="cert-photo">
+                <img src="{{ Storage::url($certificate->image) }}" alt="{{ $certificate->title }}" loading="lazy">
+                <div class="cert-shine" aria-hidden="true"></div>
+                <div class="cert-zoom-hint" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2"/>
+                    <path d="M21 21l-4.3-4.3" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          @endforeach
+        </div>
+      </div>
+
+      <button type="button" class="cert-nav" id="certNext" aria-label="Next">&#10095;</button>
+    </div>
+
+    <div class="cert-dots" id="certDots"></div>
+  </div>
+</section>
+
+<div class="cert-lightbox" id="certLightbox" aria-hidden="true">
+  <button type="button" class="cert-lightbox-close" id="certLightboxClose" aria-label="Close">&times;</button>
+  <div class="cert-lightbox-content">
+    <img src="" alt="" id="certLightboxImg" class="cert-lightbox-img">
+    <p class="cert-lightbox-title" id="certLightboxTitle"></p>
+  </div>
+</div>
+@endif
+
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -1451,52 +1502,6 @@ body.cert-lightbox-open .cert-nav{
     @endif
   </div>
 </section>
-
-@if ($certificates->count())
-<section class="certifications">
-  <div class="certifications-inner">
-    <div class="certifications-top reveal reveal-left">
-      <p class="certifications-eyebrow">Accreditations</p>
-      <h2 class="certifications-heading">EIS Accredited Certifications</h2>
-    </div>
-
-    <div class="cert-carousel reveal reveal-delay-1">
-      <button type="button" class="cert-nav" id="certPrev" aria-label="Previous">&#10094;</button>
-
-      <div class="cert-track-wrap">
-        <div class="cert-track" id="certTrack">
-          @foreach ($certificates as $certificate)
-            <div class="cert-item" data-full="{{ Storage::url($certificate->image) }}" data-title="{{ $certificate->title }}">
-              <div class="cert-photo">
-                <img src="{{ Storage::url($certificate->image) }}" alt="{{ $certificate->title }}" loading="lazy">
-                <div class="cert-shine" aria-hidden="true"></div>
-                <div class="cert-zoom-hint" aria-hidden="true">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                    <circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2"/>
-                    <path d="M21 21l-4.3-4.3" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
-                  </svg>
-                </div>
-              </div>
-            </div>
-          @endforeach
-        </div>
-      </div>
-
-      <button type="button" class="cert-nav" id="certNext" aria-label="Next">&#10095;</button>
-    </div>
-
-    <div class="cert-dots" id="certDots"></div>
-  </div>
-</section>
-
-<div class="cert-lightbox" id="certLightbox" aria-hidden="true">
-  <button type="button" class="cert-lightbox-close" id="certLightboxClose" aria-label="Close">&times;</button>
-  <div class="cert-lightbox-content">
-    <img src="" alt="" id="certLightboxImg" class="cert-lightbox-img">
-    <p class="cert-lightbox-title" id="certLightboxTitle"></p>
-  </div>
-</div>
-@endif
 <section class="cta-support">
   <div class="cta-support-inner">
     <div class="cta-support-photo reveal reveal-left"

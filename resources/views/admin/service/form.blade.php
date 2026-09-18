@@ -273,7 +273,7 @@
 
             <div class="notice caution">
                 <i class="bi bi-exclamation-triangle" style="margin-top:1px;"></i>
-                <p><b>Recommended size:</b> 1100 &times; 340px &middot; JPG, PNG, WEBP &middot; up to 10MB.</p>
+                <p><b>Recommended size:</b> 760 &times; 500px &middot; JPG, PNG, WEBP &middot; up to 10MB.</p>
             </div>
 
             <div class="image-slot" style="max-width:400px;">
@@ -374,7 +374,7 @@
 
     <div class="notice caution">
         <i class="bi bi-exclamation-triangle" style="margin-top:1px;"></i>
-        <p><b>Recommended size:</b> 800 &times; 800px &middot; JPG, PNG, WEBP &middot; up to 10MB each.</p>
+        <p><b>Recommended size:</b> 340px &times; 260px &middot; JPG, PNG, WEBP &middot; up to 10MB each.</p>
     </div>
 
     <div class="gallery-grid" id="galleryGrid"></div>

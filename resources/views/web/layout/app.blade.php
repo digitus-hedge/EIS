@@ -15,17 +15,23 @@
     <!-- Fonts (optional, remove if not used) -->
     {{-- <link rel="preconnect" href="https://fonts.googleapis.com"> --}}
 
- <style>
-html, body{
-  max-width:100%;
-  margin:0;
-  padding:0;
-  overflow-x:hidden;
-}
-*, *::before, *::after{
-  box-sizing:border-box;
-}
-</style>
+    <style>
+      html, body{
+        max-width:100%;
+        margin:0;
+        padding:0;
+        overflow-x:hidden;
+      }
+      *, *::before, *::after{
+        box-sizing:border-box;
+      }
+
+      /* Global: don't crop admin-uploaded images */
+      img{
+        max-width:100%;
+        height:auto;
+      }
+      </style>
 
     <!-- Styles -->
     @stack('styles')

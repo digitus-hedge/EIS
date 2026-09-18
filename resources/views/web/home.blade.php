@@ -73,18 +73,30 @@
   }
 
   .about-photo{
-    flex:0 0 45%;
-    border-radius:20px;
-    overflow:hidden;
-    transition:box-shadow 0.3s ease;
-    background-position:center;
-    background-size:cover;
-    box-shadow:0 18px 36px rgba(0,0,0,0.14);
-  }
+  flex:0 0 550px;      /* fixed width instead of 45% */
+  width:550px;
+  height:500px;         /* fixed height, locked */
+  border-radius:20px;
+  overflow:hidden;
+  transition:box-shadow 0.3s ease;
+  box-shadow:0 18px 36px rgba(0,0,0,0.14);
+}
 
-  .about-photo:hover{
-    box-shadow:0 22px 44px rgba(0,0,0,0.18);
-  }
+.about-photo:hover{
+  box-shadow:0 22px 44px rgba(0,0,0,0.18);
+}
+
+.about-photo-img{
+  width:100%;
+  height:100%;
+  object-fit:fill;      /* or 'contain'/'cover' — see note below */
+  display:block;
+  transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);
+}
+
+.about-photo:hover .about-photo-img{
+  transform:scale(1.06);
+}
 
   .about-content{
     flex:1;
@@ -152,7 +164,10 @@
 @media (max-width: 1024px){
   .about-bar{ padding:30px 40px; }
   .about-body{ padding:44px 40px 60px; gap:36px; }
-  .about-photo,
+  .about-photo-img{
+    object-fit:cover;
+    object-position:center;
+  }
   .about-content{ height:300px; }
   .about-content{ padding:28px 28px; }
   .about-text{ max-height:200px; padding-left:28px; }
@@ -178,11 +193,9 @@
   }
 
   .about-photo{
-    flex:none;
     width:100%;
-    height:240px;
-    order:1;
-    box-shadow:0 8px 20px rgba(0,0,0,0.12);
+    aspect-ratio: 11 / 10;   /* same ratio as desktop, height now derives automatically */
+    height:auto;
   }
 
   .about-content{
@@ -517,10 +530,20 @@
   overflow:hidden;
   margin-bottom:18px;
   background-color:#e8e8e8;
-  background-position:center;
-  background-size:cover;
-  background-repeat:no-repeat;
   transition:box-shadow 0.4s ease;
+}
+
+.services-photo-img{
+  width:100%;
+  height:100%;
+  border-radius:24px;    /* was 64px — now matches parent exactly */
+  object-fit:fill;
+  display:block;
+  transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);
+}
+
+.services-photo:hover .services-photo-img{
+  transform:scale(1.06);
 }
 .services-inner{
   display:flex;
@@ -562,9 +585,6 @@
   width:0;
   height:0;
 }
-.services-photo:hover{
-  box-shadow:0 20px 44px rgba(0,0,0,0.18);
-}
 
 .services-grid{
   display:grid;
@@ -597,15 +617,17 @@
 .service-photo{
   width:100%;
   aspect-ratio: 16 / 9;
-  height:170px;
-  border-radius:20px;   /* was 24px — now matches .service-card */
+  border-radius:20px;
   overflow:hidden;
   margin-bottom:18px;
-  background-color:#e8e8e8;
-  background-position:center;
-  background-size:cover;
-  background-repeat:no-repeat;
   transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);
+}
+
+.service-photo-img{
+  width:100%;
+  height:100%;
+  object-fit:fill;
+  display:block;
 }
 
 .service-title{
@@ -682,6 +704,63 @@
 @media (max-width: 1100px){
   .services-grid{ grid-template-columns:repeat(2, 1fr); }
 }
+@media (max-width: 1024px){
+  .services{ padding:56px 24px 70px; }
+
+  .services-inner{
+    flex-direction:column;
+    height:auto;
+    gap:36px;
+  }
+
+  .services-left,
+  .services-right{
+    height:auto;
+    max-height:none;
+    overflow:visible;
+    width:100%;
+    max-width:100%;
+    flex-basis:auto;
+  }
+
+  .services-heading{
+    font-size:clamp(22px, 5vw, 30px);
+    word-break:break-word;
+    overflow-wrap:break-word;
+  }
+
+  .services-sub{
+    font-size:15.5px;
+    line-height:1.55;
+    word-break:break-word;
+    overflow-wrap:break-word;
+  }
+
+  .services-photo{
+    width:100%;
+    height:280px;
+    aspect-ratio: 4 / 3;
+  }
+
+  .services-grid{
+    display:flex;
+    flex-wrap:nowrap;
+    overflow-x:hidden;
+    scroll-snap-type:x mandatory;
+    gap:16px;
+    padding:4px;
+    margin:0;
+    width:100%;
+  }
+
+  .service-card{
+    flex:0 0 100%;
+    max-width:100%;
+    scroll-snap-align:center;
+  }
+
+  .services-dots{ display:flex; }
+}
 
 @media (max-width: 900px){
   .services{ padding:56px 24px 70px; }
@@ -740,6 +819,25 @@
   .service-photo{ width:100%; max-height:220px; }
 
   .services-dots{ display:flex; }
+}
+@media (max-width: 1024px) and (min-width: 901px){
+  .services-inner{
+    flex-direction:column;
+    height:auto;
+    gap:44px;
+  }
+  .services-left,
+  .services-right{
+    height:auto;
+    max-height:none;
+    overflow:visible;
+    width:100%;
+    max-width:100%;
+    flex-basis:auto;
+  }
+  .services-photo{
+    height:300px;
+  }
 }
 .trusted{
   position:relative;
@@ -1125,67 +1223,12 @@
     flex:1;
     min-width:0;
     max-width:none;
-    height:400px;
-
-    /* Smooth rounded image */
+    aspect-ratio: 4 / 3;
     border-radius:28px;
     overflow:hidden;
-
-    /* Premium image background */
-    background-color:#e8e8e8;
     background-size:cover;
     background-position:center;
     background-repeat:no-repeat;
-
-    /* Soft depth */
-    box-shadow:
-        0 18px 40px rgba(0,0,0,0.12),
-        0 6px 18px rgba(0,0,0,0.06);
-
-    transition:
-        transform 0.5s cubic-bezier(0.16,1,0.3,1),
-        box-shadow 0.5s ease;
-}
-
-/* Dark gradient over bottom of image */
-.why-panel-photo::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    border-radius:28px;
-
-    background:
-        linear-gradient(
-            180deg,
-            rgba(0,0,0,0) 45%,
-            rgba(10,20,20,0.08) 65%,
-            rgba(10,20,20,0.55) 100%
-        );
-
-    pointer-events:none;
-}
-
-/* Orange accent behind image */
-.why-panel-photo::before{
-    content:"";
-    position:absolute;
-    z-index:-1;
-
-    top:18px;
-    right:-14px;
-    width:100%;
-    height:100%;
-
-    border-radius:28px;
-    background:rgba(232,121,45,0.14);
-}
-
-/* Image hover */
-.why-panel-photo:hover{
-    transform:translateY(-7px);
-    box-shadow:
-        0 28px 55px rgba(0,0,0,0.18),
-        0 10px 25px rgba(232,121,45,0.10);
 }
 
   .why-panel-badge{
@@ -1212,12 +1255,12 @@
     font-size:14px;
   }
 
-   @media (max-width: 1100px){
+ @media (max-width: 1100px){
     .why-content-wrap{ overflow:visible; }
     .why-panel{ flex-direction:column; align-items:flex-start; gap:26px; }
     .why-panel-text{ max-width:none; flex-basis:auto; width:100%; }
-    .why-panel-photo{ width:100%; flex-basis:auto; height:320px; }
-  }
+    .why-panel-photo{ width:100%; flex-basis:auto; }   /* height removed — aspect-ratio now handles it */
+}
 
   @media (max-width: 900px){
     .why{ padding:64px 24px 70px; }
@@ -1397,15 +1440,11 @@
   </div>
 
   <div class="about-body">
-    <div
-      class="about-photo reveal reveal-left"
-      role="img"
-      aria-label="{{ $about->title ?? null }}"
+    <div class="about-photo reveal reveal-left">
       @if(!empty($about->image))
-        style="background-image: url('{{ asset('storage/' . $about->image) }}');"
+        <img src="{{ asset('storage/' . $about->image) }}" alt="{{ $about->title ?? '' }}" class="about-photo-img">
       @endif
-    ></div>
-
+    </div>
     <div class="about-content reveal reveal-right">
       <p class="about-eyebrow">About EIS</p>
       <h3 class="about-heading">{{ $about->title ?? null }}</h3>
@@ -1452,12 +1491,9 @@
       <p class="services-sub">{{ $serviceSection->description ?? 'Specialized services designed to improve asset integrity, safety and performance' }}</p>
 
       @if(!empty($serviceSection->image))
-        <div
-          class="services-photo"
-          style="background-image:url('{{ asset('storage/' . $serviceSection->image) }}')"
-          role="img"
-          aria-label="{{ $serviceSection->heading ?? 'Our services' }}"
-        ></div>
+        <div class="services-photo">
+          <img src="{{ asset('storage/' . $serviceSection->image) }}" alt="{{ $serviceSection->heading ?? 'Our services' }}" class="services-photo-img">
+        </div>
       @else
         <div class="services-photo" role="img" aria-label="Offshore oil and gas platform"></div>
       @endif
@@ -1467,18 +1503,19 @@
       @if(($services ?? collect())->isNotEmpty())
   <div class="services-grid" id="servicesGrid">
     @foreach ($services as $service)
-      <div class="service-card">
-        <div
-          class="service-photo"
-          style="background-image:url('{{ $service->banner_image ? Storage::url($service->banner_image) : asset('images/hero_image.jpeg') }}')"
-          role="img"
-          aria-label="{{ $service->banner_title }}"
-        ></div>
-        <h3 class="service-title">{{ $service->banner_title }}</h3>
-        <p class="service-desc">{{ $service->banner_description }}</p>
-        <a href="{{ route('service.details', $service->slug) }}" class="service-link">READ MORE <span class="arrow">&#8594;</span></a>
-      </div>
-    @endforeach
+  <div class="service-card">
+    <div class="service-photo">
+      <img
+        src="{{ $service->overview_image  ? Storage::url($service->overview_image ) : asset('images/hero_image.jpeg') }}"
+        alt="{{ $service->banner_title }}"
+        class="service-photo-img"
+      >
+    </div>
+    <h3 class="service-title">{{ $service->banner_title }}</h3>
+    <p class="service-desc">{{ $service->banner_description }}</p>
+    <a href="{{ route('service.details', $service->slug) }}" class="service-link">READ MORE <span class="arrow">&#8594;</span></a>
+  </div>
+@endforeach
   </div>
 
   <div class="services-dots" id="servicesDots"></div>
