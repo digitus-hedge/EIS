@@ -462,6 +462,13 @@
                            onchange="previewProcessThumbnail(this)">
                     <input type="hidden" name="process[__INDEX__][existing_thumbnail]" class="existing-thumbnail-input" value="">
                 </div>
+
+                   <div class="notice caution" style="margin-top: 7px;">
+                <i class="bi bi-exclamation-triangle" style="margin-top:1px;"></i>
+                <p><b>Recommended size:</b> <br/>320 &times; 180px &middot; JPG, PNG, WEBP &middot; up to 10MB.</p>
+            </div>
+
+                
             </div>
 <div class="field">
                 <div class="field-top"><label class="field-label">Video</label></div>
@@ -488,7 +495,10 @@
     <div class="inspection-row">
         <div class="inspection-row-fields feature-row-fields">
             <div class="field">
+               
+
                 <div class="field-top"><label class="field-label">Icon</label></div>
+                
                 <div class="image-slot row-slot">
                     <div class="drop img-slot" data-row-slot="icon">
                         <div class="preview-placeholder feature-preview">
@@ -496,6 +506,12 @@
                             <div class="drop-title">Click to upload</div>
                         </div>
                     </div>
+
+                        <div class="notice caution" style="margin-top: 7px;    width: 185px;">
+                <i class="bi bi-exclamation-triangle" style="margin-top:1px;"></i>
+                <p><b>Recommended size:</b><br/> 56 &times; 56px &middot; JPG, PNG, WEBP &middot; up to 10MB.</p>
+            </div>
+            
                     <input type="file" name="features[__INDEX__][icon]" accept="image/*" hidden
                            onchange="previewFeatureIcon(this)">
                     <input type="hidden" name="features[__INDEX__][existing_icon]" class="existing-icon-input" value="">
