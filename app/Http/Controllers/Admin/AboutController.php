@@ -534,7 +534,7 @@ public function storeOperationVideo(Request $request)
 {
     $request->validate([
         'title'       => 'required|string|max:50',
-        'description' => 'required|string|max:120',
+        'description' => 'required|string|max:150',
         'thumbnail'   => 'required|image|mimes:jpg,jpeg,png,webp|max:10240',
         'video'       => [
             Rule::requiredIf(fn () => !$request->filled('vedio_link')),
@@ -555,7 +555,7 @@ public function storeOperationVideo(Request $request)
         'title.max'            => 'Title must not exceed 50 characters.',
 
         'description.required' => 'Please enter a description.',
-        'description.max'      => 'Description must not exceed 120 characters.',
+        'description.max'      => 'Description must not exceed 150 characters.',
 
         'thumbnail.required' => 'Please upload a thumbnail image.',
         'thumbnail.image'    => 'The thumbnail must be a valid image.',
@@ -618,7 +618,7 @@ public function updateOperationVideo(Request $request, OperationVideo $video)
 {
     $request->validate([
         'title'       => 'required|string|max:50',
-        'description' => 'required|string|max:120',
+        'description' => 'required|string|max:150',
         'thumbnail'   => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
         'video'       => [
             'nullable',
@@ -637,7 +637,7 @@ public function updateOperationVideo(Request $request, OperationVideo $video)
         'title.max'            => 'Title must not exceed 50 characters.',
 
         'description.required' => 'Please enter a description.',
-        'description.max'      => 'Description must not exceed 120 characters.',
+        'description.max'      => 'Description must not exceed 150 characters.',
 
         'thumbnail.image' => 'The thumbnail must be a valid image.',
         'thumbnail.mimes' => 'The thumbnail must be a JPG, PNG, or WEBP file.',
