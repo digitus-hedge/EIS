@@ -192,12 +192,16 @@
     padding:36px 24px 48px;
   }
 
+ 
   .about-photo{
+    flex:none;
     width:100%;
-    aspect-ratio: 11 / 10;   /* same ratio as desktop, height now derives automatically */
+    aspect-ratio: 11 / 10;
     height:auto;
   }
-
+  .about-photo-img{
+    object-fit: fill;
+  }
   .about-content{
     flex:none;
     width:100%;
@@ -223,7 +227,7 @@
   .about-bar p{ font-size:14.5px; }
   .about-cta{ font-size:15px; }
 
-  .about-photo{ height:200px; border-radius:14px; }
+  .about-photo{  border-radius:14px; }
   .about-content{ padding:22px 18px; border-radius:12px; }
 
   .about-eyebrow{ font-size:15px; margin-bottom:10px; padding-left:18px; }
@@ -238,7 +242,6 @@
 /* ===== Very small phones ===== */
 @media (max-width: 380px){
   .about-body{ padding:30px 14px 40px; }
-  .about-photo{ height:170px; }
   .about-content{ padding:18px 14px; }
   .about-heading{ font-size:18px; }
   .about-text{ max-height:none; }

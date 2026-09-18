@@ -504,17 +504,17 @@ $service->gallery = count($processedGallery) > 0 ? array_values($processedGaller
     }
 
     private function normalizeYoutubeUrl(string $url): string
-    {
-        preg_match(
-            '/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/',
-            $url,
-            $matches
-        );
+{
+    preg_match(
+        '/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/',
+        $url,
+        $matches
+    );
 
-        $videoId = $matches[1] ?? null;
+    $videoId = $matches[1] ?? null;
 
-        return $videoId ? "https://www.youtube.com/watch?v={$videoId}" : $url;
-    }
+    return $videoId ? "https://www.youtube.com/watch?v={$videoId}" : $url;
+}
 
     private function storeVideo($file): string
     {

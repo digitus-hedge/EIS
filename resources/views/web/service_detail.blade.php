@@ -1729,7 +1729,9 @@
 }
 
 function toYoutubeEmbedUrl(url) {
-  const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
+  const match = url.match(
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/
+  );
   return match ? `https://www.youtube.com/embed/${match[1]}?autoplay=1` : url;
 }
 
