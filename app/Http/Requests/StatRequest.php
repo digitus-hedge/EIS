@@ -15,9 +15,9 @@ class StatRequest extends FormRequest
     {
         return [
             'items'               => 'required|array|min:1|max:5',
-            'items.*.value'       => 'required|string|max:6',
+            'items.*.value'       => 'required|string|max:10',
             'items.*.label'       => 'required|string|max:45',
-            'items.*.description' => 'required|string|max:45',
+            // 'items.*.description' => 'required|string|max:45',
         ];
     }
 
@@ -29,13 +29,13 @@ class StatRequest extends FormRequest
             'items.max'       => 'You can add a maximum of 5 stats.',
 
             'items.*.value.required' => 'Value is required for each stat.',
-            'items.*.value.max'      => 'Value must not exceed 6 characters.',
+            'items.*.value.max'      => 'Value must not exceed 10 characters.',
 
             'items.*.label.required' => 'Label is required for each stat.',
             'items.*.label.max'      => 'Label must not exceed 45 characters.',
 
-            'items.*.description.required' => 'Description is required for each stat.',
-            'items.*.description.max'      => 'Description must not exceed 45 characters.',
+            // 'items.*.description.required' => 'Description is required for each stat.',
+            // 'items.*.description.max'      => 'Description must not exceed 45 characters.',
         ];
     }
 }

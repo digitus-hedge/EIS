@@ -52,7 +52,7 @@
             <div class="stats-table-header">
                 <span>Value</span>
                 <span>Label</span>
-                <span>Description</span>
+                <!-- <span>Description</span> -->
                 <span></span>
             </div>
 
@@ -90,10 +90,10 @@
                 <input type="text" name="items[__INDEX__][label]"  placeholder="e.g. LICENSES">
                 <span class="field-error error-label" style="display: none;"><i class="bi bi-exclamation-circle"></i> <span class="error-msg"></span></span>
             </div>
-            <div class="input-group-cell">
+            <!-- <div class="input-group-cell">
                 <input type="text" name="items[__INDEX__][description]"  placeholder="e.g. Held & managed">
                 <span class="field-error error-description" style="display: none;"><i class="bi bi-exclamation-circle"></i> <span class="error-msg"></span></span>
-            </div>
+            </div> -->
             <button type="button" class="action-btn delete btn-remove-row" title="Remove stat"><i class="bi bi-trash3"></i></button>
         </div>
     </div>
@@ -118,7 +118,7 @@
         maxHint.style.display = reachedMax ? 'block' : 'none';
     }
 
-    function addRow(data = { value: '', label: '', description: '' }, indexOverride = null) {
+    function addRow(data = { value: '', label: '',}, indexOverride = null) {
         if (rowCount() >= maxRows) return;
 
         const index = indexOverride !== null ? indexOverride : rowCount();
@@ -131,9 +131,9 @@
 
         wrapperEl.querySelector('input[name$="[value]"]').value = data.value ?? '';
         wrapperEl.querySelector('input[name$="[label]"]').value = data.label ?? '';
-        wrapperEl.querySelector('input[name$="[description]"]').value = data.description ?? '';
+  
 
-        ['value', 'label', 'description'].forEach(field => {
+        ['value', 'label'].forEach(field => {
             const errorKey = `items.${index}.${field}`;
             if (validationErrors[errorKey]) {
                 const errorEl = wrapperEl.querySelector(`.error-${field}`);
@@ -190,12 +190,12 @@
     .section-sub{ font-size:12px; color: var(--faint,#9AA1B2); }
 
     .stats-table-header{
-        display:grid; grid-template-columns:1fr 1fr 2fr 40px; gap:12px;
+        display:grid; grid-template-columns:1fr 1fr 0fr 40px; gap:12px;
         font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em;
         color: var(--faint,#9AA1B2); padding:0 4px 10px; border-bottom:1px solid var(--line,#E9EBF2); margin-bottom:14px;
     }
 
-    .stats-row{ display:grid; grid-template-columns:1fr 1fr 2fr 40px; gap:12px; align-items:flex-start; margin-bottom:12px; }
+    .stats-row{ display:grid; grid-template-columns:1fr 1fr 0fr 40px; gap:12px; align-items:flex-start; margin-bottom:12px; }
     .input-group-cell{ display:flex; flex-direction:column; }
 
     .stats-row input{
