@@ -28,8 +28,8 @@ class ServiceRequest extends FormRequest
             'show_on_home' => ['nullable', 'boolean'],
 
             // Overview
-            'overview_title'       => ['required', 'string', 'max:30'],
-            'overview_description' => ['required', 'string', 'max:280'],
+            'overview_title'       => ['required', 'string', 'max:50'],
+            'overview_description' => ['required', 'string', 'max:320'],
             'overview_image'       => $hasExistingOverview
                 ? ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240']
                 : ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
@@ -84,10 +84,10 @@ class ServiceRequest extends FormRequest
             'banner_video.max'   => 'The banner video must not exceed 20MB.',
 
             'overview_title.required'       => 'Please enter an overview title.',
-            'overview_title.max'            => 'Overview title must not exceed 30 characters.',
+            'overview_title.max'            => 'Overview title must not exceed 50 characters.',
 
             'overview_description.required' => 'Please enter an overview description.',
-            'overview_description.max'      => 'Overview description must not exceed 280 characters.',
+            'overview_description.max'      => 'Overview description must not exceed 320 characters.',
 
             'overview_image.required' => 'Please upload an overview image.',
             'overview_image.image'    => 'The overview image must be a valid image.',
