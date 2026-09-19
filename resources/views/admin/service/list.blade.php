@@ -129,7 +129,7 @@
         <div class="table-footer">
             <span class="count">Showing {{ $services->firstItem() ?? 0 }} to {{ $services->lastItem() ?? 0 }} of {{ $services->total() }} entries</span>
             <div class="pagination-wrap">
-                {{ $services->links() }}
+                {{ $services->links('pagination::bootstrap-5') }}
             </div>
         </div>
         @endif
