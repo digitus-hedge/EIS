@@ -162,16 +162,70 @@
 
 /* ===== Tablet ===== */
 @media (max-width: 1024px){
-  .about-bar{ padding:30px 40px; }
-  .about-body{ padding:44px 40px 60px; gap:36px; }
+  .about-bar{ padding:10px 20px; }
+
+  .about-body{
+    flex-direction: column;
+    align-items: stretch;
+  }
+
   .about-photo-img{
     object-fit:cover;
     object-position:center;
   }
-  .about-content{ height:300px; }
-  .about-content{ padding:28px 28px; }
-  .about-text{ max-height:200px; padding-left:28px; }
-  .about-text p{ font-size:16px; }
+
+  .about-photo{
+    position: static;
+    flex: 0 0 auto;   /* cancel the 550px flex-basis from desktop rules */
+    width: 100%;
+    height: 500px;    /* keep a defined height since object-fit:cover needs one */
+  }
+
+  .about-content{
+    flex: 1 1 auto;   /* cancel any fixed flex-basis, let it grow naturally */
+    height: auto;
+    width: 100%;
+    padding: 28px 28px;
+  }
+
+  .about-text{
+    max-height: none;
+    overflow: visible;
+    padding-left: 28px;
+  }
+
+  .about-text p{ font-size: 16px; }
+}
+/* ===== Small desktop / laptop ===== */
+@media (max-width: 1366px) and (min-width: 1025px){
+  .about-body{
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .about-photo-img{
+    object-fit:fill;
+    object-position:center;
+  }
+
+  .about-photo{
+    position: static;
+    flex: 0 0 auto;
+    width: 100%;
+    height: 500px;
+  }
+
+  .about-content{
+    flex: 1 1 auto;
+    height: auto;
+    width: 100%;
+    padding: 32px 34px;
+  }
+
+  .about-text{
+    max-height: none;
+    overflow: visible;
+  }
 }
 
 /* ===== Small tablet / large phone — 2 rows ===== */
