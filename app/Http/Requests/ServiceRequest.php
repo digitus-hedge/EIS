@@ -19,7 +19,7 @@ class ServiceRequest extends FormRequest
         return [
             // Banner
             'banner_title'       => ['required', 'string', 'max:55'],
-            'banner_description' => ['required', 'string', 'max:400'],
+            'banner_description' => ['required', 'string'],
             'banner_image'       => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
             'banner_video'       => ['nullable', 'mimes:mp4,mov,webm', 'max:20480'],
             'remove_banner_image' => ['nullable', 'boolean'],
@@ -29,7 +29,7 @@ class ServiceRequest extends FormRequest
 
             // Overview
             'overview_title'       => ['required', 'string', 'max:50'],
-            'overview_description' => ['required', 'string', 'max:320'],
+            'overview_description' => ['required', 'string'],
             'overview_image'       => $hasExistingOverview
                 ? ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240']
                 : ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
@@ -74,7 +74,6 @@ class ServiceRequest extends FormRequest
             'banner_title.max'            => 'Banner title must not exceed 55 characters.',
 
             'banner_description.required' => 'Please enter a banner description.',
-            'banner_description.max'      => 'Banner description must not exceed 400 characters.',
 
             'banner_image.image' => 'The banner image must be a valid image.',
             'banner_image.mimes' => 'The banner image must be a JPG, PNG, or WEBP file.',
@@ -87,7 +86,6 @@ class ServiceRequest extends FormRequest
             'overview_title.max'            => 'Overview title must not exceed 50 characters.',
 
             'overview_description.required' => 'Please enter an overview description.',
-            'overview_description.max'      => 'Overview description must not exceed 320 characters.',
 
             'overview_image.required' => 'Please upload an overview image.',
             'overview_image.image'    => 'The overview image must be a valid image.',
