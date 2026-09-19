@@ -264,6 +264,26 @@
             margin: 0 0 26px;
         }
 
+        .overview-desc {
+            position: relative;
+            max-height: 220px;
+            overflow: hidden;
+            transition: max-height 0.35s ease;
+        }
+
+        .overview-desc.expanded {
+            max-height: 340px;
+            overflow-y: auto;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .overview-desc.expanded::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+            display: none;
+        }
+
         .overview-desc p {
             font-size: 22px;
             line-height: 1.75;
@@ -273,6 +293,50 @@
 
         .overview-desc p:last-child {
             margin-bottom: 0;
+        }
+
+        .overview-desc::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 56px;
+            background: linear-gradient(to top, #ffffff 0%, rgba(255,255,255,0) 100%);
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        .overview-desc.expanded::after {
+            opacity: 0;
+        }
+
+        .overview-view-more {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin: 16px 40px 0;
+            background: none;
+            border: none;
+            padding: 0;
+            color: var(--orange);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .overview-view-more:hover {
+            color: var(--orange-dark);
+        }
+
+        .overview-view-more-arrow {
+            display: inline-block;
+            transition: transform 0.3s ease;
+            font-size: 12px;
+        }
+
+        .overview-view-more.expanded .overview-view-more-arrow {
+            transform: rotate(180deg);
         }
         .overview-right{
         flex:1;
@@ -364,6 +428,14 @@
 
             .overview-desc p {
                 font-size: 16px;
+            }
+
+            .overview-desc {
+                max-height: 170px;
+            }
+
+            .overview-desc.expanded {
+                max-height: 280px;
             }
         }
 
@@ -1159,7 +1231,7 @@
   .inspection-cta{ padding:48px 16px 56px; }
   .inspection-cta-photo{ aspect-ratio:4/3; }
 }
-   
+
 .gallery-section{
   position:relative;
   background:#FCEFE3; /* light orange */
@@ -1376,7 +1448,7 @@
   .gallery-top.reveal{ transition:none !important; }
   .gallery-top.reveal{ opacity:1 !important; transform:none !important; }
 }
-   
+
 </style>
 
 <section class="hero @if(!empty($service->banner_video)) has-video @endif">
@@ -1431,11 +1503,16 @@
                 <h2 class="overview-heading">{{ $service->overview_title }}</h2>
 
                 @if ($service->overview_description)
-                    <div class="overview-desc">
+                    <div class="overview-desc" id="overviewDesc">
                         @foreach (preg_split('/\r\n\r\n|\n\n/', trim($service->overview_description)) as $paragraph)
                             <p>{{ $paragraph }}</p>
                         @endforeach
                     </div>
+                    <button type="button" class="overview-view-more" id="overviewViewMoreBtn"
+                            data-more-text="View More" data-less-text="View Less">
+                        <span class="overview-view-more-label">View More</span>
+                        <span class="overview-view-more-arrow">&#9662;</span>
+                    </button>
                 @endif
             </div>
 
@@ -1655,6 +1732,26 @@
 @include('web.layout.footer')
 
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const desc = document.getElementById('overviewDesc');
+            const btn = document.getElementById('overviewViewMoreBtn');
+            if (desc && btn) {
+                if (desc.scrollHeight <= desc.clientHeight + 5) {
+                    btn.style.display = 'none';
+                } else {
+                    const label = btn.querySelector('.overview-view-more-label');
+                    btn.addEventListener('click', function () {
+                        const isExpanded = desc.classList.toggle('expanded');
+                        btn.classList.toggle('expanded', isExpanded);
+                        label.textContent = isExpanded ? btn.dataset.lessText : btn.dataset.moreText;
+                        if (!isExpanded) {
+                            desc.scrollTop = 0;
+                        }
+                    });
+                }
+            }
+        });
+
         document.addEventListener('DOMContentLoaded', function() {
             const revealEls = document.querySelectorAll('.reveal');
             if ('IntersectionObserver' in window && revealEls.length) {
