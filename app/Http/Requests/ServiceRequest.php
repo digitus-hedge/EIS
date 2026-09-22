@@ -29,13 +29,8 @@ class ServiceRequest extends FormRequest
             'show_on_home' => ['nullable', 'boolean'],
             'home_sort_order' => [
                 'nullable',
-                'required_if:show_on_home,1',
                 'integer',
                 'min:1',
-                'max:6',
-                Rule::unique('services', 'home_sort_order')
-                    ->where(fn ($query) => $query->where('show_on_home', true))
-                    ->ignore($service?->id),
             ],
                 // Overview
             'overview_title'       => ['required', 'string', 'max:50'],
@@ -130,11 +125,9 @@ class ServiceRequest extends FormRequest
             'features.*.icon.mimes'       => 'Feature icon must be a JPG, PNG, or WEBP file.',
             'features.*.icon.max'         => 'Feature icon must not exceed 10MB.',
 
-            'home_sort_order.required_if' => 'Please set a home page sort order (1-6) when "Show on Home Page" is enabled.',
-            'home_sort_order.integer'     => 'Home sort order must be a number.',
-            'home_sort_order.min'         => 'Home sort order must be between 1 and 6.',
-            'home_sort_order.max'         => 'Home sort order must be between 1 and 6.',
-            'home_sort_order.unique'      => 'This sort order is already used by another service shown on the home page.',
+            'home_sort_order.integer' => 'Sort order must be a number.',
+            'home_sort_order.min'     => 'Sort order must be at least 1.',
+            'home_sort_order.unique'  => 'This sort order is already used by another service.',
         ];
     }
 

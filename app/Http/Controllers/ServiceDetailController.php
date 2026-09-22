@@ -12,12 +12,12 @@ class ServiceDetailController extends Controller
      */
   
     public function index()
-    {
-        $servicePage = ServicePage::first();
-        $services = Service::latest()->get(); // pull all saved services
+{
+    $servicePage = ServicePage::first();
+    $services = Service::orderByRaw('home_sort_order IS NULL, home_sort_order ASC')->get();
 
-        return view('web.services', compact('servicePage', 'services'));
-    }
+    return view('web.services', compact('servicePage', 'services'));
+}
 
     /**
      * Show an individual Service detail page.

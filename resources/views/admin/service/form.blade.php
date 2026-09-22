@@ -23,7 +23,18 @@
     });
 </script>
 @endif
-
+@if (session('warning'))
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Heads up',
+            text: @json(session('warning')),
+            confirmButtonColor: '#EF7B2E'
+        });
+    });
+</script>
+@endif
 <div class="notice caution" id="totalSizeError" style="display:none;">
     <i class="bi bi-exclamation-circle" style="margin-top:1px;"></i>
     <span id="totalSizeErrorText"></span>
@@ -93,7 +104,7 @@
 
                 </div>
 
-                <div class="toggle-field">
+<div class="toggle-field">
     <div class="field-top">
         <label class="field-label">Show on Home Page</label>
     </div>
@@ -107,12 +118,13 @@
         <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
     @enderror
 
-    <div class="field" id="homeSortOrderWrap" style="margin-top:12px; {{ old('show_on_home', $service->show_on_home) ? '' : 'display:none;' }}">
-        <div class="field-top"><label class="field-label">Home Sort Order (1–6)</label></div>
-        <input type="number" name="home_sort_order" id="home_sort_order" min="1" max="6" step="1"
+    <div class="field" style="margin-top:12px;">
+        <div class="field-top"><label class="field-label">Sort Order</label></div>
+        <input type="number" name="home_sort_order" id="home_sort_order" min="1" step="1"
                value="{{ old('home_sort_order', $service->home_sort_order) }}"
                class="{{ $errors->has('home_sort_order') ? 'input-error' : '' }}"
                placeholder="e.g. 1">
+        <span class="field-hint" style="display:block; margin-top:6px;">Controls the display order of this service on listing pages (home page and services page).</span>
         @error('home_sort_order')
             <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
         @enderror
@@ -981,24 +993,6 @@
         }
     }
 
-
-    (function () {
-        const toggle = document.getElementById('show_on_home');
-        const wrap = document.getElementById('homeSortOrderWrap');
-        const input = document.getElementById('home_sort_order');
-
-        function sync() {
-            if (toggle.checked) {
-                wrap.style.display = 'block';
-            } else {
-                wrap.style.display = 'none';
-                input.value = '';
-            }
-        }
-
-        toggle.addEventListener('change', sync);
-        sync();
-    })();
     // ===== Process rows =====
     const existingProcess = @json($processForJs);
     const processContainer = document.getElementById('processRows');
@@ -1640,6 +1634,34 @@ function toYoutubeEmbedUrl(url) {
     .error-flash {
         animation: errorFlash 0.6s ease-in-out 2;
     }
+    input[type=number]#home_sort_order{
+    width:100px;
+    border:1px solid var(--input-border,#DBDFEA);
+    border-radius:10px;
+    padding:11px 14px;
+    font-size:14px;
+    font-weight:600;
+    font-family:inherit;
+    color: var(--ink,#171B2C);
+    text-align:center;
+    outline:none;
+    background:#fff;
+    transition:box-shadow .15s, border-color .15s;
+    -moz-appearance:textfield;
+}
+input[type=number]#home_sort_order::-webkit-outer-spin-button,
+input[type=number]#home_sort_order::-webkit-inner-spin-button{
+    -webkit-appearance:none;
+    margin:0;
+}
+input[type=number]#home_sort_order:focus{
+    border-color: var(--orange,#EF7B2E);
+    box-shadow: 0 0 0 4px var(--orange-tint-strong,#FFE9D8);
+}
+input[type=number]#home_sort_order.input-error{
+    border-color:#E9483F !important;
+    background:#FFF5F4;
+}
 </style>
 
 @endsection
