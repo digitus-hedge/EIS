@@ -94,19 +94,30 @@
                 </div>
 
                 <div class="toggle-field">
-                    <div class="field-top">
-                        <label class="field-label">Show on Home Page</label>
-                    </div>
-                    <label class="switch-toggle">
-                        <input type="checkbox" name="show_on_home" value="1"
-                               {{ old('show_on_home', $service->show_on_home) ? 'checked' : '' }}>
-                        <span class="switch-slider"></span>
-                    </label>
-                    <span class="field-hint" style="display:block; margin-top:6px;">Enable to display this service on the homepage.</span>
-                    @error('show_on_home')
-                        <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
-                    @enderror
-                </div>
+    <div class="field-top">
+        <label class="field-label">Show on Home Page</label>
+    </div>
+    <label class="switch-toggle">
+        <input type="checkbox" name="show_on_home" id="show_on_home" value="1"
+               {{ old('show_on_home', $service->show_on_home) ? 'checked' : '' }}>
+        <span class="switch-slider"></span>
+    </label>
+    <span class="field-hint" style="display:block; margin-top:6px;">Enable to display this service on the homepage.</span>
+    @error('show_on_home')
+        <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+    @enderror
+
+    <div class="field" id="homeSortOrderWrap" style="margin-top:12px; {{ old('show_on_home', $service->show_on_home) ? '' : 'display:none;' }}">
+        <div class="field-top"><label class="field-label">Home Sort Order (1–6)</label></div>
+        <input type="number" name="home_sort_order" id="home_sort_order" min="1" max="6" step="1"
+               value="{{ old('home_sort_order', $service->home_sort_order) }}"
+               class="{{ $errors->has('home_sort_order') ? 'input-error' : '' }}"
+               placeholder="e.g. 1">
+        @error('home_sort_order')
+            <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+        @enderror
+    </div>
+</div>
             </div>
         </div>
 
@@ -970,6 +981,24 @@
         }
     }
 
+
+    (function () {
+        const toggle = document.getElementById('show_on_home');
+        const wrap = document.getElementById('homeSortOrderWrap');
+        const input = document.getElementById('home_sort_order');
+
+        function sync() {
+            if (toggle.checked) {
+                wrap.style.display = 'block';
+            } else {
+                wrap.style.display = 'none';
+                input.value = '';
+            }
+        }
+
+        toggle.addEventListener('change', sync);
+        sync();
+    })();
     // ===== Process rows =====
     const existingProcess = @json($processForJs);
     const processContainer = document.getElementById('processRows');

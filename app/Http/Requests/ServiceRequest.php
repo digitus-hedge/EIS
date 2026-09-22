@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ServiceRequest extends FormRequest
 {
@@ -26,8 +27,17 @@ class ServiceRequest extends FormRequest
             'remove_banner_video' => ['nullable', 'boolean'],
 
             'show_on_home' => ['nullable', 'boolean'],
-
-            // Overview
+            'home_sort_order' => [
+                'nullable',
+                'required_if:show_on_home,1',
+                'integer',
+                'min:1',
+                'max:6',
+                Rule::unique('services', 'home_sort_order')
+                    ->where(fn ($query) => $query->where('show_on_home', true))
+                    ->ignore($service?->id),
+            ],
+                // Overview
             'overview_title'       => ['required', 'string', 'max:50'],
             'overview_description' => ['required', 'string'],
             'overview_image'       => $hasExistingOverview
@@ -119,6 +129,12 @@ class ServiceRequest extends FormRequest
             'features.*.icon.image'       => 'Feature icon must be a valid image.',
             'features.*.icon.mimes'       => 'Feature icon must be a JPG, PNG, or WEBP file.',
             'features.*.icon.max'         => 'Feature icon must not exceed 10MB.',
+
+            'home_sort_order.required_if' => 'Please set a home page sort order (1-6) when "Show on Home Page" is enabled.',
+            'home_sort_order.integer'     => 'Home sort order must be a number.',
+            'home_sort_order.min'         => 'Home sort order must be between 1 and 6.',
+            'home_sort_order.max'         => 'Home sort order must be between 1 and 6.',
+            'home_sort_order.unique'      => 'This sort order is already used by another service shown on the home page.',
         ];
     }
 

@@ -19,7 +19,7 @@ class HomeController extends Controller
         $stat   = Stat::first();
         $serviceSection = ServiceSection::first();
         $services = Service::where('show_on_home', 1)
-            ->latest()
+            ->orderBy('home_sort_order')
             ->take(6)
             ->get();
         $clientSection = ClientSection::first();

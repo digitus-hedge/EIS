@@ -25,6 +25,7 @@ class Service extends Model
         'features' => 'array',
          'gallery' => 'array',
         'show_on_home' => 'boolean',
+        'home_sort_order' => 'integer',
 
     ];
 }

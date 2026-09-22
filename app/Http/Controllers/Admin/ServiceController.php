@@ -284,7 +284,9 @@ class ServiceController extends Controller
     $service->slug = Str::slug($data['banner_title']);
     $service->banner_description = $data['banner_description'] ?? null;
     $service->show_on_home = $request->boolean('show_on_home');
-
+    $service->home_sort_order = $service->show_on_home
+    ? (int) $data['home_sort_order']
+    : null;
     $service->meta_title = $data['meta_title'];
     $service->meta_description = $data['meta_description'];
 
