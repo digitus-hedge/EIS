@@ -64,109 +64,187 @@
   .about-cta:hover{ gap:12px; color:#E8792D; }
   .about-cta:hover .arrow{ transform:translateX(2px); }
 
-  /* ===== About body: fixed, equal, reduced height for image + content ===== */
+    /* ===== About body ===== */
   .about-body{
     display:flex;
-    align-items:stretch;
-    gap:48px;
-    padding:50px 60px 70px;
+    align-items:center;
+    gap:56px;
+    padding:60px 60px 80px;
+    max-width:1440px;
+    margin:0 auto;
   }
 
   .about-photo{
-  flex:0 0 550px;      /* fixed width instead of 45% */
-  width:550px;
-  height:500px;         /* fixed height, locked */
-  border-radius:20px;
-  overflow:hidden;
-  transition:box-shadow 0.3s ease;
-  box-shadow:0 18px 36px rgba(0,0,0,0.14);
-}
-
-.about-photo:hover{
-  box-shadow:0 22px 44px rgba(0,0,0,0.18);
-}
-
-.about-photo-img{
-  width:100%;
-  height:100%;
-  object-fit:fill;      /* or 'contain'/'cover' — see note below */
-  display:block;
-  transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);
-}
-
-.about-photo:hover .about-photo-img{
-  transform:scale(1.06);
-}
-
-  .about-content{
-    flex:1;
-    min-width:0;
-    height:500px;                 /* same fixed height as photo */
-    display:flex;
-    flex-direction:column;
-    justify-content:flex-start;
-    border-radius:14px;
-    padding:32px 34px;
+    position:relative;
+    flex:0 0 46%;
+    max-width:620px;
+    aspect-ratio:4 / 3;          /* height follows width – never stretched */
+    border-radius:20px;
     overflow:hidden;
+    background:#eef0f3;
+    box-shadow:0 18px 36px rgba(0,0,0,0.14);
+    transition:box-shadow 0.3s ease;
   }
 
-.about-eyebrow{
-  margin-top:20px;
-  position:relative;
-  color:var(--orange);
-  font-weight:700;
-  font-size:20px;
-  margin:0 0 1px;
-  padding-left:24px;
-  flex-shrink:0;
-}
+  .about-photo:hover{
+    box-shadow:0 22px 44px rgba(0,0,0,0.18);
+  }
 
-.about-eyebrow::before{
-  content:"";
-  position:absolute;
-  left:0;
-  top:50%;
-  transform:translateY(-50%);
-  width:16px;
-  height:3px;
-  background:var(--orange);
-  border-radius:2px;
-}
+  .about-photo-img{
+    width:100%;
+    height:100%;
+    object-fit:cover;            /* crop to fit, keep true proportions */
+    object-position:center;
+    display:block;
+    transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);
+  }
 
-.about-heading{
-  font-size:clamp(20px, 3vw, 32px);   /* was fixed 32px — now scales */
-  line-height:1.2;
-  font-weight:700;
-  letter-spacing:-0.3px;
-  color:#111111;
-  margin:0 0 14px;
-  flex-shrink:0;
-}
+  .about-photo:hover .about-photo-img{
+    transform:scale(1.05);
+  }
 
-.about-text{
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-  transition:max-height 0.35s ease;
-  padding-left:40px;
-  max-height:400px;
-}
+  .about-content{
+    flex:1 1 0;
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding:0;
+  }
 
-.about-text p{
-  font-size:18px;
-  line-height:1.6;
-  color:#3d3d3d;
-  margin:0;
-}
+  .about-eyebrow{
+    position:relative;
+    color:var(--orange);
+    font-weight:700;
+    font-size:20px;
+    margin:0 0 8px;
+    padding-left:24px;
+  }
 
-/* ===== Tablet ===== */
-@media (max-width: 1024px){
-  .about-bar{ padding:10px 20px; }
+  .about-eyebrow::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:50%;
+    transform:translateY(-50%);
+    width:16px;
+    height:3px;
+    background:var(--orange);
+    border-radius:2px;
+  }
 
+  .about-heading{
+    font-size:clamp(24px, 2.6vw, 34px);
+    line-height:1.2;
+    font-weight:700;
+    letter-spacing:-0.3px;
+    color:#111111;
+    margin:0 0 18px;
+  }
+
+  .about-text{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    padding-left:0;
+  }
+
+  .about-text p{
+    font-size:17px;
+    line-height:1.7;
+    color:#3d3d3d;
+    margin:0;
+  }
+
+  /* ===== Laptop 1025–1366 : stay side by side, just tighter ===== */
+  @media (max-width: 1366px){
+    .about-body{
+      gap:40px;
+      padding:50px 40px 70px;
+    }
+    .about-photo{
+      flex-basis:44%;
+      aspect-ratio:4 / 3.2;
+    }
+    .about-text p{ font-size:16px; line-height:1.65; }
+  }
+
+  /* ===== Tablet ≤1024 : stack, image on top ===== */
+  @media (max-width: 1024px){
+    .about-bar{ padding:24px 32px; }
+
+    .about-body{
+      flex-direction:column;
+      align-items:stretch;
+      gap:32px;
+      padding:40px 32px 60px;
+    }
+
+    .about-photo{
+      flex:none;
+      width:100%;
+      max-width:100%;
+      aspect-ratio:16 / 9;       /* wide, not tall */
+      max-height:460px;
+    }
+
+    .about-content{ width:100%; }
+  }
+
+  /* ===== Small tablet / large phone ===== */
+  @media (max-width: 900px){
+    .about-bar{
+      flex-direction:column;
+      gap:14px;
+      padding:26px 24px;
+    }
+    .about-cta{ align-self:flex-start; }
+
+    .about-body{ gap:26px; padding:36px 24px 48px; }
+    .about-photo{ aspect-ratio:3 / 2; }
+
+    .about-eyebrow{ font-size:17px; padding-left:20px; }
+  }
+
+  /* ===== Phones ===== */
+  @media (max-width: 600px){
+    .about-bar h2{ font-size:20px; }
+    .about-bar p{ font-size:14.5px; }
+    .about-cta{ font-size:15px; }
+
+    .about-body{ padding:30px 18px 44px; gap:22px; }
+    .about-photo{ aspect-ratio:4 / 3; border-radius:14px; }
+
+    .about-eyebrow{ font-size:15px; padding-left:18px; }
+    .about-eyebrow::before{ width:14px; }
+    .about-heading{ font-size:clamp(20px, 6vw, 24px); margin-bottom:12px; }
+    .about-text p{ font-size:15px; line-height:1.6; }
+  }
+
+  /* ===== Very small phones ===== */
+  @media (max-width: 380px){
+    .about-body{ padding:26px 14px 36px; }
+    .about-heading{ font-size:19px; }
+    .about-text p{ font-size:14px; }
+  }
+  /* ===== Large desktop (1367px and up) ===== */
+@media (min-width: 1367px){
   .about-body{
-    flex-direction: column;
-    align-items: stretch;
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    gap:64px;
+    max-width:1600px;
+    margin:0 auto;
+    padding:30px 0 100px;
+  }
+
+  .about-photo{
+    flex:0 0 52%;
+    width:52%;
+    max-width:none;
+    height:auto;
+    aspect-ratio:16 / 10;
   }
 
   .about-photo-img{
@@ -174,132 +252,32 @@
     object-position:center;
   }
 
-  .about-photo{
-    position: static;
-    flex: 0 0 auto;   /* cancel the 550px flex-basis from desktop rules */
-    width: 100%;
-    height: 500px;    /* keep a defined height since object-fit:cover needs one */
-  }
-
   .about-content{
-    flex: 1 1 auto;   /* cancel any fixed flex-basis, let it grow naturally */
-    height: auto;
-    width: 100%;
-    padding: 28px 28px;
-  }
-
-  .about-text{
-    max-height: none;
-    overflow: visible;
-    padding-left: 28px;
-  }
-
-  .about-text p{ font-size: 16px; }
-}
-/* ===== Small desktop / laptop ===== */
-@media (max-width: 1366px) and (min-width: 1025px){
-  .about-body{
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .about-photo-img{
-    object-fit:fill;
-    object-position:center;
-  }
-
-  .about-photo{
-    position: static;
-    flex: 0 0 auto;
-    width: 100%;
-    height: 500px;
-  }
-
-  .about-content{
-    flex: 1 1 auto;
-    height: auto;
-    width: 100%;
-    padding: 32px 34px;
-  }
-
-  .about-text{
-    max-height: none;
-    overflow: visible;
-  }
-}
-
-/* ===== Small tablet / large phone — 2 rows ===== */
-@media (max-width: 900px){
-  .about-bar{
-    flex-direction:column;
-    gap:14px;
-    padding:26px 24px;
-  }
-
-  .about-cta{ align-self:flex-start; }
-
-  .about-body{
-    display:flex;
-    flex-direction:column;
-    align-items:stretch;
-    gap:24px;
-    padding:36px 24px 48px;
-  }
-
- 
-  .about-photo{
-    flex:none;
-    width:100%;
-    aspect-ratio: 11 / 10;
+    flex:1 1 0;
     height:auto;
-  }
-  .about-photo-img{
-    object-fit: fill;
-  }
-  .about-content{
-    flex:none;
-    width:100%;
-    height:auto;
-    max-height:none;      /* was 340px — let content breathe on mobile */
-    padding:26px 24px;
-    order:2;
+    padding:0;
   }
 
-  .about-eyebrow{ margin-top:0; font-size:17px; padding-left:20px; }
-  .about-heading{ margin-bottom:12px; }
+  .about-eyebrow{ font-size:20px; }
+  .about-heading{ font-size:36px; margin-bottom:20px; }
 
   .about-text{
-  max-height:none;
-  padding-left:20px;
-}
-  .about-text p{ font-size:16px; }
-}
-
-/* ===== Phones ===== */
-@media (max-width: 600px){
-  .about-bar h2{ font-size:20px; }
-  .about-bar p{ font-size:14.5px; }
-  .about-cta{ font-size:15px; }
-
-  .about-photo{  border-radius:14px; }
-  .about-content{ padding:22px 18px; border-radius:12px; }
-
-  .about-eyebrow{ font-size:15px; margin-bottom:10px; padding-left:18px; }
-  .about-eyebrow::before{ width:14px; }
-
-  .about-heading{ font-size:clamp(18px, 6vw, 24px); margin-bottom:10px; }
-
-  .about-text{ gap:12px; max-height:none; padding-left:0; }
-  .about-text p{ font-size:14.5px; }
+    max-height:none;
+    overflow:visible;
+    padding-left:0;
+    gap:16px;
+  }
+  .about-text p{ font-size:18px; line-height:1.75; }
 }
 
-/* ===== Very small phones ===== */
-@media (max-width: 380px){
-  .about-body{ padding:30px 14px 40px; }
-  .about-content{ padding:18px 14px; }
-  .about-heading{ font-size:18px; }
-  .about-text{ max-height:none; }
-  .about-text p{ font-size:14px; }
+/* ===== Extra-large screens (1920px and up) ===== */
+@media (min-width: 1920px){
+  .about-body{
+    max-width:1760px;
+    gap:80px;
+  }
+  .about-heading{ font-size:40px; }
+  .about-text p{ font-size:19px; }
 }
 
   /* scroll-reveal motion */
@@ -1689,7 +1667,7 @@
         {{-- EIS Ltd has offices in Erbil, Iraq. providing access to oilfield services, machine shops, port facilities, storage and logistics operations. --}}
       {{-- EIS Ltd has offices in Erbil, Iraq, providing access to oilfield services, machine shops, port facilities, storage, and logistics operations. Our Erbil base supports clients across the Kurdistan region with equipment inspection, certification, and maintenance services, backed by a team of qualified inspectors and technicians. From lifting equipment to pressure testing, we help operators keep projects running safely and on schedule, with fast turnaround and direct access to regional supply chains. --}}
     
-    EIS Ltd has offices in Erbil, Iraq, providing access to oilfield services, machine shops, port facilities, storage, and logistics operations. Our Erbil base supports clients across the Kurdistan region with equipment inspection, certification, and maintenance services, delivered by qualified inspectors and technicians with fast turnaround and direct access to regional supply chains.</p>
+    Our Erbil base enables us to deliver equipment inspection, certification, testing, and maintenance services with fast response and efficient turnaround. Supported by qualified inspectors, technicians, and established regional supply chains, EIS provides reliable technical support to oil and gas operators, contractors, and service companies throughout the region.</p>
       <a href="{{ url('/contact') }}" class="presence-cta">Contact EIS</a>
     </div>
 
