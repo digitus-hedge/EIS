@@ -236,7 +236,7 @@
     gap:64px;
     max-width:1600px;
     margin:0 auto;
-    padding:30px 0 100px;
+    padding:30px 60px 100px;
   }
 
   .about-photo{
