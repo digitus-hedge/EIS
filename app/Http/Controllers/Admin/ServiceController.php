@@ -104,6 +104,7 @@ class ServiceController extends Controller
 
     public function update(ServiceRequest $request, Service $service)
 {
+    
     $data = $request->validated();
     $this->fillService($service, $data, $request);
     $service->save();
@@ -135,13 +136,8 @@ class ServiceController extends Controller
             Storage::disk('public')->delete($service->overview_image);
         }
 
-        foreach ($service->process ?? [] as $row) {
-            if (!empty($row['video'])) {
-                Storage::disk('public')->delete($row['video']);
-            }
-            if (!empty($row['thumbnail'])) {
-                Storage::disk('public')->delete($row['thumbnail']);
-            }
+        if ($service->process_image) {
+            Storage::disk('public')->delete($service->process_image);
         }
 
         foreach ($service->features ?? [] as $row) {
@@ -160,129 +156,6 @@ class ServiceController extends Controller
             ->route('admin.home.services')
             ->with('success', 'Service deleted successfully.');
     }
-
-    // private function fillService(Service $service, array $data, Request $request): void
-    // {
-    //     // ===== Banner =====
-    //     $service->banner_title = $data['banner_title'];
-    //     $service->slug = Str::slug($data['banner_title']);
-    //     $service->banner_description = $data['banner_description'] ?? null;
-    //     $service->show_on_home = $request->boolean('show_on_home');
-
-    //     $service->meta_title = $data['meta_title'];
-    //     $service->meta_description = $data['meta_description'];
-
-    //     if ($request->hasFile('banner_image')) {
-    //         if ($service->banner_image) {
-    //             Storage::disk('public')->delete($service->banner_image);
-    //         }
-    //         $service->banner_image = $this->processAndStoreImage(
-    //             $request->file('banner_image'),
-    //             $this->imageWidth,
-    //             $this->imageHeight
-    //         );
-    //     }
-
-    //     // ===== Overview =====
-    //     $service->overview_title = $data['overview_title'] ?? null;
-    //     $service->overview_description = $data['overview_description'] ?? null;
-
-    //     if ($request->hasFile('overview_image')) {
-    //         if ($service->overview_image) {
-    //             Storage::disk('public')->delete($service->overview_image);
-    //         }
-    //         $service->overview_image = $this->processAndStoreImage(
-    //             $request->file('overview_image'),
-    //             $this->imageWidth,
-    //             $this->imageHeight
-    //         );
-    //     }
-
-    //     // ===== Process: repeatable description + video rows (unlimited) =====
-    //     $processInput = $data['process'] ?? [];
-    //     $oldProcess = $service->process ?? [];
-    //     $processedRows = [];
-
-    //    foreach ($processInput as $index => $row) {
-    //         $description = trim($row['description'] ?? '');
-    //         $hasNewVideo = $request->hasFile("process.$index.video");
-    //         $hasNewThumbnail = $request->hasFile("process.$index.thumbnail");
-
-    //         if ($description === '' && !$hasNewVideo && empty($row['existing_video']) && !$hasNewThumbnail && empty($row['existing_thumbnail'])) {
-    //             continue;
-    //         }
-
-    //         $videoPath = $row['existing_video'] ?? null;
-    //         $thumbnailPath = $row['existing_thumbnail'] ?? null;
-
-    //         if ($hasNewVideo) {
-    //             if (!empty($oldProcess[$index]['video'])) {
-    //                 Storage::disk('public')->delete($oldProcess[$index]['video']);
-    //             }
-    //             $videoPath = $this->storeVideo($request->file("process.$index.video"));
-    //         }
-
-    //         if ($hasNewThumbnail) {
-    //             if (!empty($oldProcess[$index]['thumbnail'])) {
-    //                 Storage::disk('public')->delete($oldProcess[$index]['thumbnail']);
-    //             }
-    //             $thumbnailPath = $this->processAndStoreImage(
-    //                 $request->file("process.$index.thumbnail"),
-    //                 400,
-    //                 300,
-    //                 'services/thumbnails'
-    //             );
-    //         }
-
-    //         $processedRows[] = [
-    //             'description' => $description,
-    //             'video'       => $videoPath,
-    //             'thumbnail'   => $thumbnailPath,
-    //         ];
-    //     }
-
-    //     $service->process = count($processedRows) > 0 ? array_values($processedRows) : null;
-
-    //     // ===== Features: heading + up to 4 rows (icon, title, description) =====
-    //     $service->features_heading = $data['features_heading'] ?? null;
-
-    //     // Enforce the 4-row cap server-side regardless of what the client sent
-    //     $featuresInput = array_slice($data['features'] ?? [], 0, 4);
-    //     $oldFeatures = $service->features ?? [];
-    //     $processedFeatures = [];
-
-    //     foreach ($featuresInput as $index => $row) {
-    //         $title = trim($row['title'] ?? '');
-    //         $description = trim($row['description'] ?? '');
-    //         $hasNewIcon = $request->hasFile("features.$index.icon");
-
-    //         if ($title === '' && $description === '' && !$hasNewIcon && empty($row['existing_icon'])) {
-    //             continue;
-    //         }
-
-    //         $iconPath = $row['existing_icon'] ?? null;
-
-    //         if ($hasNewIcon) {
-    //             if (!empty($oldFeatures[$index]['icon'])) {
-    //                 Storage::disk('public')->delete($oldFeatures[$index]['icon']);
-    //             }
-    //             $iconPath = $this->processAndStoreImage(
-    //                 $request->file("features.$index.icon"),
-    //                 $this->iconWidth,
-    //                 $this->iconHeight,
-    //                 'services/icons'
-    //             );
-    //         }
-
-    //         $processedFeatures[] = [
-    //             'icon'        => $iconPath,
-    //             'title'       => $title,
-    //             'description' => $description,
-    //         ];
-    //     }
-
-    //     $service->features = count($processedFeatures) > 0 ? array_values($processedFeatures) : null;
-    // }
 
 
     private function fillService(Service $service, array $data, Request $request): void
@@ -358,63 +231,23 @@ class ServiceController extends Controller
         );
     }
 
-    // ===== Process: repeatable description + video rows (unlimited) =====
-  // ===== Process: repeatable description + (video OR YouTube link) rows (unlimited) =====
-    $processInput = $data['process'] ?? [];
-    $oldProcess = $service->process ?? [];
-    $processedRows = [];
+    // ===== Process =====
+    $service->process_title = $data['process_title'] ?? null;
+    // CKEditor HTML: keep formatting tags only, strip scripts and anything else
+    $service->process_description = isset($data['process_description'])
+    ? strip_tags($data['process_description'], '<p><br><strong><b><em><i><u><ul><ol><li><a><h2><h3><h4><blockquote>')
+    : null;
 
-    foreach ($processInput as $index => $row) {
-        $description = trim($row['description'] ?? '');
-        $hasNewVideo = $request->hasFile("process.$index.video");
-        $hasNewThumbnail = $request->hasFile("process.$index.thumbnail");
-        $vedioLink = trim($row['vedio_link'] ?? '');
-
-        if ($description === '' && !$hasNewVideo && empty($row['existing_video']) && $vedioLink === ''
-            && !$hasNewThumbnail && empty($row['existing_thumbnail'])) {
-            continue;
+    if ($request->hasFile('process_image')) {
+        if ($service->process_image) {
+            Storage::disk('public')->delete($service->process_image);
         }
-
-        $videoPath = $row['existing_video'] ?? null;
-        $thumbnailPath = $row['existing_thumbnail'] ?? null;
-
-        if ($hasNewThumbnail) {
-            if (!empty($oldProcess[$index]['thumbnail'])) {
-                Storage::disk('public')->delete($oldProcess[$index]['thumbnail']);
-            }
-            $thumbnailPath = $this->processAndStoreImage(
-                $request->file("process.$index.thumbnail"),
-                400,
-                300,
-                'services/thumbnails'
-            );
-        }
-
-        if ($hasNewVideo) {
-            // A newly uploaded file always takes precedence over a link
-            if (!empty($oldProcess[$index]['video'])) {
-                Storage::disk('public')->delete($oldProcess[$index]['video']);
-            }
-            $videoPath = $this->storeVideo($request->file("process.$index.video"));
-            $vedioLink = ''; // uploaded file wins; drop any link
-        } elseif ($vedioLink !== '') {
-            // A YouTube link was provided/kept: it replaces any stored video file
-            if (!empty($oldProcess[$index]['video'])) {
-                Storage::disk('public')->delete($oldProcess[$index]['video']);
-            }
-            $videoPath = null;
-            $vedioLink = $this->normalizeYoutubeUrl($vedioLink);
-        }
-
-        $processedRows[] = [
-            'description' => $description,
-            'video'       => $videoPath,
-            'vedio_link'  => $vedioLink !== '' ? $vedioLink : null,
-            'thumbnail'   => $thumbnailPath,
-        ];
+        $service->process_image = $this->processAndStoreImage(
+            $request->file('process_image'),
+            $this->imageWidth,
+            $this->imageHeight
+        );
     }
-
-    $service->process = count($processedRows) > 0 ? array_values($processedRows) : null;
 
     // ===== Features: heading + up to 4 rows (icon, title, description) =====
     $service->features_heading = $data['features_heading'] ?? null;

@@ -14,14 +14,15 @@ class Service extends Model
         'overview_title',
         'overview_description',
         'overview_image',
-        'process',
+        'process_title',
+        'process_description',
+        'process_image',
         'features_heading',
         'features',
         'show_on_home'
     ];
 
     protected $casts = [
-        'process'  => 'array',
         'features' => 'array',
          'gallery' => 'array',
         'show_on_home' => 'boolean',

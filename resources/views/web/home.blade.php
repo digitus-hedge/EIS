@@ -1332,7 +1332,7 @@
 .presence-photo{
   position:relative;
   z-index:1;
-  width:100%;
+  width:95%;
   height:450px;
   aspect-ratio: 4 / 3.4;
   border-radius:24px;
@@ -1424,7 +1424,7 @@
   font-size:20px;
   line-height:1.6;
   color:#333333;
-  max-width:480px;
+  max-width:700px;
   margin:0 0 32px;
 }
 

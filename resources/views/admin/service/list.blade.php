@@ -78,8 +78,15 @@
                     <tr>
                         <td>
                             <div class="thumb-wrap">
-                                @if ($service->banner_image)
-                                    <img src="{{ Storage::url($service->banner_image) }}" alt="{{ $service->banner_title }}">
+                                @php
+                                    // Banner video uploaded → show the overview image instead
+                                    $thumb = $service->banner_video
+                                        ? $service->overview_image
+                                        : ($service->banner_image ?: $service->overview_image);
+                                @endphp
+
+                                @if ($thumb)
+                                    <img src="{{ Storage::url($thumb) }}" alt="{{ $service->banner_title }}">
                                 @else
                                     <i class="bi bi-image" style="color:var(--faint,#9AA1B2);"></i>
                                 @endif

@@ -3,6 +3,7 @@
 @section('content')
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
 
 @if ($errors->any())
 <div class="notice caution" style="margin-bottom:20px;">
@@ -329,25 +330,73 @@
         </div>
 
         {{-- ================= PROCESS SECTION ================= --}}
-        <div class="card">
-            <div class="section-title">
-                <h2><span class="icon"><i class="bi bi-camera-reels"></i></span> Process <span class="req">*</span></h2>
-            </div>
-<p class="field-hint">Detail page &mdash; step-by-step process, each with a description and a video file OR a YouTube link. Add as many as needed.</p>
-            <div id="processRows"></div>
-            <button type="button" id="addProcessBtn" class="btn-add-row">
-                <i class="bi bi-plus-lg"></i> Add Row
-            </button>
+<div class="card">
+    <div class="section-title">
+        <h2><span class="icon"><i class="bi bi-type"></i></span> Process Title <span class="req">*</span></h2>
+    </div>
+    <div class="field">
+        <input type="text" name="process_title" value="{{ old('process_title', $service->process_title) }}"
+            class="{{ $errors->has('process_title') ? 'input-error' : '' }}"
+            placeholder="e.g. Our Process">
+        @error('process_title')
+        <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+        @enderror
+    </div>
+</div>
 
-            @error('process')
-                <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
-            @enderror
-            @if ($errors->has('process.*.description') || $errors->has('process.*.video'))
-                <span class="field-error">
-                    <i class="bi bi-exclamation-circle"></i> Please check the description/video for each process step.
-                </span>
+<div class="card">
+    <div class="section-title">
+        <h2><span class="icon"><i class="bi bi-card-text"></i></span> Process Description <span class="req">*</span></h2>
+    </div>
+    <div class="field">
+        <div class="ck-wrap {{ $errors->has('process_description') ? 'input-error' : '' }}" id="process-description-wrap">
+            <textarea name="process_description" id="process_description" rows="4"
+                placeholder="Describe the process...">{{ old('process_description', $service->process_description) }}</textarea>
+        </div>
+        @error('process_description')
+        <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+        @enderror
+    </div>
+</div>
+
+<div class="card">
+    <div class="section-title">
+        <h2><span class="icon"><i class="bi bi-image"></i></span> Process Image <span class="req">*</span></h2>
+    </div>
+
+    <div class="notice caution">
+        <i class="bi bi-exclamation-triangle" style="margin-top:1px;"></i>
+        <p><b>Recommended size:</b> 760 &times; 500px &middot; JPG, PNG, WEBP &middot; up to 10MB.</p>
+    </div>
+
+    <div class="image-slot" style="max-width:400px;">
+        <div class="drop img-slot {{ $service->process_image ? 'filled' : '' }} {{ $errors->has('process_image') ? 'input-error' : '' }}"
+             data-file-input="file-process-image" id="drop-process-image" onclick="handleDropClick(this)">
+            @if ($service->process_image)
+                <img src="{{ Storage::url($service->process_image) }}" id="preview-process-image" alt="Process image">
+                <button type="button" class="remove-img-btn" onclick="removeUploadedImage(event, this, 'process-image', 'preview-process-image')" title="Remove image">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+                <div class="uploaded-tag"><i class="bi bi-check-circle"></i> Uploaded</div>
+            @else
+                <div class="preview-placeholder" id="preview-process-image">
+                    <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:18px;"></i></div>
+                    <div class="drop-title">Click to upload</div>
+                    <div class="drop-sub">or drag &amp; drop</div>
+                </div>
             @endif
         </div>
+        <input type="file" id="file-process-image" name="process_image" accept="image/*" hidden
+               onchange="handleImageChange(this, 'preview-process-image', MAX_IMAGE_BYTES, 'Process image', 'process-image')">
+        <input type="hidden" name="remove_process_image" id="remove-process-image" value="0">
+        @if (!$service->process_image)
+            <button type="button" class="choose-btn" onclick="document.getElementById('file-process-image').click()">Choose file</button>
+        @endif
+    </div>
+    @error('process_image')
+    <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+    @enderror
+</div>
 
         {{-- ================= FEATURES SECTION ================= --}}
         <div class="card">
@@ -463,56 +512,6 @@
 </div>
 
 {{-- ===== Templates ===== --}}
-
-<template id="processRowTemplate">
-    <div class="inspection-row">
-        <div class="inspection-row-fields">
-            <div class="field">
-                <div class="field-top"><label class="field-label">Description</label></div>
-                <textarea name="process[__INDEX__][description]" rows="3" placeholder="Describe this process step..."></textarea>
-            </div>
-
-            <div class="field">
-                <div class="field-top"><label class="field-label">Thumbnail</label></div>
-                <div class="image-slot row-slot">
-                    <div class="drop img-slot" data-row-slot="thumbnail">
-                        <div class="preview-placeholder process-thumb-preview">
-                            <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:16px;"></i></div>
-                            <div class="drop-title">Click to upload</div>
-                        </div>
-                    </div>
-                    <input type="file" name="process[__INDEX__][thumbnail]" accept="image/*" hidden
-                           onchange="previewProcessThumbnail(this)">
-                    <input type="hidden" name="process[__INDEX__][existing_thumbnail]" class="existing-thumbnail-input" value="">
-                </div>
-
-                   <div class="notice caution" style="margin-top: 7px;">
-                <i class="bi bi-exclamation-triangle" style="margin-top:1px;"></i>
-                <p><b>Recommended size:</b> <br/>320 &times; 180px &middot; JPG, PNG, WEBP &middot; up to 10MB.</p>
-            </div>
-
-                
-            </div>
-<div class="field">
-                <div class="field-top"><label class="field-label">Video</label></div>
-                <div class="video-slot" id="video-drop-wrap">
-                    <div class="video-drop" data-row-slot="video">
-                        <div class="ico-circle"><i class="bi bi-camera-video" style="color:#AEB4C4;font-size:16px;"></i></div>
-                        <div class="drop-title">Click to upload</div>
-                    </div>
-                    <input type="file" name="process[__INDEX__][video]" accept="video/*" hidden
-                           onchange="previewProcessVideo(this)">
-                    <input type="hidden" name="process[__INDEX__][existing_video]" class="existing-video-input" value="">
-                </div>
-                <div class="field" style="margin-top:8px;">
-                    <input type="text" name="process[__INDEX__][vedio_link]" class="process-vedio-link-input"
-                           placeholder="Or paste a YouTube link" oninput="onProcessLinkInput(this)">
-                </div>
-            </div>
-        </div>
-        <button type="button" class="btn-remove-row inspection-remove"><i class="bi bi-trash3"></i></button>
-    </div>
-</template>
 
 <template id="featureRowTemplate">
     <div class="inspection-row">
@@ -811,29 +810,6 @@
 </style>
 
 @php
-    $processForJs = collect(old('process', $service->process ?? []))
-    ->values()
-    ->map(function ($row, $i) use ($errors) {
-        $row = is_array($row) ? $row : [];
-
-        if (!empty($row['video'])) {
-            $row['video_url'] = Storage::url($row['video']);
-        }
-
-        if (!empty($row['thumbnail'])) {
-            $row['thumbnail_url'] = Storage::url($row['thumbnail']);
-        }
-
-        $row['errors'] = [
-            'description' => $errors->first("process.$i.description"),
-            'video' => $errors->first("process.$i.video"),
-        ];
-
-        return $row;
-    })
-    ->values()
-    ->toArray();
-
     $featuresForJs = collect(old('features', $service->features ?? []))
         ->values()
         ->map(function ($row, $i) use ($errors) {
@@ -878,6 +854,26 @@
     const MAX_ICON_BYTES  = 5 * 1024 * 1024;
     const MAX_VIDEO_BYTES = 20 * 1024 * 1024;
     const MAX_TOTAL_BYTES = 95 * 1024 * 1024;
+
+    // ===== CKEditor: Process Description =====
+    let processDescEditor = null;
+
+    ClassicEditor
+        .create(document.querySelector('#process_description'), {
+            toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|', 'undo', 'redo']
+        })
+        .then(editor => {
+            processDescEditor = editor;
+
+            // Clear the red error state as soon as the user types
+            editor.model.document.on('change:data', () => {
+                const wrap = document.getElementById('process-description-wrap');
+                wrap.classList.remove('input-error');
+                const next = wrap.nextElementSibling;
+                if (next && next.classList.contains('field-error')) next.remove();
+            });
+        })
+        .catch(error => console.error(error));
 
     function formatBytes(bytes) {
         return (bytes / (1024 * 1024)).toFixed(1) + 'MB';
@@ -993,221 +989,24 @@
         }
     }
 
-    // ===== Process rows =====
-    const existingProcess = @json($processForJs);
-    const processContainer = document.getElementById('processRows');
-    const processTemplate = document.getElementById('processRowTemplate');
-    let processIndex = 0;
-
-    function addProcessRow(data = {}) {
-        const clone = processTemplate.content.cloneNode(true);
-        const row = clone.querySelector('.inspection-row');
-
-        row.querySelectorAll('input, textarea').forEach(field => {
-            field.name = field.name.replace('__INDEX__', processIndex);
-        });
-
-        const descField = row.querySelector('textarea[name$="[description]"]');
-        descField.value = data.description ?? '';
-
-        const thumbDrop = row.querySelector('[data-row-slot="thumbnail"]');
-        const thumbInput = row.querySelector('input[type="file"][name$="[thumbnail]"]');
-        thumbDrop.addEventListener('click', () => thumbInput.click());
-
-        if (data.thumbnail) {
-            thumbDrop.classList.add('filled');
-            thumbDrop.innerHTML = `
-                <img src="${data.thumbnail_url ?? data.thumbnail}" alt="Thumbnail">
-                <button type="button" class="remove-img-btn" title="Remove"><i class="bi bi-x-lg"></i></button>
-            `;
-            row.querySelector('.existing-thumbnail-input').value = data.thumbnail;
-            wireRowRemove(thumbDrop, row.querySelector('.existing-thumbnail-input'), 'process-thumb-preview');
-        }
-
-        const videoDrop = row.querySelector('[data-row-slot="video"]');
-        const videoInput = row.querySelector('input[type="file"][name$="[video]"]');
-        const linkInput = row.querySelector('.process-vedio-link-input');
-
-        videoDrop.addEventListener('click', () => {
-            if (!videoDrop.classList.contains('filled')) videoInput.click();
-        });
-
-        if (data.video) {
-            videoDrop.classList.add('has-file', 'filled');
-            videoDrop.innerHTML = `
-                <video src="${data.video_url ?? data.video}" controls muted style="width:100%;height:100%;object-fit:cover;"></video>
-                <button type="button" class="remove-img-btn" title="Remove"><i class="bi bi-x-lg"></i></button>
-            `;
-            row.querySelector('.existing-video-input').value = data.video;
-            wireRowRemove(videoDrop, row.querySelector('.existing-video-input'), null, true);
-        } else if (data.vedio_link) {
-            linkInput.value = data.vedio_link;
-            markVideoDropAsLinked(videoDrop, videoInput, linkInput);
-        }
-
-        if (data.errors) {
-            if (data.errors.description) setFieldError(descField, data.errors.description, false);
-            if (data.errors.video) setFieldError(videoDrop, data.errors.video, false);
-            if (data.errors.vedio_link) setFieldError(linkInput, data.errors.vedio_link, false);
-        }
-
-        row.querySelector('.inspection-remove').addEventListener('click', () => row.remove());
-
-        processContainer.appendChild(row);
-        processIndex++;
-    }
-
-    // function markVideoDropAsLinked(videoDrop, videoInput, linkInput) {
-    //     videoDrop.classList.add('has-file', 'filled');
-    //     videoDrop.innerHTML = `
-    //         <div class="drop-title" style="padding:10px; display:flex; align-items:center; gap:6px;">
-    //             <i class="bi bi-youtube"></i> YouTube link set
-    //         </div>
-    //         <button type="button" class="remove-img-btn" title="Remove link"><i class="bi bi-x-lg"></i></button>
-    //     `;
-    //     videoDrop.querySelector('.remove-img-btn').onclick = function (ev) {
-    //         ev.stopPropagation();
-    //         linkInput.value = '';
-    //         videoInput.value = '';
-    //         videoDrop.classList.remove('has-file', 'filled');
-    //         videoDrop.innerHTML = `
-    //             <div class="ico-circle"><i class="bi bi-camera-video" style="color:#AEB4C4;font-size:16px;"></i></div>
-    //             <div class="drop-title">Click to upload</div>
-    //         `;
-    //     };
-    // }
-
-function toYoutubeEmbedUrl(url) {
-    const match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-    return match ? `https://www.youtube.com/embed/${match[1]}` : url;
-}
-
-    function markVideoDropAsLinked(videoDrop, videoInput, linkInput) {
-        const embedUrl = toYoutubeEmbedUrl(linkInput.value.trim());
-
-        videoDrop.classList.add('has-file', 'filled');
-        videoDrop.innerHTML = `
-            <iframe src="${embedUrl}" style="width:100%; height:100%; border:0;" allowfullscreen></iframe>
-            <button type="button" class="remove-img-btn" title="Remove link"><i class="bi bi-x-lg"></i></button>
-        `;
-        videoDrop.querySelector('.remove-img-btn').onclick = function (ev) {
-            ev.stopPropagation();
-            linkInput.value = '';
-            videoInput.value = '';
-            videoDrop.classList.remove('has-file', 'filled');
-            videoDrop.innerHTML = `
-                <div class="ico-circle"><i class="bi bi-camera-video" style="color:#AEB4C4;font-size:16px;"></i></div>
-                <div class="drop-title">Click to upload</div>
-            `;
-        };
-    }
-
-    function onProcessLinkInput(linkInput) {
-        const wrapper = linkInput.closest('.inspection-row-fields') || linkInput.closest('.field').parentElement;
-        const videoDrop = wrapper.querySelector('[data-row-slot="video"]');
-        const videoInput = wrapper.querySelector('input[type="file"][name$="[video]"]');
-        const existingVideoInput = wrapper.querySelector('.existing-video-input');
-
-        if (linkInput.value.trim() !== '') {
-            videoInput.value = '';
-            if (existingVideoInput) existingVideoInput.value = '';
-            markVideoDropAsLinked(videoDrop, videoInput, linkInput);
-        } else {
-            videoDrop.classList.remove('has-file', 'filled');
-            videoDrop.innerHTML = `
-                <div class="ico-circle"><i class="bi bi-camera-video" style="color:#AEB4C4;font-size:16px;"></i></div>
-                <div class="drop-title">Click to upload</div>
-            `;
-        }
-    }
-
-    function wireRowRemove(dropEl, existingInput, placeholderClass, isVideo = false) {
+    // ===== Shared: remove button for row image slots (feature icons) =====
+    function wireRowRemove(dropEl, existingInput, placeholderClass) {
         const btn = dropEl.querySelector('.remove-img-btn');
         if (!btn) return;
         btn.onclick = function (ev) {
             ev.stopPropagation();
             const fileInput = dropEl.parentElement.querySelector('input[type="file"]');
-            fileInput.value = '';
+            if (fileInput) fileInput.value = '';
             if (existingInput) existingInput.value = '';
 
-            if (isVideo) {
-                const videoEl = dropEl.querySelector('video');
-                if (videoEl && videoEl.src.startsWith('blob:')) {
-                    URL.revokeObjectURL(videoEl.src);
-                }
-                dropEl.classList.remove('has-file', 'filled');
-                dropEl.innerHTML = `
-                    <div class="ico-circle"><i class="bi bi-camera-video" style="color:#AEB4C4;font-size:16px;"></i></div>
-                    <div class="drop-title">Click to upload</div>
-                `;
-            } else {
-                dropEl.classList.remove('filled');
-                dropEl.innerHTML = `
-                    <div class="preview-placeholder ${placeholderClass}">
-                        <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:16px;"></i></div>
-                        <div class="drop-title">Click to upload</div>
-                    </div>
-                `;
-            }
-        };
-    }
-
-    function previewProcessThumbnail(input) {
-        if (!validateFileSize(input, MAX_IMAGE_BYTES, 'Process thumbnail')) return;
-
-        const wrapper = input.closest('.image-slot');
-        const dropEl = wrapper.querySelector('[data-row-slot="thumbnail"]');
-        const oldError = wrapper.querySelector('.field-error');
-        if (oldError) oldError.remove();
-
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                dropEl.classList.add('filled');
-                dropEl.classList.remove('input-error');
-                dropEl.innerHTML = `
-                    <img src="${e.target.result}" alt="Thumbnail">
-                    <button type="button" class="remove-img-btn" title="Remove"><i class="bi bi-x-lg"></i></button>
-                `;
-                const existingInput = wrapper.querySelector('.existing-thumbnail-input');
-                wireRowRemove(dropEl, existingInput, 'process-thumb-preview');
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
-    function previewProcessVideo(input) {
-        if (!validateFileSize(input, MAX_VIDEO_BYTES, 'Process video')) return;
-
-        const wrapper = input.closest('.video-slot');
-        const dropEl = wrapper.querySelector('[data-row-slot="video"]');
-        const oldError = wrapper.querySelector('.field-error');
-        if (oldError) oldError.remove();
-
-        const row = wrapper.closest('.inspection-row');
-        const linkInput = row ? row.querySelector('.process-vedio-link-input') : null;
-        if (linkInput) linkInput.value = '';
-
-        if (input.files && input.files[0]) {
-            const videoURL = URL.createObjectURL(input.files[0]);
-
-            dropEl.classList.add('has-file', 'filled');
-            dropEl.classList.remove('input-error');
+            dropEl.classList.remove('filled');
             dropEl.innerHTML = `
-                <video src="${videoURL}" controls muted style="width:100%;height:100%;object-fit:cover;"></video>
-                <button type="button" class="remove-img-btn" title="Remove"><i class="bi bi-x-lg"></i></button>
+                <div class="preview-placeholder ${placeholderClass}">
+                    <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:16px;"></i></div>
+                    <div class="drop-title">Click to upload</div>
+                </div>
             `;
-            const existingInput = wrapper.querySelector('.existing-video-input');
-            wireRowRemove(dropEl, existingInput, null, true);
-        }
-    }
-
-    document.getElementById('addProcessBtn').addEventListener('click', () => addProcessRow());
-
-    if (existingProcess.length > 0) {
-        existingProcess.forEach(row => addProcessRow(row));
-    } else {
-        addProcessRow();
+        };
     }
 
     // ===== Feature rows =====
@@ -1386,6 +1185,7 @@ function toYoutubeEmbedUrl(url) {
         }
         totalErrorBox.style.display = 'none';
 
+        if (processDescEditor) processDescEditor.updateSourceElement();
         const formData = new FormData(form);
         const submitBtn = form.querySelector('.btn-save');
         const originalBtnHtml = submitBtn.innerHTML;
@@ -1452,6 +1252,9 @@ function toYoutubeEmbedUrl(url) {
             overview_title: f => f.querySelector('[name="overview_title"]'),
             overview_description: f => f.querySelector('[name="overview_description"]'),
             overview_image: f => document.getElementById('drop-overview-image'),
+            process_title: f => f.querySelector('[name="process_title"]'),
+            process_description: f => document.getElementById('process-description-wrap'),
+            process_image: f => document.getElementById('drop-process-image'),
             features_heading: f => f.querySelector('[name="features_heading"]'),
             meta_title: f => f.querySelector('[name="meta_title"]'),
             meta_description: f => f.querySelector('[name="meta_description"]'),
@@ -1461,23 +1264,7 @@ function toYoutubeEmbedUrl(url) {
         Object.keys(errors).forEach(field => {
             const message = errors[field][0];
 
-            let m = field.match(/^process\.(\d+)\.(\w+)$/);
-            if (m) {
-                const [, idx, sub] = m;
-                const input = form.querySelector(`[name="process[${idx}][${sub}]"]`);
-                if (!input) return;
-                const target = (sub === 'thumbnail' || sub === 'video')
-                    ? input.previousElementSibling
-                    : input;
-                target.classList.add('input-error');
-                const errorEl = document.createElement('span');
-                errorEl.className = 'field-error';
-                errorEl.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
-                target.insertAdjacentElement('afterend', errorEl);
-                return;
-            }
-
-            m = field.match(/^features\.(\d+)\.(\w+)$/);
+            let m = field.match(/^features\.(\d+)\.(\w+)$/);
             if (m) {
                 const [, idx, sub] = m;
                 const input = form.querySelector(`[name="features[${idx}][${sub}]"]`);
@@ -1505,14 +1292,6 @@ function toYoutubeEmbedUrl(url) {
                 return;
             }
 
-            if (field === 'process') {
-                const container = document.getElementById('processRows');
-                const errorEl = document.createElement('span');
-                errorEl.className = 'field-error';
-                errorEl.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
-                container.insertAdjacentElement('afterend', errorEl);
-                return;
-            }
             if (field === 'features') {
                 const container = document.getElementById('featureRows');
                 const errorEl = document.createElement('span');
@@ -1662,6 +1441,14 @@ input[type=number]#home_sort_order.input-error{
     border-color:#E9483F !important;
     background:#FFF5F4;
 }
+
+/* ===== CKEditor (Process Description) ===== */
+.ck-editor__editable{ min-height:180px; font-size:14px; }
+.ck.ck-editor__main > .ck-editor__editable{ border-radius:0 0 10px 10px !important; }
+.ck.ck-toolbar{ border-radius:10px 10px 0 0 !important; }
+.ck-wrap.input-error{ background:transparent; }
+.ck-wrap.input-error .ck-editor__editable,
+.ck-wrap.input-error .ck-toolbar{ border-color:#E9483F !important; }
 </style>
 
 @endsection

@@ -351,52 +351,16 @@
           background-position:center;
           background-size:100% 100%;   /* was cover — stretches to fill, no cropping */
           background-repeat:no-repeat;
-          box-shadow:0 20px 44px rgba(0,0,0,0.14);
           transition:transform 0.6s cubic-bezier(0.16,1,0.3,1), box-shadow 0.6s ease;
           margin-top:30px;
       }
 
         .overview-photo:hover {
             transform: translateY(-6px);
-            box-shadow: 0 28px 56px rgba(0, 0, 0, 0.2);
         }
 
         .overview-photo-placeholder {
             background-image: url('{{ asset('images/placeholder.jpg') }}');
-        }
-
-        /* ===== Reveal animation ===== */
-        .overview-left.reveal {
-            opacity: 0;
-            transform: translateX(-40px);
-            transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .overview-right.reveal {
-            opacity: 0;
-            transform: translateX(40px) scale(0.97);
-            transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.15s, transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
-        }
-
-        .overview-left.reveal.in-view,
-        .overview-right.reveal.in-view {
-            opacity: 1;
-            transform: translateX(0) scale(1);
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .overview-photo {
-                transition: none;
-            }
-
-            .overview-left.reveal,
-            .overview-right.reveal,
-            .overview-left.reveal.in-view,
-            .overview-right.reveal.in-view {
-                opacity: 1 !important;
-                transform: none !important;
-                transition: none !important;
-            }
         }
 
         @media (max-width: 900px) {
@@ -439,300 +403,94 @@
             }
         }
 
+        /* ===== Overview: stop slide-in from causing horizontal scroll ===== */
+.service-overview{ overflow:hidden; }
 
-        .process{
+/* ===== Process section (mirror of Overview: image left, text right) ===== */
+.service-process{
   position:relative;
   background:#ffffff;
-  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  padding:60px 60px 60px;
-}
-
-.process *{ box-sizing:border-box; }
-
-.process-inner{ margin:0 auto; }
-
-.process-top{ margin-bottom:40px; }
-
-.process-eyebrow{
-  color:var(--orange);
-  font-weight:700;
-  font-size:19px;
-  margin:0 0 14px;
-}
-
-.process-heading{
-  font-size:clamp(30px, 3.6vw, 46px);
-  line-height:1.2;
-  font-weight:400;
-  color:#111111;
-  margin-left:30px;
-}
-
-.process-video{
-  position:relative;
-  width:100%;
-  aspect-ratio: 16 / 7.2;
-  border-radius:20px;
+  font-family:'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  padding:30px 60px 60px;
   overflow:hidden;
-  box-shadow:0 24px 48px rgba(0,0,0,0.18);
-  cursor:pointer;
-  margin-bottom:60px;
-  transition:box-shadow 0.35s ease;
 }
+.service-process *{ box-sizing:border-box; }
 
-.process-video:hover{ box-shadow:0 32px 64px rgba(0,0,0,0.28); }
-
-.process-video img,
-.process-video video{
-  display:block;
-  width:100%;
-  height:100%;
-  object-fit:fill;
-  transition:transform 0.8s cubic-bezier(0.16,1,0.3,1);
-}
-
-.process-video:hover img{ transform:scale(1.08); }
-
-.process-play{
-  position:absolute;
-  top:50%; left:50%;
-  transform:translate(-50%, -50%) scale(1);
-  width:78px; height:78px;
-  border-radius:50%;
-  background:rgba(255,255,255,0.95);
-  display:flex; align-items:center; justify-content:center;
-  box-shadow:0 12px 30px rgba(0,0,0,0.25);
-  transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1), background 0.25s ease;
-  z-index:2;
-}
-
-.process-play::before{
-  content:"";
-  width:0; height:0;
-  border-style:solid;
-  border-width:12px 0 12px 20px;
-  border-color:transparent transparent transparent var(--orange);
-  margin-left:6px;
-}
-
-.process-video:hover .process-play{
-  transform:translate(-50%, -50%) scale(1.12);
-  background:var(--orange);
-}
-.process-video:hover .process-play::before{
-  border-color:transparent transparent transparent var(--white);
-}
-
-.process-play-ring{
-  position:absolute;
-  top:50%; left:50%;
-  transform:translate(-50%, -50%);
-  width:78px; height:78px;
-  border-radius:50%;
-  border:2px solid rgba(255,255,255,0.7);
-  animation: processPulse 2.4s ease-out infinite;
-  z-index:1;
-}
-
-@keyframes processPulse{
-  0%{ transform:translate(-50%, -50%) scale(1); opacity:0.8; }
-  100%{ transform:translate(-50%, -50%) scale(1.9); opacity:0; }
-}
-
-.process-video-overlay{
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:flex-end;
-  padding:30px;
-  background:linear-gradient(to top, rgba(20,20,20,0.85) 0%, rgba(20,20,20,0.15) 55%, transparent 100%);
-  opacity:0;
-  transform:translateY(10px);
-  transition:opacity 0.35s ease, transform 0.35s ease;
-  z-index:3;
-  pointer-events:none;
-}
-
-.process-video:hover .process-video-overlay{
-  opacity:1;
-  transform:translateY(0);
-}
-
-.process-video-title{
-  color:var(--white);
-  font-size:22px;
-  font-weight:700;
-  margin:0 0 8px;
-}
-
-.process-video-desc{
-  color:rgba(255,255,255,0.9);
-  font-size:15px;
-  line-height:1.5;
-  margin:0;
-  max-width:600px;
-}
-
-.process-video.is-playing .process-play,
-.process-video.is-playing .process-play-ring,
-.process-video.is-playing .process-video-overlay{
-  display:none;
-}
-
-/* Carousel */
-.process-carousel{
-  position:relative;
+.process-inner{
   display:flex;
   align-items:center;
-  gap:20px;
-}
-
-.process-track-wrap{
-  flex:1;
-  overflow:hidden;
-  max-width:900px;
+  gap:180px;
   margin:0 auto;
 }
+.process-left{ flex:1; max-width:760px; }
+.process-right{ flex:0 0 38%; max-width:38%; }
 
-.process-track{
-  display:flex;
-  gap:28px;
-  transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);
-}
-
-.process-card{
-  position:relative;
-  flex:0 0 calc((100% - 56px) / 3);
-  aspect-ratio: 4 / 3;
-  border-radius:18px;
-  overflow:hidden;
-  cursor:pointer;
-  box-shadow:0 14px 34px rgba(0,0,0,0.14);
-  transition:box-shadow 0.3s ease;
-}
-
-.process-card:hover{ box-shadow:0 22px 46px rgba(0,0,0,0.22); }
-
-.process-card img,
-.process-card video{
-  display:block;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  transition:transform 0.7s cubic-bezier(0.16,1,0.3,1);
-}
-
-.process-card:hover img{ transform:scale(1.12); }
-
-.process-card-play{
-  position:absolute;
-  top:50%; left:50%;
-  transform:translate(-50%, -50%) scale(1);
-  width:48px; height:48px;
-  border-radius:50%;
-  background:rgba(255,255,255,0.95);
-  display:flex; align-items:center; justify-content:center;
-  box-shadow:0 8px 20px rgba(0,0,0,0.25);
-  transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1), background 0.2s ease;
-  z-index:2;
-}
-
-.process-card-play::before{
-  content:"";
-  width:0; height:0;
-  border-style:solid;
-  border-width:8px 0 8px 13px;
-  border-color:transparent transparent transparent var(--orange);
-  margin-left:4px;
-}
-
-.process-card:hover .process-card-play{
-  transform:translate(-50%, -50%) scale(1.12);
-  background:var(--orange);
-}
-.process-card:hover .process-card-play::before{
-  border-color:transparent transparent transparent var(--white);
-}
-
-.process-card-overlay{
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:flex-end;
-  padding:22px;
-  background:linear-gradient(to top, rgba(20,20,20,0.85) 0%, rgba(20,20,20,0.15) 55%, transparent 100%);
+/* ===== Slide-in from sides (Overview + Process) ===== */
+.slide-in-left,
+.slide-in-right{
   opacity:0;
-  transform:translateY(10px);
-  transition:opacity 0.35s ease, transform 0.35s ease;
+  transition:opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+  will-change:opacity, transform;
 }
+.slide-in-left{ transform:translateX(-80px); }
+.slide-in-right{ transform:translateX(80px); transition-delay:0.15s; }
 
-.process-card:hover .process-card-overlay{
-  opacity:1;
-  transform:translateY(0);
-}
-
-.process-card-title{
-  color:var(--white);
-  font-size:17px;
-  font-weight:700;
-  margin:0 0 6px;
-}
-
-.process-card-desc{
-  color:rgba(255,255,255,0.85);
-  font-size:13.5px;
-  line-height:1.45;
-  margin:0;
-}
-
-.process-nav{
-  flex:0 0 auto;
-  width:44px; height:44px;
-  border-radius:50%;
-  background:#ffffff;
-  border:1px solid #e6e6e6;
-  display:flex; align-items:center; justify-content:center;
-  cursor:pointer;
-  color:#111111;
-  font-size:18px;
-  transition:background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
-}
-
-.process-nav:hover{
-  background:var(--orange);
-  border-color:var(--orange);
-  color:var(--white);
-  transform:translateY(-2px);
-}
-
-.process-nav:disabled{
-  opacity:0.35;
-  cursor:default;
-  pointer-events:none;
-}
-
-/* ===== Mobile responsiveness ===== */
 @media (max-width: 900px){
-  .process{ padding:64px 24px 70px; }
-  .process-video{ aspect-ratio:4/3; margin-bottom:40px; }
-  .process-card{ flex:0 0 calc((100% - 28px) / 2); }
+  .slide-in-left{ transform:translateX(-40px); }
+  .slide-in-right{ transform:translateX(40px); transition-delay:0.1s; }
 }
 
-@media (max-width: 600px){
-  .process-card{ flex:0 0 100%; }
-  .process-video-title{ font-size:18px; }
-  .process-video-desc{ font-size:13.5px; }
-}
-
-@media (max-width: 480px){
-  .process{ padding:48px 16px 56px; }
-  .process-heading{ font-size:26px; }
-  .process-nav{ width:38px; height:38px; font-size:15px; }
+.slide-in-left.in-view,
+.slide-in-right.in-view{
+  opacity:1;
+  transform:translateX(0);
 }
 
 @media (prefers-reduced-motion: reduce){
-  .process-play-ring{ animation:none; }
-  .process-video img, .process-card img{ transition:none; }
+  .overview-photo{ transition:none; }
+  .slide-in-left,
+  .slide-in-right{
+    opacity:1 !important;
+    transform:none !important;
+    transition:none !important;
+  }
+}
+
+/* ===== Responsive: Overview + Process ===== */
+@media (max-width: 1280px){
+  .overview-inner,
+  .process-inner{ gap:80px; }
+}
+
+@media (max-width: 1100px){
+  .overview-inner,
+  .process-inner{ gap:50px; }
+  .overview-left,
+  .process-right{ flex-basis:44%; max-width:44%; }
+  .overview-desc p{ font-size:19px; margin:0 20px 24px; }
+  .overview-view-more{ margin:14px 20px 0; }
+}
+
+@media (max-width: 900px){
+  .service-process{ padding:40px 24px 64px; }
+  .process-inner{ flex-direction:column; gap:32px; }
+  .process-left,
+  .process-right{ flex:none; max-width:none; width:100%; }
+  .process-right{ order:-1; }             /* text first, image below, same as Overview on mobile */
+
+  .overview-inner{ gap:32px; }
+  .overview-left{ flex:none; max-width:none; width:100%; }
+  .overview-desc p{ font-size:17px; margin:0 0 20px; }
+  .overview-view-more{ margin:12px 0 0; }
+  .overview-photo{ margin-top:0; }
+  .overview-eyebrow{ font-size:18px; margin-bottom:10px; }
+  .overview-heading{ margin-bottom:18px; }
+}
+
+@media (max-width: 480px){
+  .service-overview{ padding:48px 16px 40px; }
+  .service-process{ padding:32px 16px 48px; }
+  .overview-desc p{ font-size:16px; line-height:1.7; }
 }
 
 .features{
@@ -1448,7 +1206,78 @@
   .gallery-top.reveal{ transition:none !important; }
   .gallery-top.reveal{ opacity:1 !important; transform:none !important; }
 }
+/* ===== Keep Overview / Process text inside its column ===== */
+.overview-left,
+.overview-right,
+.process-left,
+.process-right{
+  min-width:0;                 /* lets flex columns shrink instead of overflowing */
+}
 
+.overview-heading,
+.overview-desc p{
+  overflow-wrap:anywhere;      /* breaks very long words instead of spilling out */
+  word-break:break-word;
+}
+/* ===== CKEditor rich text inside Overview / Process description ===== */
+.overview-desc h2,
+.overview-desc h3,
+.overview-desc h4{
+  margin:0 40px 14px;
+  line-height:1.3;
+  font-weight:700;
+  color:#111111;
+}
+.overview-desc h2{ font-size:28px; }
+.overview-desc h3{ font-size:24px; }
+.overview-desc h4{ font-size:21px; }
+
+.overview-desc ul,
+.overview-desc ol{
+  margin:0 40px 24px;
+  padding-left:24px;
+  font-size:20px;
+  line-height:1.7;
+  color:#111111;
+}
+.overview-desc ul{ list-style:disc; }
+.overview-desc ol{ list-style:decimal; }
+.overview-desc li{ margin-bottom:6px; }
+
+.overview-desc blockquote{
+  margin:0 40px 24px;
+  padding-left:16px;
+  border-left:3px solid var(--orange);
+  font-style:italic;
+  color:#444444;
+}
+.overview-desc blockquote p{ margin-left:0; margin-right:0; }
+
+.overview-desc a{ color:var(--orange); text-decoration:underline; }
+.overview-desc strong,
+.overview-desc b{ font-weight:700; }
+.overview-desc em,
+.overview-desc i{ font-style:italic; }
+
+@media (max-width: 1100px){
+  .overview-desc h2, .overview-desc h3, .overview-desc h4,
+  .overview-desc ul, .overview-desc ol,
+  .overview-desc blockquote{ margin-left:20px; margin-right:20px; }
+}
+
+@media (max-width: 900px){
+  .overview-desc h2, .overview-desc h3, .overview-desc h4,
+  .overview-desc ul, .overview-desc ol,
+  .overview-desc blockquote{ margin-left:0; margin-right:0; }
+  .overview-desc ul, .overview-desc ol{ font-size:17px; }
+  .overview-desc h2{ font-size:24px; }
+  .overview-desc h3{ font-size:21px; }
+  .overview-desc h4{ font-size:19px; }
+}
+
+@media (max-width: 480px){
+  .overview-desc ul, .overview-desc ol{ font-size:16px; }
+}
 </style>
 
 <section class="hero @if(!empty($service->banner_video)) has-video @endif">
@@ -1498,7 +1327,7 @@
     <section class="service-overview">
         <div class="overview-inner">
 
-            <div class="overview-left reveal reveal-left">
+            <div class="overview-left slide-in-left">
                 <p class="overview-eyebrow">Overview</p>
                 <h2 class="overview-heading">{{ $service->overview_title }}</h2>
 
@@ -1516,7 +1345,7 @@
                 @endif
             </div>
 
-            <div class="overview-right reveal reveal-right">
+            <div class="overview-right slide-in-right">
                 @if ($service->overview_image)
                     <div class="overview-photo" style="background-image:url('{{ Storage::url($service->overview_image) }}')"
                         role="img" aria-label="{{ $service->overview_title }}"></div>
@@ -1527,69 +1356,50 @@
 
         </div>
     </section>
-    @php
-  $processSteps = collect($service->process ?? [])
-    ->filter(fn($step) => !empty($step['video']) || !empty($step['vedio_link']))
-    ->values();
-  $mainProcess = $processSteps->first();
-  $otherProcesses = $processSteps->slice(1)->values();
-@endphp
+    
+@if ($service->process_title || $service->process_description || $service->process_image)
+<section class="service-process">
+    <div class="process-inner">
 
-@if ($mainProcess)
-<section class="process">
-  <div class="process-inner">
-    <div class="process-top reveal reveal-left">
-      <p class="process-eyebrow">Our Process</p>
-      <h2 class="process-heading">Step by step, from<br>inspection to report</h2>
-    </div>
-
-    {{-- main video --}}
-    <div class="process-video reveal reveal-delay-1"
-     id="processVideo"
-     data-video-url="{{ !empty($mainProcess['video']) ? Storage::url($mainProcess['video']) : ($mainProcess['vedio_link'] ?? '') }}"
-     data-title="Step 1"
-     data-desc="{{ $mainProcess['description'] }}">
-
-      <img src="{{ $mainProcess['thumbnail'] ? Storage::url($mainProcess['thumbnail']) : asset('images/process_placeholder.jpg') }}" alt="Step 1">
-      <div class="process-play-ring"></div>
-      <div class="process-play" aria-label="Play video"></div>
-      <div class="process-video-overlay">
-        <div>
-          <p class="process-video-title">Step 1</p>
-          <p class="process-video-desc">{{ $mainProcess['description'] }}</p>
+        {{-- Left: image --}}
+        <div class="process-left slide-in-left">
+            @if ($service->process_image)
+                <div class="overview-photo" style="background-image:url('{{ Storage::url($service->process_image) }}')"
+                    role="img" aria-label="{{ $service->process_title }}"></div>
+            @else
+                <div class="overview-photo overview-photo-placeholder"></div>
+            @endif
         </div>
-      </div>
-    </div>
 
-    @if ($otherProcesses->count())
-      <div class="process-carousel reveal reveal-delay-2">
-        <button type="button" class="process-nav" id="processPrev" aria-label="Previous">&#10094;</button>
+        {{-- Right: title + description --}}
+        <div class="process-right slide-in-right">
+            <p class="overview-eyebrow">Our Process</p>
+            <h2 class="overview-heading">{{ $service->process_title }}</h2>
 
-        <div class="process-track-wrap">
-          <div class="process-track" id="processTrack">
-            @foreach ($otherProcesses as $index => $step)
-              {{-- carousel cards --}}
-              <div class="process-card"
-                  data-video-url="{{ !empty($step['video']) ? Storage::url($step['video']) : ($step['vedio_link'] ?? '') }}"
-                  data-title="Step {{ $index + 2 }}"
-                  data-desc="{{ $step['description'] }}">
-                <img src="{{ $step['thumbnail'] ? Storage::url($step['thumbnail']) : asset('images/process_placeholder.jpg') }}" alt="Step {{ $index + 2 }}">
-                <div class="process-card-play"></div>
-                <div class="process-card-overlay">
-                  <div>
-                    <p class="process-card-title">Step {{ $index + 2 }}</p>
-                    <p class="process-card-desc">{{ Str::limit($step['description'], 90) }}</p>
-                  </div>
-                </div>
+            @if ($service->process_description)
+                @php
+                  $processDesc = $service->process_description;
+                  $processIsHtml = $processDesc !== strip_tags($processDesc);
+              @endphp
+              <div class="overview-desc" id="processDesc">
+                  @if ($processIsHtml)
+                      {!! $processDesc !!}
+                  @else
+                      {{-- Old plain-text descriptions saved before CKEditor --}}
+                      @foreach (preg_split('/\r\n\r\n|\n\n/', trim($processDesc)) as $paragraph)
+                          <p>{{ $paragraph }}</p>
+                      @endforeach
+                  @endif
               </div>
-            @endforeach
-          </div>
+                <button type="button" class="overview-view-more" id="processViewMoreBtn"
+                        data-more-text="View More" data-less-text="View Less">
+                    <span class="overview-view-more-label">View More</span>
+                    <span class="overview-view-more-arrow">&#9662;</span>
+                </button>
+            @endif
         </div>
 
-        <button type="button" class="process-nav" id="processNext" aria-label="Next">&#10095;</button>
-      </div>
-    @endif
-  </div>
+    </div>
 </section>
 @endif
 @if (!empty($service->features))
@@ -1732,233 +1542,110 @@
 @include('web.layout.footer')
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const desc = document.getElementById('overviewDesc');
-            const btn = document.getElementById('overviewViewMoreBtn');
-            if (desc && btn) {
-                if (desc.scrollHeight <= desc.clientHeight + 5) {
-                    btn.style.display = 'none';
-                } else {
-                    const label = btn.querySelector('.overview-view-more-label');
-                    btn.addEventListener('click', function () {
-                        const isExpanded = desc.classList.toggle('expanded');
-                        btn.classList.toggle('expanded', isExpanded);
-                        label.textContent = isExpanded ? btn.dataset.lessText : btn.dataset.moreText;
-                        if (!isExpanded) {
-                            desc.scrollTop = 0;
-                        }
-                    });
+document.addEventListener('DOMContentLoaded', function () {
+
+    // ===== View More / View Less (Overview + Process) =====
+    function initViewMore(descId, btnId) {
+        const desc = document.getElementById(descId);
+        const btn = document.getElementById(btnId);
+        if (!desc || !btn) return;
+
+        if (desc.scrollHeight <= desc.clientHeight + 5) {
+            btn.style.display = 'none';
+            desc.classList.add('expanded'); // removes the fade when text is short
+            return;
+        }
+
+        const label = btn.querySelector('.overview-view-more-label');
+        btn.addEventListener('click', function () {
+            const isExpanded = desc.classList.toggle('expanded');
+            btn.classList.toggle('expanded', isExpanded);
+            label.textContent = isExpanded ? btn.dataset.lessText : btn.dataset.moreText;
+            if (!isExpanded) desc.scrollTop = 0;
+        });
+    }
+
+    initViewMore('overviewDesc', 'overviewViewMoreBtn');
+    initViewMore('processDesc', 'processViewMoreBtn');
+
+    // ===== Reveal + slide-in from sides (Overview, Process, Features, Gallery, Related, CTA) =====
+    const animatedEls = document.querySelectorAll('.reveal, .slide-in-left, .slide-in-right');
+
+    if ('IntersectionObserver' in window && animatedEls.length) {
+        const observer = new IntersectionObserver(function (entries, obs) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('in-view');
+                    obs.unobserve(entry.target);
                 }
-            }
+            });
+        }, {
+            threshold: 0.15,
+            rootMargin: '0px 0px -60px 0px'
         });
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const revealEls = document.querySelectorAll('.reveal');
-            if ('IntersectionObserver' in window && revealEls.length) {
-                const revealObserver = new IntersectionObserver(function(entries, obs) {
-                    entries.forEach(function(entry) {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add('in-view');
-                            obs.unobserve(entry.target);
-                        }
-                    });
-                }, {
-                    threshold: 0.15,
-                    rootMargin: '0px 0px -60px 0px'
-                });
+        animatedEls.forEach(function (el) { observer.observe(el); });
+    } else {
+        animatedEls.forEach(function (el) { el.classList.add('in-view'); });
+    }
 
-                revealEls.forEach(function(el) {
-                    revealObserver.observe(el);
-                });
-            } else {
-                revealEls.forEach(function(el) {
-                    el.classList.add('in-view');
-                });
-            }
+    // ===== Gallery marquee + lightbox =====
+    const galleryTrack = document.getElementById('galleryTrack');
+    const lightbox = document.getElementById('galleryLightbox');
+
+    if (galleryTrack && lightbox) {
+        const allItems = Array.from(galleryTrack.querySelectorAll('.gallery-item'));
+        const uniqueItems = allItems.filter(el => !el.hasAttribute('aria-hidden'));
+        const uniqueCount = uniqueItems.length;
+
+        galleryTrack.style.setProperty('--gallery-duration', Math.max(20, uniqueCount * 6) + 's');
+        if (uniqueCount <= 1) galleryTrack.style.animation = 'none';
+
+        const lightboxImg = document.getElementById('galleryLightboxImg');
+        const closeBtn = document.getElementById('galleryLightboxClose');
+        const prevBtn = document.getElementById('galleryLightboxPrev');
+        const nextBtn = document.getElementById('galleryLightboxNext');
+        const uniqueUrls = uniqueItems.map(el => el.getAttribute('data-full'));
+        let currentIndex = 0;
+
+        function openLightbox(url) {
+            currentIndex = Math.max(0, uniqueUrls.indexOf(url));
+            lightboxImg.src = uniqueUrls[currentIndex];
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function showRelative(offset) {
+            currentIndex = (currentIndex + offset + uniqueUrls.length) % uniqueUrls.length;
+            lightboxImg.src = uniqueUrls[currentIndex];
+        }
+
+        allItems.forEach(function (item) {
+            item.addEventListener('click', function () {
+                openLightbox(item.getAttribute('data-full'));
+            });
         });
 
-        document.addEventListener('DOMContentLoaded', function () {
-  const track = document.getElementById('processTrack');
-  const prevBtn = document.getElementById('processPrev');
-  const nextBtn = document.getElementById('processNext');
+        closeBtn.addEventListener('click', closeLightbox);
+        prevBtn.addEventListener('click', function () { showRelative(-1); });
+        nextBtn.addEventListener('click', function () { showRelative(1); });
 
-  if (track && prevBtn && nextBtn) {
-    const cards = track.children;
-    let visibleCount = 3;
-    let index = 0;
+        lightbox.addEventListener('click', function (e) {
+            if (e.target === lightbox) closeLightbox();
+        });
 
-    function getVisibleCount() {
-      if (window.innerWidth <= 600) return 1;
-      if (window.innerWidth <= 900) return 2;
-      return 3;
+        document.addEventListener('keydown', function (e) {
+            if (!lightbox.classList.contains('active')) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft') showRelative(-1);
+            if (e.key === 'ArrowRight') showRelative(1);
+        });
     }
-
-    function update() {
-      visibleCount = getVisibleCount();
-      const maxIndex = Math.max(0, cards.length - visibleCount);
-      index = Math.min(index, maxIndex);
-      const cardWidth = cards[0].getBoundingClientRect().width;
-      const gap = 28;
-      track.style.transform = 'translateX(' + (-(cardWidth + gap) * index) + 'px)';
-      prevBtn.disabled = index === 0;
-      nextBtn.disabled = index >= maxIndex;
-    }
-
-    prevBtn.addEventListener('click', function () {
-      index = Math.max(0, index - 1);
-      update();
-    });
-
-    nextBtn.addEventListener('click', function () {
-      const maxIndex = Math.max(0, cards.length - visibleCount);
-      index = Math.min(maxIndex, index + 1);
-      update();
-    });
-
-    window.addEventListener('resize', update);
-    update();
-  }
-
-  const processVideo = document.getElementById('processVideo');
-
- function isYoutubeUrl(url) {
-  return /youtube\.com|youtu\.be/.test(url);
-}
-
-function toYoutubeEmbedUrl(url) {
-  const match = url.match(
-    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/
-  );
-  return match ? `https://www.youtube.com/embed/${match[1]}?autoplay=1` : url;
-}
-
-function loadMainProcessVideo(source) {
-  if (!processVideo) return;
-
-  const videoUrl = source.getAttribute('data-video-url');
-  const title = source.getAttribute('data-title') || '';
-  const desc = source.getAttribute('data-desc') || '';
-
-  const titleEl = processVideo.querySelector('.process-video-title');
-  const descEl = processVideo.querySelector('.process-video-desc');
-  if (titleEl) titleEl.textContent = title;
-  if (descEl) descEl.textContent = desc;
-
-  if (!videoUrl) return;
-
-  const existingMedia = processVideo.querySelector('video, iframe');
-  if (existingMedia) existingMedia.remove();
-
-  let mediaEl;
-  if (isYoutubeUrl(videoUrl)) {
-    mediaEl = document.createElement('iframe');
-    mediaEl.src = toYoutubeEmbedUrl(videoUrl);
-    mediaEl.allow = 'autoplay; encrypted-media; picture-in-picture';
-    mediaEl.allowFullscreen = true;
-    mediaEl.style.border = '0';
-  } else {
-    mediaEl = document.createElement('video');
-    mediaEl.src = videoUrl;
-    mediaEl.controls = true;
-    mediaEl.autoplay = true;
-    mediaEl.style.objectFit = 'cover';
-  }
-
-  mediaEl.style.position = 'absolute';
-  mediaEl.style.inset = '0';
-  mediaEl.style.width = '100%';
-  mediaEl.style.height = '100%';
-  mediaEl.style.zIndex = '1';
-
-  processVideo.prepend(mediaEl);
-  processVideo.classList.add('is-playing');
-
-  if (mediaEl.tagName === 'VIDEO') {
-    mediaEl.addEventListener('ended', function () {
-      processVideo.classList.remove('is-playing');
-    });
-  }
-
-  processVideo.scrollIntoView({ behavior: 'smooth', block: 'center' });
-}
-
-  if (processVideo) {
-    processVideo.addEventListener('click', function () {
-      loadMainProcessVideo(processVideo);
-    });
-  }
- document.addEventListener('DOMContentLoaded', function () {
-  const track = document.getElementById('galleryTrack');
-  const lightbox = document.getElementById('galleryLightbox');
-  if (!track || !lightbox) return;
-
-  const allItems = Array.from(track.querySelectorAll('.gallery-item'));
-  const uniqueCount = allItems.filter(el => !el.hasAttribute('aria-hidden')).length;
-
-  // Slower scroll for more images, faster for fewer — tweak the multiplier to taste
-  const duration = Math.max(20, uniqueCount * 6);
-  track.style.setProperty('--gallery-duration', duration + 's');
-
-  // Pause the marquee if there's only one image (nothing to scroll)
-  if (uniqueCount <= 1) {
-    track.style.animation = 'none';
-  }
-
-  const lightboxImg = document.getElementById('galleryLightboxImg');
-  const closeBtn = document.getElementById('galleryLightboxClose');
-  const prevBtn = document.getElementById('galleryLightboxPrev');
-  const nextBtn = document.getElementById('galleryLightboxNext');
-
-  const uniqueUrls = allItems
-    .filter(el => !el.hasAttribute('aria-hidden'))
-    .map(el => el.getAttribute('data-full'));
-
-  let currentIndex = 0;
-
-  function openLightbox(url) {
-    currentIndex = uniqueUrls.indexOf(url);
-    if (currentIndex === -1) currentIndex = 0;
-    lightboxImg.src = uniqueUrls[currentIndex];
-    lightbox.classList.add('active');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeLightbox() {
-    lightbox.classList.remove('active');
-    document.body.style.overflow = '';
-  }
-
-  function showRelative(offset) {
-    currentIndex = (currentIndex + offset + uniqueUrls.length) % uniqueUrls.length;
-    lightboxImg.src = uniqueUrls[currentIndex];
-  }
-
-  allItems.forEach(function (item) {
-    item.addEventListener('click', function () {
-      openLightbox(item.getAttribute('data-full'));
-    });
-  });
-
-  closeBtn.addEventListener('click', closeLightbox);
-  prevBtn.addEventListener('click', function () { showRelative(-1); });
-  nextBtn.addEventListener('click', function () { showRelative(1); });
-
-  lightbox.addEventListener('click', function (e) {
-    if (e.target === lightbox) closeLightbox();
-  });
-
-  document.addEventListener('keydown', function (e) {
-    if (!lightbox.classList.contains('active')) return;
-    if (e.key === 'Escape') closeLightbox();
-    if (e.key === 'ArrowLeft') showRelative(-1);
-    if (e.key === 'ArrowRight') showRelative(1);
-  });
 });
-  document.querySelectorAll('.process-card').forEach(function (card) {
-    card.addEventListener('click', function () {
-      loadMainProcessVideo(card);
-    });
-  });
-});
-    </script>
+</script>
 @endsection
