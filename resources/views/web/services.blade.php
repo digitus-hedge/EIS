@@ -833,7 +833,6 @@
 </section>
 
 @php
-  $servicesPerPage = 8;
   $servicesTotal = $services->count();
 @endphp
 <section class="inspect">
@@ -847,19 +846,15 @@
     <div class="inspect-header-divider"></div>
 
     <div class="inspect-header-right reveal reveal-delay-1">
-      <p class="inspect-count" id="inspectCount">
-        Showing <strong id="inspectCountFrom">1</strong>–<strong id="inspectCountTo">{{ min($servicesPerPage, $servicesTotal) }}</strong> of <strong>{{ $servicesTotal }}</strong> services
+      <p class="inspect-count">
+        Showing <strong>{{ $servicesTotal }}</strong> services
       </p>
     </div>
   </div>
 
   <div class="inspect-grid" id="inspectGrid">
     @foreach ($services as $index => $service)
-      <div
-        class="inspect-card reveal reveal-delay-{{ min($index % 4, 3) }}"
-        data-page="{{ intdiv($index, $servicesPerPage) + 1 }}"
-        style="{{ $index >= $servicesPerPage ? 'display:none;' : '' }}"
-      >
+      <div class="inspect-card reveal reveal-delay-{{ min($index % 4, 3) }}">
         <div
           class="inspect-card-photo"
           style="background-image:url('{{ $service->banner_image ? asset('storage/' . $service->banner_image) : asset('images/services/default.jpg') }}')"
@@ -874,24 +869,6 @@
       </div>
     @endforeach
 </div>
-
-  @php $totalPages = (int) ceil($servicesTotal / $servicesPerPage); @endphp
-
-  @if ($totalPages > 1)
-    <nav class="inspect-pagination" id="inspectPagination" aria-label="Services pagination" data-total-pages="{{ $totalPages }}" data-per-page="{{ $servicesPerPage }}" data-total-items="{{ $servicesTotal }}">
-      <button type="button" class="inspect-page-arrow disabled" id="inspectPrev" aria-label="Previous page">&#8249;</button>
-
-      @for ($page = 1; $page <= $totalPages; $page++)
-        <button
-          type="button"
-          class="inspect-page-num {{ $page === 1 ? 'active' : '' }}"
-          data-page="{{ $page }}"
-        >{{ $page }}</button>
-      @endfor
-
-      <button type="button" class="inspect-page-arrow {{ $totalPages <= 1 ? 'disabled' : '' }}" id="inspectNext" aria-label="Next page">&#8250;</button>
-    </nav>
-  @endif
 
 </section>
 
@@ -916,64 +893,6 @@
     }
   });
 
-  document.addEventListener('DOMContentLoaded', function () {
-    const pagination = document.getElementById('inspectPagination');
-    if (!pagination) return;
-
-    const cards = Array.from(document.querySelectorAll('#inspectGrid .inspect-card'));
-    const pageButtons = Array.from(pagination.querySelectorAll('.inspect-page-num'));
-    const prevBtn = document.getElementById('inspectPrev');
-    const nextBtn = document.getElementById('inspectNext');
-    const countFrom = document.getElementById('inspectCountFrom');
-    const countTo = document.getElementById('inspectCountTo');
-
-    const totalPages = parseInt(pagination.dataset.totalPages, 10);
-    const perPage = parseInt(pagination.dataset.perPage, 10);
-    const totalItems = parseInt(pagination.dataset.totalItems, 10);
-    let currentPage = 1;
-
-    function showPage(page) {
-      currentPage = page;
-
-      cards.forEach(function (card) {
-        const cardPage = parseInt(card.dataset.page, 10);
-        const show = cardPage === page;
-        card.style.display = show ? '' : 'none';
-        if (show) {
-          card.classList.remove('in-view');
-          void card.offsetWidth;
-          requestAnimationFrame(function () { card.classList.add('in-view'); });
-        }
-      });
-
-      pageButtons.forEach(function (btn) {
-        btn.classList.toggle('active', parseInt(btn.dataset.page, 10) === page);
-      });
-
-      prevBtn.classList.toggle('disabled', page === 1);
-      nextBtn.classList.toggle('disabled', page === totalPages);
-
-      const from = (page - 1) * perPage + 1;
-      const to = Math.min(page * perPage, totalItems);
-      countFrom.textContent = from;
-      countTo.textContent = to;
-
-      pagination.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-
-    pageButtons.forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        showPage(parseInt(btn.dataset.page, 10));
-      });
-    });
-
-    prevBtn.addEventListener('click', function () {
-      if (currentPage > 1) showPage(currentPage - 1);
-    });
-
-    nextBtn.addEventListener('click', function () {
-      if (currentPage < totalPages) showPage(currentPage + 1);
-    });
-  });
+  
 </script>
 @endsection
