@@ -1523,7 +1523,7 @@
   <div class="inspection-cta-inner">
 
     <div class="inspection-cta-photo reveal reveal-left"
-         style="background-image:url('{{ asset('images/hero_image.jpeg') }}')"
+         style="background-image:url('{{ asset('images/servicedetail.jpeg') }}')"
          role="img" aria-label="Inspector reviewing equipment on site"></div>
 
     <div class="inspection-cta-content reveal reveal-right reveal-delay-1">

@@ -630,7 +630,7 @@
   display:block;
   width:100%;
   height:100%;
-  object-fit:fill;
+  object-fit:cover;
   transition:transform 0.8s cubic-bezier(0.16,1,0.3,1);
 }
 
@@ -800,7 +800,7 @@
   display:block;
   width:100%;
   height:100%;
-  object-fit:fill;
+  object-fit:cover;
   transition:transform 0.7s cubic-bezier(0.16,1,0.3,1);
 }
 
@@ -882,6 +882,33 @@
   .operation-play-ring{ animation:none; }
   .operation-video img, .operation-card img{ transition:none; }
 }
+/* ===== Always the wide frame; vertical media sits centered ===== */
+.operation-video{ background:#111; }
+.operation-video video,
+.operation-video iframe{ background:transparent; }
+/* ===== Thumbnail fits any frame: full image over a blurred copy ===== */
+.operation-video::before,
+.operation-card::before{
+  content:"";
+  position:absolute;
+  inset:-24px;
+  background:var(--thumb, none) center / cover no-repeat;
+  filter:blur(20px) brightness(0.75);
+  transform:scale(1.1);
+  z-index:0;
+  pointer-events:none;
+}
+.operation-video img,
+.operation-card img{
+  position:relative;
+  z-index:1;
+  object-fit:contain !important;   /* whole thumbnail visible, never cropped */
+}
+.operation-card-overlay{ z-index:3; }
+
+/* While a video plays, hide only the sharp thumbnail; keep the blurred sides */
+.operation-video.is-playing img{ display:none; }
+
 body.cert-lightbox-open .cert-nav{
   display:none;
 }
@@ -1599,6 +1626,48 @@ body.cert-lightbox-open .cert-nav{
 
 const operationVideo = document.getElementById('operationVideo');
 
+/* ---------- Orientation: vertical vs horizontal ---------- */
+function setOrientation(el, w, h) {
+  if (el && w && h) el.classList.toggle('is-vertical', h > w);
+}
+
+function detectOrientation(el) {
+  const url = el.getAttribute('data-video-url') || '';
+  const img = el.querySelector('img');
+
+  // Blurred background copy of the thumbnail
+  if (img && img.src) el.style.setProperty('--thumb', 'url("' + img.src + '")');
+
+  // YouTube: Shorts are vertical, normal videos horizontal
+  if (/youtube\.com|youtu\.be/.test(url)) {
+    el.classList.toggle('is-vertical', /youtube\.com\/shorts\//.test(url));
+    return;
+  }
+
+  // 1) Instant: use the thumbnail's shape (same result on every refresh)
+  if (img) {
+    const run = function () { setOrientation(el, img.naturalWidth, img.naturalHeight); };
+    if (img.complete && img.naturalWidth) run();
+    else img.addEventListener('load', run, { once: true });
+  }
+
+  // 2) If the video's details load, they get the final say
+  if (url) {
+    const probe = document.createElement('video');
+    probe.preload = 'metadata';
+    probe.muted = true;
+    probe.src = url;
+    probe.addEventListener('loadedmetadata', function () {
+      setOrientation(el, probe.videoWidth, probe.videoHeight);
+      probe.removeAttribute('src');
+      probe.load();
+    }, { once: true });
+  }
+}
+
+if (operationVideo) detectOrientation(operationVideo);
+document.querySelectorAll('.operation-card').forEach(detectOrientation);
+
 function isYoutubeUrl(url) {
   return /youtube\.com|youtu\.be/.test(url);
 }
@@ -1627,7 +1696,10 @@ function loadMainVideo(source) {
   operationVideo.setAttribute('data-title', title);
   operationVideo.setAttribute('data-desc', desc);
 
-  if (!videoUrl) return;
+    if (!videoUrl) return;
+
+  // Blurred sides use the clicked video's thumbnail
+  if (thumbUrl) operationVideo.style.setProperty('--thumb', 'url("' + thumbUrl + '")');
 
   const existingMedia = operationVideo.querySelector('video, iframe');
   if (existingMedia) existingMedia.remove();
@@ -1642,10 +1714,21 @@ function loadMainVideo(source) {
   } else {
     mediaEl = document.createElement('video');
     mediaEl.src = videoUrl;
-    mediaEl.controls = true;
+        mediaEl.controls = true;
     mediaEl.autoplay = true;
-    mediaEl.style.objectFit = 'cover';
+    mediaEl.playsInline = true;
+    mediaEl.style.objectFit = 'contain';   // never crop the video
+    // Final check from the video itself (in case the thumbnail's shape differs)
+    mediaEl.addEventListener('loadedmetadata', function () {
+      setOrientation(operationVideo, mediaEl.videoWidth, mediaEl.videoHeight);
+    }, { once: true });
   }
+      // If the browser can't play the file, go back to the thumbnail
+    mediaEl.addEventListener('error', function () {
+      console.error('Video could not be played:', videoUrl);
+      mediaEl.remove();
+      operationVideo.classList.remove('is-playing');
+    }, { once: true });
 
   mediaEl.style.position = 'absolute';
   mediaEl.style.inset = '0';
@@ -1667,6 +1750,8 @@ function loadMainVideo(source) {
 
 if (operationVideo) {
   operationVideo.addEventListener('click', function () {
+    // Already playing: let the video's own controls handle the click
+    if (operationVideo.classList.contains('is-playing')) return;
     loadMainVideo(operationVideo);
   });
 }

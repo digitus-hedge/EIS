@@ -155,6 +155,24 @@ class AboutController extends Controller
     }
 
     /**
+ * Resize without cropping: keeps the original shape (vertical stays vertical).
+ * Only shrinks images larger than 1600px on their longest side.
+ */
+private function processAndStoreThumbnail($file, string $folder = 'operation/thumbnails'): string
+{
+    $filename = $folder . '/' . Str::random(20) . '.webp';
+
+    $manager = new ImageManager(new Driver());
+    $image   = $manager->read($file->getPathname());
+
+    $image->scaleDown(width: 1600, height: 1600);   // fit inside 1600×1600, no crop
+
+    Storage::disk('public')->put($filename, (string) $image->toWebp(quality: 85));
+
+    return $filename;
+}
+
+    /**
      * Show the "About" content page (title + description).
      * Route: GET /admin/about -> admin.about.about
      */
@@ -574,7 +592,7 @@ public function storeOperationVideo(Request $request)
     ]);
 
     try {
-        $thumbnailPath = $this->processAndStoreImage($request->file('thumbnail'), 'operation/thumbnails');
+        $thumbnailPath = $this->processAndStoreThumbnail($request->file('thumbnail'));
 
         $videoPath = null;
         if ($request->hasFile('video')) {
@@ -660,7 +678,7 @@ public function updateOperationVideo(Request $request, OperationVideo $video)
             if ($video->thumbnail) {
                 Storage::disk('public')->delete($video->thumbnail);
             }
-            $video->thumbnail = $this->processAndStoreImage($request->file('thumbnail'), 'operation/thumbnails');
+            $video->thumbnail = $this->processAndStoreThumbnail($request->file('thumbnail'));
         }
 
         // If a new video file is uploaded, it takes over from any existing YouTube link
@@ -720,8 +738,14 @@ private function normalizeYoutubeUrl(string $url): string
     );
 
     $videoId = $matches[1] ?? null;
+    if (! $videoId) {
+        return $url;
+    }
 
-    return $videoId ? "https://www.youtube.com/watch?v={$videoId}" : $url;
+    // Keep Shorts as Shorts so the website can show them vertically
+    return str_contains($url, '/shorts/')
+        ? "https://www.youtube.com/shorts/{$videoId}"
+        : "https://www.youtube.com/watch?v={$videoId}";
 }
 
 public function destroyOperationVideo(OperationVideo $video)

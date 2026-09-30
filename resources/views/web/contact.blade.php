@@ -1051,8 +1051,8 @@
                     <div class="find-us-card-icon"><i class="bi bi-geo-alt-fill"></i></div>
                     <p class="find-us-card-title">Address</p>
                     <p class="find-us-card-value">{{ $contact->address }}</p>
-                    <a href="https://www.google.com/maps/dir/?api=1&destination={{ $contact->latitude ?? '36.1911' }},{{ $contact->longitude ?? '43.9877' }}"
-                       target="_blank" rel="noopener" class="find-us-card-btn">
+                    <a href="https://www.google.com/maps/dir/?api=1&destination={{ $contact->latitude ?: '36.2682541' }},{{ $contact->longitude ?: '43.9647897' }}"
+                    target="_blank" rel="noopener" class="find-us-card-btn">
                         Get directions <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>
@@ -1173,15 +1173,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const mapEl = document.getElementById('contactMap');
     if (!mapEl) return;
 
-    const lat = {{ $contact->latitude ?? 36.1901 }};
-    const lng = {{ $contact->longitude ?? 44.0091 }};
+    const lat = {{ (float) ($contact->latitude ?: 36.2682541) }};
+    const lng = {{ (float) ($contact->longitude ?: 43.9647897) }};
 
-    const map = L.map('contactMap', { scrollWheelZoom: false }).setView([lat, lng], 15);
+    const map = L.map('contactMap', { scrollWheelZoom: false }).setView([lat, lng], 16);
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    maxZoom: 20,
-    subdomains: 'abcd',
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19,
 }).addTo(map);
 
     const pinIcon = L.divIcon({
@@ -1197,7 +1196,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     L.marker([lat, lng], { icon: pinIcon })
     .addTo(map)
-    .bindPopup('<strong>Erbil, Iraq</strong>')
+    .bindPopup('<strong>Energy Inspection Services Ltd</strong><br>Erbil, Iraq')
     .openPopup();
 
     // Re-check size in case the map rendered while its container was hidden/animating
