@@ -14,6 +14,7 @@ class Service extends Model
         'overview_title',
         'overview_description',
         'overview_image',
+        'process_images',
         'process_title',
         'process_description',
         'process_image',
@@ -27,6 +28,7 @@ class Service extends Model
          'gallery' => 'array',
         'show_on_home' => 'boolean',
         'home_sort_order' => 'integer',
+        'process_images' => 'array',
 
     ];
 }

@@ -1278,6 +1278,96 @@
 @media (max-width: 480px){
   .overview-desc ul, .overview-desc ol{ font-size:16px; }
 }
+
+/* ===== Process image slider ===== */
+.process-slider{
+  position:relative;
+  width:100%;
+  aspect-ratio: 760 / 500;
+  border-radius:20px;
+  overflow:hidden;
+  background:#e8e8e8;
+  margin-top:30px;
+  touch-action:pan-y;
+}
+.process-slider-track{
+  display:flex;
+  height:100%;
+  transition:transform 0.7s cubic-bezier(0.16,1,0.3,1);
+  will-change:transform;
+}
+.process-slide{
+  flex:0 0 100%;
+  height:100%;
+  background-position:center;
+  background-size:100% 100%;   /* same as overview photo: fills, no cropping */
+  background-repeat:no-repeat;
+}
+
+.process-slider-nav{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:46px; height:46px;
+  border-radius:50%;
+  border:none;
+  background:rgba(255,255,255,0.92);
+  color:var(--navy);
+  font-size:16px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+  box-shadow:0 8px 20px rgba(0,0,0,0.18);
+  opacity:0;
+  transition:opacity 0.3s ease, background 0.25s ease, color 0.25s ease, transform 0.25s ease;
+  z-index:2;
+}
+.process-slider-prev{ left:16px; }
+.process-slider-next{ right:16px; }
+.process-slider:hover .process-slider-nav,
+.process-slider-nav:focus-visible{ opacity:1; }
+.process-slider-nav:hover{
+  background:var(--orange);
+  color:#fff;
+  transform:translateY(-50%) scale(1.08);
+}
+
+.process-slider-dots{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin-top:18px;
+}
+.process-slider-dot{
+  width:10px; height:10px;
+  padding:0;
+  border:none;
+  border-radius:20px;
+  background:#d6d6d6;
+  cursor:pointer;
+  transition:width 0.35s ease, background 0.35s ease;
+}
+.process-slider-dot:hover{ background:#bdbdbd; }
+.process-slider-dot.active{
+  width:28px;
+  background:var(--orange);
+}
+
+@media (max-width: 900px){
+  .process-slider{ margin-top:0; }
+  .process-slider-nav{ opacity:1; width:38px; height:38px; font-size:14px; }  /* always visible on touch screens */
+  .process-slider-prev{ left:10px; }
+  .process-slider-next{ right:10px; }
+}
+
+@media (max-width: 480px){
+  .process-slider{ border-radius:16px; }
+  .process-slider-dots{ margin-top:14px; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .process-slider-track{ transition:none; }
+}
+
 </style>
 
 <section class="hero @if(!empty($service->banner_video)) has-video @endif">
@@ -1357,15 +1447,39 @@
         </div>
     </section>
     
-@if ($service->process_title || $service->process_description || $service->process_image)
+@if ($service->process_title || $service->process_description || $service->process_image || !empty($service->process_images))
 <section class="service-process">
     <div class="process-inner">
 
-        {{-- Left: image --}}
+                {{-- Left: image slider --}}
+        @php
+            $processImages = collect($service->process_images ?: [$service->process_image])->filter()->values();
+        @endphp
         <div class="process-left slide-in-left">
-            @if ($service->process_image)
-                <div class="overview-photo" style="background-image:url('{{ Storage::url($service->process_image) }}')"
-                    role="img" aria-label="{{ $service->process_title }}"></div>
+            @if ($processImages->isNotEmpty())
+                <div class="process-slider {{ $processImages->count() > 1 ? 'has-many' : '' }}" id="processSlider"
+                     aria-roledescription="carousel" aria-label="{{ $service->process_title }} images">
+                    <div class="process-slider-track">
+                        @foreach ($processImages as $i => $img)
+                            <div class="process-slide" style="background-image:url('{{ Storage::url($img) }}')"
+                                 role="img" aria-label="{{ $service->process_title }} {{ $i + 1 }} of {{ $processImages->count() }}"></div>
+                        @endforeach
+                    </div>
+
+                    @if ($processImages->count() > 1)
+                        <button type="button" class="process-slider-nav process-slider-prev" aria-label="Previous image">&#10094;</button>
+                        <button type="button" class="process-slider-nav process-slider-next" aria-label="Next image">&#10095;</button>
+                    @endif
+                </div>
+
+                @if ($processImages->count() > 1)
+                    <div class="process-slider-dots" id="processSliderDots">
+                        @foreach ($processImages as $i => $img)
+                            <button type="button" class="process-slider-dot {{ $i === 0 ? 'active' : '' }}"
+                                    data-index="{{ $i }}" aria-label="Go to image {{ $i + 1 }}"></button>
+                        @endforeach
+                    </div>
+                @endif
             @else
                 <div class="overview-photo overview-photo-placeholder"></div>
             @endif
@@ -1568,6 +1682,81 @@ document.addEventListener('DOMContentLoaded', function () {
     initViewMore('overviewDesc', 'overviewViewMoreBtn');
     initViewMore('processDesc', 'processViewMoreBtn');
 
+        // ===== Process image slider (arrows + dots + auto scroll + swipe) =====
+    const processSlider = document.getElementById('processSlider');
+
+    if (processSlider) {
+        const track   = processSlider.querySelector('.process-slider-track');
+        const slides  = track.querySelectorAll('.process-slide');
+        const dots    = document.querySelectorAll('#processSliderDots .process-slider-dot');
+        const prevBtn = processSlider.querySelector('.process-slider-prev');
+        const nextBtn = processSlider.querySelector('.process-slider-next');
+        const total   = slides.length;
+        const DELAY   = 4000;   // auto scroll every 4 seconds
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        let current = 0;
+        let timer = null;
+
+        function goTo(index) {
+            current = (index + total) % total;
+            track.style.transform = 'translateX(-' + (current * 100) + '%)';
+            dots.forEach(function (dot, i) {
+                dot.classList.toggle('active', i === current);
+                dot.setAttribute('aria-current', i === current ? 'true' : 'false');
+            });
+        }
+
+        function stopAuto() {
+            if (timer) { clearInterval(timer); timer = null; }
+        }
+
+        function startAuto() {
+            stopAuto();
+            if (total < 2 || reduceMotion) return;
+            timer = setInterval(function () { goTo(current + 1); }, DELAY);
+        }
+
+        if (total > 1) {
+            prevBtn && prevBtn.addEventListener('click', function () { goTo(current - 1); startAuto(); });
+            nextBtn && nextBtn.addEventListener('click', function () { goTo(current + 1); startAuto(); });
+
+            dots.forEach(function (dot) {
+                dot.addEventListener('click', function () {
+                    goTo(parseInt(dot.dataset.index, 10));
+                    startAuto();
+                });
+            });
+
+            // Pause while hovering (desktop)
+            processSlider.addEventListener('mouseenter', stopAuto);
+            processSlider.addEventListener('mouseleave', startAuto);
+
+            // Swipe on touch screens
+            let touchStartX = null;
+            processSlider.addEventListener('touchstart', function (e) {
+                touchStartX = e.touches[0].clientX;
+                stopAuto();
+            }, { passive: true });
+
+            processSlider.addEventListener('touchend', function (e) {
+                if (touchStartX !== null) {
+                    const dx = e.changedTouches[0].clientX - touchStartX;
+                    if (Math.abs(dx) > 40) goTo(current + (dx < 0 ? 1 : -1));
+                }
+                touchStartX = null;
+                startAuto();
+            });
+
+            // Pause when the browser tab is hidden
+            document.addEventListener('visibilitychange', function () {
+                document.hidden ? stopAuto() : startAuto();
+            });
+
+            goTo(0);
+            startAuto();
+        }
+    }
     // ===== Reveal + slide-in from sides (Overview, Process, Features, Gallery, Related, CTA) =====
     const animatedEls = document.querySelectorAll('.reveal, .slide-in-left, .slide-in-right');
 

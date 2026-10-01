@@ -302,7 +302,7 @@
 
             <div class="image-slot" style="max-width:400px;">
                 <div class="drop img-slot {{ $service->overview_image ? 'filled' : '' }} {{ $errors->has('overview_image') ? 'input-error' : '' }}"
-                     data-file-input="file-overview-image"      id="drop-overview-image"  onclick="handleDropClick(this)">
+                     data-file-input="file-overview-image" id="drop-overview-image" onclick="handleDropClick(this)">
                     @if ($service->overview_image)
                         <img src="{{ Storage::url($service->overview_image) }}" id="preview-overview-image" alt="Overview image">
                         <button type="button" class="remove-img-btn" onclick="removeUploadedImage(event, this, 'overview-image', 'preview-overview-image')" title="Remove image">
@@ -361,40 +361,42 @@
 
 <div class="card">
     <div class="section-title">
-        <h2><span class="icon"><i class="bi bi-image"></i></span> Process Image <span class="req">*</span></h2>
+        <h2><span class="icon"><i class="bi bi-images"></i></span> Process Images <span class="req">*</span></h2>
     </div>
+    <p class="field-hint">Add one or more images. The first image is used as the main process image. Use × to remove.</p>
 
     <div class="notice caution">
         <i class="bi bi-exclamation-triangle" style="margin-top:1px;"></i>
-        <p><b>Recommended size:</b> 760 &times; 500px &middot; JPG, PNG, WEBP &middot; up to 10MB.</p>
+        <p><b>Recommended size:</b> 760 &times; 500px &middot; JPG, PNG, WEBP &middot; up to 10MB each &middot; max 20 images.</p>
     </div>
 
-    <div class="image-slot" style="max-width:400px;">
-        <div class="drop img-slot {{ $service->process_image ? 'filled' : '' }} {{ $errors->has('process_image') ? 'input-error' : '' }}"
-             data-file-input="file-process-image" id="drop-process-image" onclick="handleDropClick(this)">
-            @if ($service->process_image)
-                <img src="{{ Storage::url($service->process_image) }}" id="preview-process-image" alt="Process image">
-                <button type="button" class="remove-img-btn" onclick="removeUploadedImage(event, this, 'process-image', 'preview-process-image')" title="Remove image">
-                    <i class="bi bi-x-lg"></i>
-                </button>
-                <div class="uploaded-tag"><i class="bi bi-check-circle"></i> Uploaded</div>
-            @else
-                <div class="preview-placeholder" id="preview-process-image">
-                    <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:18px;"></i></div>
-                    <div class="drop-title">Click to upload</div>
-                    <div class="drop-sub">or drag &amp; drop</div>
+    {{-- Always sent, so the server knows the list was submitted (even if every old image is removed) --}}
+    <input type="hidden" name="existing_process_images[]" value="">
+
+    <div class="gallery-grid process-grid" id="processGrid">
+        @foreach ((array) ($service->process_images ?: array_filter([$service->process_image])) as $img)
+            <div class="gallery-tile">
+                <div class="drop img-slot filled">
+                    <img src="{{ Storage::url($img) }}" alt="Process image">
+                    <button type="button" class="remove-img-btn" title="Remove" onclick="removeProcessTile(event, this)">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
                 </div>
-            @endif
-        </div>
-        <input type="file" id="file-process-image" name="process_image" accept="image/*" hidden
-               onchange="handleImageChange(this, 'preview-process-image', MAX_IMAGE_BYTES, 'Process image', 'process-image')">
-        <input type="hidden" name="remove_process_image" id="remove-process-image" value="0">
-        @if (!$service->process_image)
-            <button type="button" class="choose-btn" onclick="document.getElementById('file-process-image').click()">Choose file</button>
-        @endif
+                <input type="hidden" name="existing_process_images[]" value="{{ $img }}">
+            </div>
+        @endforeach
     </div>
-    @error('process_image')
-    <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+
+    {{-- Picker (no name) + the real input that is submitted, filled from JS --}}
+    <input type="file" id="processPicker" accept="image/jpeg,image/png,image/webp" multiple hidden>
+    <input type="file" id="file-process-images" name="process_images[]" multiple hidden>
+
+    <button type="button" id="addProcessBtn" class="btn-add-row">
+        <i class="bi bi-plus-lg"></i> Add Images
+    </button>
+
+    @error('process_images')
+        <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
     @enderror
 </div>
 
@@ -807,6 +809,23 @@
 .gallery-tile .remove-img-btn{
     position:absolute; top:6px; right:6px;
 }
+
+/* ===== Process images (multiple) ===== */
+.process-grid:empty{ display:none; }
+.process-grid.input-error{
+    display:flex; outline:2px dashed #E9483F; outline-offset:4px; border-radius:12px; background:#FFF5F4;
+    min-height:40px;
+}
+.gallery-tile .new-tag{
+    position:absolute; left:6px; bottom:6px; z-index:2;
+    background: var(--orange,#EF7B2E); color:#fff; font-size:10px; font-weight:700;
+    padding:2px 8px; border-radius:20px; letter-spacing:.3px;
+}
+.process-grid .gallery-tile:first-child::after{
+    content:"Main"; position:absolute; left:6px; top:6px; z-index:2;
+    background:rgba(0,0,0,.6); color:#fff; font-size:10px; font-weight:700;
+    padding:2px 8px; border-radius:20px;
+}
 </style>
 
 @php
@@ -1159,6 +1178,97 @@
         `;
     }
 
+    // ===== Process images (multiple) =====
+    const MAX_PROCESS_IMAGES = 20;
+    const processGrid   = document.getElementById('processGrid');
+    const processPicker = document.getElementById('processPicker');
+    const processInput  = document.getElementById('file-process-images');
+    let processFiles    = new DataTransfer();   // the new files that will be uploaded
+
+    function processTileCount() {
+        return processGrid.querySelectorAll('.gallery-tile').length;
+    }
+
+    function syncProcessInput() {
+        processInput.files = processFiles.files;
+    }
+
+    function clearProcessError() {
+        processGrid.classList.remove('input-error');
+        document.querySelectorAll('#processGrid ~ .field-error').forEach(el => el.remove());
+    }
+
+    document.getElementById('addProcessBtn').addEventListener('click', () => processPicker.click());
+
+    processPicker.addEventListener('change', function () {
+        const files = Array.from(this.files || []);
+        this.value = '';
+        clearProcessError();
+
+        const skipped = [];
+
+        files.forEach(file => {
+            if (processTileCount() >= MAX_PROCESS_IMAGES) {
+                skipped.push(`${file.name} (limit of ${MAX_PROCESS_IMAGES} images reached)`);
+                return;
+            }
+            if (!/^image\/(jpeg|png|webp)$/.test(file.type)) {
+                skipped.push(`${file.name} (not a JPG, PNG or WEBP)`);
+                return;
+            }
+            if (file.size > MAX_IMAGE_BYTES) {
+                skipped.push(`${file.name} (${formatBytes(file.size)}, max ${formatBytes(MAX_IMAGE_BYTES)})`);
+                return;
+            }
+
+            processFiles.items.add(file);
+            addNewProcessTile(file);
+        });
+
+        syncProcessInput();
+
+        if (skipped.length) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Some images were skipped',
+                html: skipped.map(s => `&bull; ${s}`).join('<br>'),
+                confirmButtonColor: '#EF7B2E'
+            });
+        }
+    });
+
+    function addNewProcessTile(file) {
+        const url  = URL.createObjectURL(file);
+        const tile = document.createElement('div');
+        tile.className = 'gallery-tile';
+        tile._file = file;
+        tile.innerHTML = `
+            <div class="drop img-slot filled">
+                <img src="${url}" alt="New process image">
+                <button type="button" class="remove-img-btn" title="Remove"><i class="bi bi-x-lg"></i></button>
+                <span class="new-tag">NEW</span>
+            </div>
+        `;
+        tile.querySelector('.remove-img-btn').addEventListener('click', (ev) => {
+            ev.stopPropagation();
+
+            // Rebuild the upload list without this file
+            const rebuilt = new DataTransfer();
+            Array.from(processFiles.files).forEach(f => { if (f !== tile._file) rebuilt.items.add(f); });
+            processFiles = rebuilt;
+            syncProcessInput();
+
+            URL.revokeObjectURL(url);
+            tile.remove();
+        });
+        processGrid.appendChild(tile);
+    }
+
+    // Remove an already-saved image (its hidden input goes with the tile)
+    function removeProcessTile(event, btn) {
+        event.stopPropagation();
+        btn.closest('.gallery-tile').remove();
+    }
     // ===== AJAX submit =====
     document.getElementById('serviceForm').addEventListener('submit', function (e) {
         e.preventDefault();
@@ -1169,7 +1279,7 @@
         const form = document.getElementById('serviceForm');
         let totalBytes = 0;
         form.querySelectorAll('input[type="file"]').forEach(input => {
-            if (input.files && input.files[0]) totalBytes += input.files[0].size;
+            Array.from(input.files || []).forEach(file => { totalBytes += file.size; });
         });
 
         const totalErrorBox = document.getElementById('totalSizeError');
@@ -1254,7 +1364,6 @@
             overview_image: f => document.getElementById('drop-overview-image'),
             process_title: f => f.querySelector('[name="process_title"]'),
             process_description: f => document.getElementById('process-description-wrap'),
-            process_image: f => document.getElementById('drop-process-image'),
             features_heading: f => f.querySelector('[name="features_heading"]'),
             meta_title: f => f.querySelector('[name="meta_title"]'),
             meta_description: f => f.querySelector('[name="meta_description"]'),
@@ -1263,7 +1372,17 @@
 
         Object.keys(errors).forEach(field => {
             const message = errors[field][0];
-
+            // Process images (list, single legacy field, or a specific file)
+            if (/^(process_images|process_image|existing_process_images)(\.\d+)?$/.test(field)) {
+                if (!processGrid.classList.contains('input-error')) {
+                    processGrid.classList.add('input-error');
+                    const errorEl = document.createElement('span');
+                    errorEl.className = 'field-error';
+                    errorEl.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+                    processGrid.insertAdjacentElement('afterend', errorEl);
+                }
+                return;
+            }
             let m = field.match(/^features\.(\d+)\.(\w+)$/);
             if (m) {
                 const [, idx, sub] = m;

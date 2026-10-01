@@ -136,8 +136,8 @@ class ServiceController extends Controller
             Storage::disk('public')->delete($service->overview_image);
         }
 
-        if ($service->process_image) {
-            Storage::disk('public')->delete($service->process_image);
+        foreach ($this->processPaths($service) as $path) {
+            Storage::disk('public')->delete($path);
         }
 
         foreach ($service->features ?? [] as $row) {
@@ -238,16 +238,42 @@ class ServiceController extends Controller
     ? strip_tags($data['process_description'], '<p><br><strong><b><em><i><u><ul><ol><li><a><h2><h3><h4><blockquote>')
     : null;
 
+    // Process images: kept + newly uploaded (multiple)
+    $oldProcess = $this->processPaths($service);
+
+    if ($request->has('existing_process_images')) {
+        // Only keep paths that really belonged to this service, in the order sent by the form
+        $processImages = array_values(array_intersect(
+            array_filter((array) $request->input('existing_process_images', [])),
+            $oldProcess
+        ));
+    } else {
+        // Old form: keep everything that was already there
+        $processImages = $oldProcess;
+    }
+
+    // Old single field (still supported)
     if ($request->hasFile('process_image')) {
-        if ($service->process_image) {
-            Storage::disk('public')->delete($service->process_image);
-        }
-        $service->process_image = $this->processAndStoreImage(
-            $request->file('process_image'),
-            $this->imageWidth,
-            $this->imageHeight
+        $processImages[] = $this->processAndStoreImage(
+            $request->file('process_image'), $this->imageWidth, $this->imageHeight
         );
     }
+
+    foreach (array_filter((array) $request->file('process_images', [])) as $file) {
+        $processImages[] = $this->processAndStoreImage(
+            $file, $this->imageWidth, $this->imageHeight, 'services/process'
+        );
+    }
+
+    $processImages = array_values(array_unique($processImages));
+
+    // Delete images removed in the form
+    foreach (array_diff($oldProcess, $processImages) as $path) {
+        Storage::disk('public')->delete($path);
+    }
+
+    $service->process_images = $processImages ?: null;
+    $service->process_image  = $processImages[0] ?? null; // first image, for the current front-end
 
     // ===== Features: heading + up to 4 rows (icon, title, description) =====
     $service->features_heading = $data['features_heading'] ?? null;
@@ -331,7 +357,15 @@ $service->gallery = count($processedGallery) > 0 ? array_values($processedGaller
 }
 
 
+    /**
+     * All process image paths of a service (new list + old single column).
+     */
+    private function processPaths(Service $service): array
+    {
+        $paths = array_merge((array) ($service->process_images ?? []), [$service->process_image]);
 
+        return array_values(array_unique(array_filter($paths, fn ($p) => is_string($p) && $p !== '')));
+    }
     private function processAndStoreImage($file, int $width, int $height, string $folder = 'services'): string
     {
         $filename = $folder . '/' . Str::random(20) . '.webp';
