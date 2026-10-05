@@ -553,17 +553,30 @@
   gap:38px;
 }
 .footprint-location-photo{
-  flex:0 0 320px;
-  height:220px;   /* was 200px */
-  border-radius:26px;
-  overflow:hidden;
-  background:#f2f2f2;
-  box-shadow:0 14px 30px rgba(0,0,0,0.14);
-  transition:box-shadow 0.3s ease, transform 0.3s ease;
+    position:relative;
+    flex:0 0 320px;
+    height:220px;
+    border-radius:26px;
+    overflow:hidden;
+    background:#f2f2f2;
+    transition:transform 0.45s cubic-bezier(0.16,1,0.3,1);
 }
-.footprint-location-photo:hover{ box-shadow:0 20px 40px rgba(232,121,45,0.22); transform:translateY(-4px); }
-.footprint-location-photo img{ display:block; width:100%; height:100%; object-fit:fill; transition:transform 0.6s cubic-bezier(0.16,1,0.3,1); }
-.footprint-location-photo:hover img{ transform:scale(1.1); }
+
+.footprint-location-photo:hover{
+    transform:translateY(-4px);
+}
+
+.footprint-location-photo img{
+    display:block;
+    width:100%;
+    height:100%;
+    object-fit:fill;
+    transition:transform 0.7s cubic-bezier(0.16,1,0.3,1);
+}
+
+.footprint-location-photo:hover img{
+    transform:scale(1.06);
+}
 
 .footprint-location-text{ flex:1; min-width:0; }
 .footprint-location-title{ font-size:22px; font-weight:600; color:#111111; margin:0 0 8px; }
