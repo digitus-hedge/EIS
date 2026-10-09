@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\CertificateController;
 use App\Http\Controllers\EnquiryController;
 use App\Http\Controllers\Admin\CareerController;
 use App\Http\Controllers\Admin\CareerEnquiryController;
+use App\Http\Controllers\Admin\CareerBannerController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -129,5 +130,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('career/{career}/edit', [CareerController::class, 'edit'])->name('career.edit');
         Route::put('career/{career}', [CareerController::class, 'update'])->name('career.update');
         Route::delete('career/{career}', [CareerController::class, 'destroy'])->name('career.destroy');
+
+
+        Route::get('career/banner', [CareerBannerController::class, 'edit'])->name('career.banner');                 // NEW: Career > Banner
+        Route::post('career/banner', [CareerBannerController::class, 'store'])->name('career.banner.store');
+        
     });
 });

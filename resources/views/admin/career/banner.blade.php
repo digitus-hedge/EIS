@@ -1,0 +1,667 @@
+@extends('admin.layout')
+
+@section('title', 'Career - Banner Section')
+
+@section('content')
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+@if ($errors->any())
+<div class="notice caution" style="margin-bottom:20px;">
+    <i class="bi bi-exclamation-triangle" style="font-size:15px;flex-shrink:0;margin-top:1px;"></i>
+    <p>Please fix the highlighted fields below before submitting.</p>
+</div>
+@endif
+
+@if (session('success'))
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        Swal.fire({
+            icon: 'success',
+            title: 'Saved!',
+            text: @json(session('success')),
+            confirmButtonColor: '#EF7B2E',
+            timer: 2500,
+            timerProgressBar: true
+        });
+    });
+</script>
+@endif
+
+@if (session('error'))
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: @json(session('error')),
+            confirmButtonColor: '#D5392F'
+        });
+    });
+</script>
+@endif
+
+<div class="wrap">
+    <div class="crumbs">
+        <span onclick="window.location='{{ route('admin.dashboard') }}'">Home</span>
+        <span>&rsaquo;</span>
+        <b>Career Banner Section</b>
+    </div>
+
+    <div class="header">
+        <div>
+            <h1>{{ $careerPage->exists ? 'Edit Career Banner' : 'Add Career Banner' }}</h1>
+            <p>The banner, the career section heading and the SEO details of your Career page.</p>
+        </div>
+    </div>
+
+    <form action="{{ route('admin.career.banner.store') }}" method="POST" id="careerBannerForm"  enctype="multipart/form-data">
+        @csrf
+
+        <div class="card">
+            <div class="section-title">
+                <h2><span class="icon"><i class="bi bi-type"></i></span> Title<span class="req">*</span></h2>
+            </div>
+            <div class="field">
+                <input type="text" name="banner_title"
+                       class="{{ $errors->has('banner_title') ? 'input-error' : '' }}"
+                       value="{{ old('banner_title', $careerPage->banner_title ?? '') }}"
+                       placeholder="Enter banner title">
+                @error('banner_title')
+                    <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                @enderror
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="section-title">
+                <h2><span class="icon"><i class="bi bi-card-text"></i></span> Banner Description</h2>
+            </div>
+            <div class="field">
+                <textarea name="banner_description" rows="4" maxlength="1000"
+                          class="{{ $errors->has('banner_description') ? 'input-error' : '' }}"
+                          placeholder="Enter banner description">{{ old('banner_description', $careerPage->banner_description ?? '') }}</textarea>
+                @error('banner_description')
+                    <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                @enderror
+            </div>
+        </div>
+        <div class="card">
+    <div class="section-title">
+        <h2><span class="icon"><i class="bi bi-image"></i></span> Banner Image or Video<span class="req">*</span></h2>
+    </div>
+
+    <div class="notice caution">
+        <i class="bi bi-exclamation-triangle" style="margin-top:1px;"></i>
+        <p><b>Image:</b> 1200 &times; 600px &middot; JPG, PNG, WEBP &middot; up to 10MB.
+           <b>Video:</b> MP4, MOV, WEBM &middot; up to 20MB.</p>
+    </div>
+
+    <div class="images-row">
+        {{-- Image slot --}}
+        <div class="image-slot">
+            <div class="slot-top"><span class="slot-label">Banner Image</span></div>
+            <div class="drop img-slot {{ ($careerPage->banner ?? null) ? 'filled' : '' }}" id="drop-career-banner"
+                 data-file-input="file-banner" onclick="handleDropClick(this)">
+                @if ($careerPage->banner ?? null)
+                    <img src="{{ asset('storage/' . $careerPage->banner) }}" id="preview-banner" alt="Career banner">
+                    <button type="button" class="remove-img-btn" onclick="removeUploadedImage(event, this, 'banner', 'preview-banner')" title="Remove image">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                    <div class="uploaded-tag"><i class="bi bi-check-circle"></i> Uploaded</div>
+                @else
+                    <div class="preview-placeholder" id="preview-banner">
+                        <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:18px;"></i></div>
+                        <div class="drop-title">Click to upload</div>
+                        <div class="drop-sub">or drag &amp; drop</div>
+                    </div>
+                @endif
+            </div>
+            <input type="file" id="file-banner" name="banner" accept="image/*" hidden
+                   onchange="previewImage(this, 'preview-banner')">
+            <input type="hidden" name="remove_banner" id="remove-banner" value="0">
+            @if (!($careerPage->banner ?? null))
+                <button type="button" class="choose-btn" onclick="document.getElementById('file-banner').click()">Choose file</button>
+            @else
+                <div class="video-btn-spacer"></div>
+            @endif
+            @error('banner')
+                <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+            @enderror
+        </div>
+
+        {{-- Video slot --}}
+        <div class="image-slot">
+            <div class="slot-top"><span class="slot-label">Banner Video</span></div>
+            <div class="video-drop {{ ($careerPage->banner_video ?? null) ? 'has-file filled' : '' }} {{ $errors->has('banner_video') ? 'input-error' : '' }}"
+                 id="drop-career-banner-video" onclick="handleCareerVideoDropClick(this)">
+                @if ($careerPage->banner_video ?? null)
+                    <video src="{{ asset('storage/' . $careerPage->banner_video) }}" muted playsinline preload="metadata"></video>
+                    <button type="button" class="remove-img-btn" onclick="removeCareerUploadedVideo(event)" title="Remove video">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                    <div class="uploaded-tag"><i class="bi bi-camera-video-fill"></i> Uploaded</div>
+                @else
+                    <div class="preview-placeholder" id="preview-banner-video">
+                        <div class="ico-circle"><i class="bi bi-camera-video" style="color:#AEB4C4;font-size:18px;"></i></div>
+                        <div class="drop-title">Click to upload</div>
+                        <div class="drop-sub">or drag &amp; drop</div>
+                    </div>
+                @endif
+            </div>
+            <input type="file" id="file-banner-video" name="banner_video" accept="video/*" hidden
+                   onchange="showCareerBannerVideoFileName(this)">
+            <input type="hidden" name="remove_banner_video" id="remove-banner_video" value="0">
+            <div class="video-btn-spacer"></div>
+            @error('banner_video')
+                <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+            @enderror
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card">
+            <div class="section-title">
+                <h2><span class="icon"><i class="bi bi-briefcase"></i></span> Career Section</h2>
+            </div>
+            <p class="section-sub" style="margin:0 0 16px;">The heading and intro text shown above the list of careers on your Career page.</p>
+
+            <div class="field">
+                <div class="field-top">
+                    <label class="field-label">Career Title<span class="req">*</span></label>
+                </div>
+                <input type="text" name="career_title" value="{{ old('career_title', $careerPage->career_title ?? '') }}" maxlength="255"
+                       class="{{ $errors->has('career_title') ? 'input-error' : '' }}"
+                       placeholder="Enter career title">
+                @error('career_title')
+                    <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                @enderror
+            </div>
+
+            <div class="field">
+                <div class="field-top">
+                    <label class="field-label">Career Description<span class="req">*</span></label>
+                </div>
+                <textarea name="career_description" rows="5" maxlength="5000"
+                          class="{{ $errors->has('career_description') ? 'input-error' : '' }}"
+                          placeholder="Enter career description">{{ old('career_description', $careerPage->career_description ?? '') }}</textarea>
+                @error('career_description')
+                    <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                @enderror
+            </div>
+        </div>
+
+<div class="card">
+            <div class="section-title">
+                <h2><span class="icon"><i class="bi bi-search"></i></span> SEO Meta</h2>
+            </div>
+            <p class="section-sub" style="margin:0 0 16px;">Used for search engine results and social share previews.</p>
+
+            <div class="field">
+                <div class="field-top">
+                    <label class="field-label">Meta Title</label>
+                    <span class="field-hint">Recommended under 60 chars</span>
+                </div>
+                <input type="text" name="meta_title" value="{{ old('meta_title', $careerPage->meta_title) }}" maxlength="60"
+                       class="{{ $errors->has('meta_title') ? 'input-error' : '' }}"
+                       placeholder="Enter meta title">
+                @error('meta_title')
+                    <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                @enderror
+            </div>
+
+            <div class="field">
+                <div class="field-top">
+                    <label class="field-label">Meta Description</label>
+                    <span class="field-hint">Recommended under 160 chars</span>
+                </div>
+                <textarea name="meta_description" rows="3" maxlength="160"
+                          class="{{ $errors->has('meta_description') ? 'input-error' : '' }}"
+                          placeholder="Enter meta description">{{ old('meta_description', $careerPage->meta_description) }}</textarea>
+                @error('meta_description')
+                    <span class="field-error"><i class="bi bi-exclamation-circle"></i> {{ $message }}</span>
+                @enderror
+            </div>
+        </div>
+
+
+        <div class="savebar">
+            <div class="savebar-inner">
+                <span class="savebar-status">All changes save to the live Career page</span>
+                <div class="btn-group">
+                    <a href="{{ route('admin.dashboard') }}" class="btn-cancel">Cancel</a>
+                    <button type="submit" class="btn-save">
+                        <i class="bi bi-check-lg"></i>
+                        {{ $careerPage->exists ? 'Update Banner' : 'Save Banner' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<style>
+    .crumbs{ display:flex; align-items:center; gap:8px; font-size:13px; color: var(--faint,#9AA1B2); margin-bottom:10px; }
+    .crumbs b{ color: var(--ink,#171B2C); font-weight:600; }
+    .crumbs span:first-child{ cursor:pointer; transition:color .15s; }
+    .crumbs span:first-child:hover{ color: var(--orange,#EF7B2E); }
+
+    .header{ display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:32px; gap:16px; flex-wrap:wrap; }
+    .header h1{ font-size:25px; font-weight:700; letter-spacing:-0.02em; margin:0; color: var(--ink,#171B2C); }
+    .header p{ font-size:13.5px; color: var(--muted,#667085); margin:7px 0 0; max-width:560px; line-height:1.55; }
+
+    .section-title{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:6px; }
+    .section-title h2{ display:flex; align-items:center; gap:8px; font-size:14px; font-weight:700; margin:0; color: var(--ink,#171B2C); }
+    .icon{ display:inline-flex; color: var(--orange,#EF7B2E); }
+    .req{ color: var(--orange, #EF7B2E); }
+
+    .field{ margin-bottom:0; }
+
+    input[type=text]{
+        width:100%; border:1px solid var(--input-border,#DBDFEA); border-radius:10px;
+        padding:11px 14px; font-size:14px; font-family:inherit; color: var(--ink,#171B2C);
+        outline:none; transition:box-shadow .15s, border-color .15s;
+    }
+    input[type=text]:focus{
+        border-color: var(--orange,#EF7B2E);
+        box-shadow: 0 0 0 4px var(--orange-tint-strong,#FFE9D8);
+    }
+    .input-error{ border-color:#e74c3c !important; background:#fff8f8; }
+    .field-error{ display:flex; align-items:center; gap:5px; color:#e74c3c; font-size:12.5px; margin-top:6px; }
+
+    .notice{ display:flex; align-items:flex-start; gap:8px; background: var(--canvas,#F6F7FB); border-radius:10px; padding:10px 12px; margin-bottom:16px; }
+    .notice.caution{ background:#FFF8E8; border:1px solid #F5E3B3; }
+    .notice.caution i{ color:#B7791F; }
+    .notice.caution p{ color:#8A6116; margin:0; font-size:12px; }
+
+    /* ===== Image upload slot ===== */
+    .image-slot{ width:100%; }
+    .drop.img-slot{
+        position:relative;
+        width:100%;
+        aspect-ratio: 16 / 6;
+        border:1.5px dashed var(--input-border,#DBDFEA);
+        border-radius:12px;
+        background:#fff;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        cursor:pointer;
+        overflow:hidden;
+        transition:border-color .15s ease;
+    }
+    .drop.img-slot:hover{ border-color: var(--orange-border,#F3D8C2); }
+    .drop.img-slot.filled{ border-style:solid; padding:0; }
+    .drop.img-slot img{ width:100%; height:100%; object-fit:cover; }
+
+    .preview-placeholder{
+        display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-align:center;
+    }
+    .ico-circle{
+        width:36px; height:36px; border-radius:50%; background: var(--canvas,#F6F7FB);
+        display:flex; align-items:center; justify-content:center; margin-bottom:4px;
+    }
+    .drop-title{ font-weight:600; font-size:14px; color: var(--ink,#171B2C); }
+    .drop-sub{ font-size:12px; color: var(--faint,#9AA1B2); }
+
+    .remove-img-btn{
+        position:absolute; top:8px; right:8px; width:28px; height:28px; border-radius:8px;
+        background:rgba(0,0,0,0.55); color:#fff; border:none; display:flex; align-items:center; justify-content:center;
+        cursor:pointer; font-size:12px; z-index:2; transition:background .15s ease;
+    }
+    .remove-img-btn:hover{ background:rgba(0,0,0,0.75); }
+
+    .uploaded-tag{
+        position:absolute; bottom:8px; left:8px; display:flex; align-items:center; gap:5px;
+        background:rgba(255,255,255,0.95); color: var(--green,#12875A); font-size:11.5px; font-weight:600;
+        padding:4px 9px; border-radius:7px; z-index:2;
+    }
+
+    .choose-btn{
+        margin-top:10px; display:inline-flex; align-items:center; gap:6px;
+        background: var(--canvas,#F6F7FB); color: var(--ink,#171B2C); font-size:12.5px; font-weight:600;
+        padding:8px 15px; border-radius:9px; border:1px solid var(--input-border,#DBDFEA); cursor:pointer;
+        transition:background .15s ease, border-color .15s ease;
+    }
+    .choose-btn:hover{ background: var(--orange-tint,#FFF8F3); border-color: var(--orange-border,#F3D8C2); color: var(--orange-deep,#DA6A20); }
+
+    /* ===== Sticky save bar ===== */
+    .savebar{
+        position:sticky; bottom:0; border-top:1px solid var(--line,#E9EBF2);
+        background:rgba(255,255,255,0.92); backdrop-filter:blur(6px);
+        margin:24px -32px -32px; padding:0 32px;
+        box-shadow:0 -4px 16px -8px rgba(15,21,38,0.06);
+    }
+    .savebar-inner{ padding:16px 0; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+    .savebar-status{ font-size:12px; color: var(--faint,#9AA1B2); }
+    .btn-group{ display:flex; align-items:center; gap:12px; }
+    .btn-cancel{
+        font-size:13px; font-weight:600; color: var(--muted,#667085); background:none; border:none;
+        padding:10px 16px; border-radius:8px; cursor:pointer; text-decoration:none; transition:color .15s, background .15s;
+    }
+    .btn-cancel:hover{ color: var(--ink,#171B2C); background: var(--canvas,#F6F7FB); }
+    .btn-save{
+        display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; color:#fff;
+        background:linear-gradient(135deg, #0F1526, #1D2439); border:none;
+        padding:11px 22px; border-radius:9px; cursor:pointer;
+        box-shadow:0 4px 12px -4px rgba(15,21,38,0.4);
+        transition:transform .12s ease, box-shadow .12s ease;
+    }
+    .btn-save:hover{ transform:translateY(-1px); box-shadow:0 8px 18px -6px rgba(15,21,38,0.5); }
+
+
+    .images-row{ display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start; }
+.image-slot{ width:400px; flex-shrink:0; }
+.slot-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.slot-label{ font-size:12px; font-weight:500; color: var(--muted,#667085); }
+.video-btn-spacer{ margin-top:8px; height:35px; }
+
+.video-drop{
+    position:relative; height:190px; border-radius:12px;
+    border:2px dashed var(--input-border,#DBDFEA); background:#FAFBFD;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    cursor:pointer; overflow:hidden; transition:border-color .15s, background .15s; text-align:center;
+}
+.video-drop:hover{ border-color: var(--orange,#EF7B2E); background: var(--orange-tint,#FFF8F3); }
+.video-drop.has-file .drop-title{ color: var(--green,#12875A); }
+.video-drop.input-error{ border-color:#e74c3c; background:#fff8f8; }
+.video-drop.filled{ border:2px solid transparent; cursor:default; }
+.video-drop video{ width:100%; height:100%; object-fit:cover; display:block; background:#0F1220; }
+.video-drop .uploaded-tag{
+    position:absolute; left:0; right:0; bottom:0; padding:8px 12px;
+    background:linear-gradient(to top, rgba(0,0,0,0.55), transparent);
+    color:rgba(255,255,255,0.9); font-size:11px; display:flex; align-items:center; gap:4px;
+    pointer-events:none;
+}
+.drop{ height:190px; }
+
+ input[type=text], textarea{
+        width:100%; border:1px solid var(--input-border,#DBDFEA); border-radius:10px;
+        padding:11px 14px; font-size:14px; font-family:inherit; color: var(--ink,#171B2C);
+        outline:none; transition:box-shadow .15s, border-color .15s;
+    }
+    input[type=text]:focus, textarea:focus{
+        border-color: var(--orange,#EF7B2E);
+        box-shadow: 0 0 0 4px var(--orange-tint-strong,#FFE9D8);
+    }
+
+    textarea{ resize:vertical; display:block; }
+
+    .section-sub {
+    font-size: 12px;
+    color: var(--faint, #9AA1B2);
+    margin: 0 0 16px;
+}
+
+.field-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.field-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink, #171B2C);
+}
+.field-hint {
+    font-size: 11.5px;
+    color: var(--faint, #9AA1B2);
+}
+.field:last-child {
+    margin-bottom: 0;
+}
+.field {
+    margin-bottom: 28px;
+}
+</style>
+
+<script>
+    function handleDropClick(el) {
+        if (el.classList.contains('filled')) return;
+        const inputId = el.getAttribute('data-file-input');
+        const input = document.getElementById(inputId);
+        if (input) input.click();
+    }
+
+    function previewImage(input, previewId) {
+        const preview = document.getElementById(previewId);
+        if (!preview) return;
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.id = previewId;
+                preview.replaceWith(img);
+
+                const drop = img.closest('.drop');
+                if (drop) {
+                    drop.classList.add('filled');
+                    const chooseBtn = drop.parentElement.querySelector('.choose-btn');
+                    if (chooseBtn) chooseBtn.style.display = 'none';
+
+                    const removeInput = drop.parentElement.querySelector('input[type="hidden"][id^="remove-"]');
+                    if (removeInput) removeInput.value = '0';
+
+                    if (!drop.querySelector('.remove-img-btn')) {
+                        const fieldName = removeInput ? removeInput.id.replace('remove-', '') : null;
+                        if (fieldName) {
+                            const btn = document.createElement('button');
+                            btn.type = 'button';
+                            btn.className = 'remove-img-btn';
+                            btn.title = 'Remove image';
+                            btn.innerHTML = '<i class="bi bi-x-lg"></i>';
+                            btn.onclick = (ev) => removeUploadedImage(ev, btn, fieldName, previewId);
+                            drop.appendChild(btn);
+                        }
+                    }
+                }
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function removeUploadedImage(event, btn, fieldName, previewId) {
+        event.stopPropagation();
+        const drop = btn.closest('.drop');
+        const wrapper = drop.parentElement;
+        const fileInput = wrapper.querySelector('input[type="file"]');
+        const removeInput = document.getElementById(`remove-${fieldName}`);
+
+        if (removeInput) removeInput.value = '1';
+        if (fileInput) fileInput.value = '';
+
+        drop.classList.remove('filled');
+        drop.innerHTML = `
+            <div class="preview-placeholder" id="${previewId}">
+                <div class="ico-circle"><i class="bi bi-image" style="color:#AEB4C4;font-size:18px;"></i></div>
+                <div class="drop-title">Click to upload</div>
+                <div class="drop-sub">or drag &amp; drop</div>
+            </div>
+        `;
+
+        let chooseBtn = wrapper.querySelector('.choose-btn');
+        if (!chooseBtn && fileInput) {
+            chooseBtn = document.createElement('button');
+            chooseBtn.type = 'button';
+            chooseBtn.className = 'choose-btn';
+            chooseBtn.textContent = 'Choose file';
+            chooseBtn.onclick = () => fileInput.click();
+            wrapper.appendChild(chooseBtn);
+        } else if (chooseBtn) {
+            chooseBtn.style.display = 'block';
+        }
+    }
+
+        document.addEventListener('DOMContentLoaded', function () {
+    // ===== Scroll to the first validation error on page load =====
+    const firstErrorField = document.querySelector('.input-error, .upload-btn-error');
+    const firstErrorMsg = document.querySelector('.field-error');
+
+    if (firstErrorField) {
+        firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Give a brief highlight so the eye lands exactly on the right field
+        firstErrorField.classList.add('error-flash');
+        setTimeout(() => firstErrorField.classList.remove('error-flash'), 1500);
+    } else if (firstErrorMsg) {
+        // Fallback: some errors (like the "at least 1 image" group error) don't
+        // sit on an input directly — scroll to the message itself instead.
+        firstErrorMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+});
+</script>
+
+
+<script>
+document.getElementById('careerBannerForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    submitCareerBannerForm();
+});
+
+function submitCareerBannerForm() {
+    const form = document.getElementById('careerBannerForm');
+    const formData = new FormData(form);
+    const submitBtn = form.querySelector('.btn-save');
+    const originalBtnHtml = submitBtn.innerHTML;
+
+    form.querySelectorAll('.field-error').forEach(el => el.remove());
+    form.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving...';
+
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(async (response) => {
+        const data = await response.json().catch(() => null);
+
+        if (response.status === 422 && data && data.errors) {
+            showCareerBannerValidationErrors(data.errors);
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error('Request failed');
+        }
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Saved!',
+            text: 'Career banner updated successfully.',
+            confirmButtonColor: '#EF7B2E',
+            timer: 2000,
+            timerProgressBar: true
+        }).then(() => {
+            window.location.reload();
+        });
+    })
+    .catch(() => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Something went wrong. Please try again.',
+            confirmButtonColor: '#D5392F'
+        });
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnHtml;
+    });
+}
+
+
+function handleCareerVideoDropClick(el) {
+    if (el.classList.contains('filled')) return;
+    document.getElementById('file-banner-video').click();
+}
+
+function showCareerBannerVideoFileName(input) {
+    const drop = document.getElementById('drop-career-banner-video');
+    const file = input.files && input.files[0];
+    if (!file) return;
+
+    const videoURL = URL.createObjectURL(file);
+
+    drop.classList.add('has-file', 'filled');
+    drop.innerHTML = `
+        <video src="${videoURL}" muted playsinline preload="metadata"></video>
+        <button type="button" class="remove-img-btn" onclick="removeCareerUploadedVideo(event)" title="Remove video">
+            <i class="bi bi-x-lg"></i>
+        </button>
+        <div class="uploaded-tag"><i class="bi bi-camera-video-fill"></i> Uploaded</div>
+    `;
+}
+
+function removeCareerUploadedVideo(event) {
+    event.stopPropagation();
+    const drop = document.getElementById('drop-career-banner-video');
+    const fileInput = document.getElementById('file-banner-video');
+    const removeInput = document.getElementById('remove-banner_video');
+
+    const existingVideo = drop.querySelector('video');
+    if (existingVideo && existingVideo.src.startsWith('blob:')) {
+        URL.revokeObjectURL(existingVideo.src);
+    }
+
+    if (removeInput) removeInput.value = '1';
+    if (fileInput) fileInput.value = '';
+
+    drop.classList.remove('has-file', 'filled');
+    drop.innerHTML = `
+        <div class="preview-placeholder" id="preview-banner-video">
+            <div class="ico-circle"><i class="bi bi-camera-video" style="color:#AEB4C4;font-size:18px;"></i></div>
+            <div class="drop-title">Click to upload</div>
+            <div class="drop-sub">or drag &amp; drop</div>
+        </div>
+    `;
+}
+
+function showCareerBannerValidationErrors(errors) {
+    const form = document.getElementById('careerBannerForm');
+
+   const fieldMap = {
+    banner_title: f => f.querySelector('[name="banner_title"]'),
+    banner_description: f => f.querySelector('[name="banner_description"]'),
+    career_title: f => f.querySelector('[name="career_title"]'),
+    career_description: f => f.querySelector('[name="career_description"]'),
+    banner: f => document.getElementById('drop-career-banner'),
+    banner_video: f => document.getElementById('drop-career-banner-video'),
+    meta_title: f => f.querySelector('[name="meta_title"]'),
+    meta_description: f => f.querySelector('[name="meta_description"]'),
+};
+
+    Object.keys(errors).forEach(field => {
+        const message = errors[field][0];
+        const target = fieldMap[field] ? fieldMap[field](form) : null;
+        if (!target) return;
+
+        target.classList.add('input-error');
+
+        const errorEl = document.createElement('span');
+        errorEl.className = 'field-error';
+        errorEl.innerHTML = `<i class="bi bi-exclamation-circle"></i> ${message}`;
+        target.insertAdjacentElement('afterend', errorEl);
+    });
+
+    const firstErrorField = form.querySelector('.input-error');
+    if (firstErrorField) {
+        firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+</script>
+
+@endsection

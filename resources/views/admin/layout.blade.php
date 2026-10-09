@@ -563,7 +563,7 @@ $homeOpen = (request()->routeIs('admin.home') || request()->routeIs('admin.home.
 
 
               {{-- Career submenu --}}
-              {{-- Career submenu --}}
+             {{-- Career submenu --}}
             @php
             $careerOpen = request()->routeIs('admin.career') || request()->routeIs('admin.career.*');
             @endphp
@@ -574,6 +574,12 @@ $homeOpen = (request()->routeIs('admin.home') || request()->routeIs('admin.home.
                     <i class="bi bi-chevron-right chev"></i>
                 </a>
                 <ul class="submenu">
+                    <li>
+                        <a class="nav-item {{ request()->routeIs('admin.career.banner*') ? 'active' : '' }}"
+                            href="{{ route('admin.career.banner') }}">
+                            <i class="bi bi-image nav-ico"></i> Banner
+                        </a>
+                    </li>
                     <li>
                         <a class="nav-item {{ request()->routeIs('admin.career', 'admin.career.create', 'admin.career.edit') ? 'active' : '' }}"
                             href="{{ route('admin.career') }}">

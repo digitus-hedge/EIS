@@ -6,8 +6,10 @@ use Illuminate\Foundation\Http\FormRequest;
 
 /**
  * Validation for the "apply" form on the Career page of the website.
- * The form sends: name, email, phone and either career_id (the career being applied for)
- * or apply_for (the position typed or chosen as text).
+ * The form sends: name, email, phone, nationality, either career_id (the career being
+ * applied for) or apply_for (the position as text), cv (a file) and message.
+ *
+ * To make Nationality or CV optional, change 'required' to 'nullable' on its line in rules().
  */
 class CareerEnquiryRequest extends FormRequest
 {
@@ -30,8 +32,10 @@ class CareerEnquiryRequest extends FormRequest
         $this->merge([
             'name'      => trim((string) $this->input('name')),
             'email'     => trim((string) $this->input('email')),
-            'phone'     => trim((string) $this->input('phone')),
-            'apply_for' => trim((string) $this->input('apply_for')),
+            'phone'       => trim((string) $this->input('phone')),
+            'nationality' => trim((string) $this->input('nationality')),
+            'apply_for'   => trim((string) $this->input('apply_for')),
+            'message'     => trim((string) $this->input('message')),
         ]);
     }
 
@@ -40,10 +44,13 @@ class CareerEnquiryRequest extends FormRequest
         return [
             'name'      => ['required', 'string', 'max:255'],
             'email'     => ['required', 'email', 'max:255'],
-            'phone'     => ['required', 'string', 'max:30', 'regex:/^[0-9+()\-\s]{6,30}$/'],
-            'career_id' => ['nullable', 'integer', 'exists:careers,id'],
-            'apply_for' => ['required_without:career_id', 'nullable', 'string', 'max:255'],
-            'website'   => ['nullable', 'string', 'max:255'],   // hidden anti-spam field, see the controller
+            'phone'       => ['required', 'string', 'max:30', 'regex:/^[0-9+()\-\s]{6,30}$/'],
+            'nationality' => ['required', 'string', 'max:100'],
+            'career_id'   => ['nullable', 'integer', 'exists:careers,id'],
+            'apply_for'   => ['required_without:career_id', 'nullable', 'string', 'max:255'],
+            'cv'          => ['required', 'file', 'mimes:pdf,doc,docx', 'max:2048'],   // max is in KB: 2 MB
+            'message'     => ['nullable', 'string', 'max:2000'],
+            'website'     => ['nullable', 'string', 'max:255'],   // hidden anti-spam field, see the controller
         ];
     }
 
@@ -55,6 +62,12 @@ class CareerEnquiryRequest extends FormRequest
             'email.email'                => 'Please enter a valid email address.',
             'phone.required'             => 'Please enter your phone number.',
             'phone.regex'                => 'Please enter a valid phone number.',
+            'nationality.required'       => 'Please enter your nationality.',
+            'cv.required'                => 'Please attach your CV.',
+            'cv.uploaded'                => 'The CV could not be uploaded. Please use a file of 2 MB or less.',
+            'cv.mimes'                   => 'The CV must be a PDF or Word file.',
+            'cv.max'                     => 'The CV must be 2 MB or less.',
+            'message.max'                => 'The message can be at most 2000 characters.',
             'career_id.exists'           => 'This position is no longer open.',
             'apply_for.required_without' => 'Please choose the position you are applying for.',
         ];
