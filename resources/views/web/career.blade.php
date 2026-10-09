@@ -1,7 +1,6 @@
 @extends('web.layout.app')
-@section('title', 'Careers - Energy Inspection Services Ltd')
-@section('meta_description', 'Current job openings at Energy Inspection Services Ltd. Read the role details and send your CV online to join our oil and gas inspection team.')
-
+@section('title', $careerPage->meta_title ?? 'Careers - Energy Inspection Services Ltd')
+@section('meta_description', $careerPage->meta_description ?? 'Current job openings at Energy Inspection Services Ltd. Read the role details and send your CV online to join our oil and gas inspection team.')
 @section('content')
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -49,7 +48,24 @@
   z-index:1;
   transform:scale(1);
 }
+.hero-video{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  z-index:1;
+  display:block;
+}
 
+/* When a video is playing, drop the dark overlays */
+.hero.has-video::before,
+.hero.has-video::after{ display:none; }
+
+.hero.has-video h1,
+.hero.has-video .eyebrow,
+.hero.has-video .lede{ text-shadow:0 2px 12px rgba(0,0,0,0.75); }
 .hero::before{
   content:"";
   position:absolute;
@@ -215,7 +231,10 @@
   margin:0;
   max-width:640px;
 }
-
+.career-intro-desc p{ margin:0 0 14px; }
+.career-intro-desc ul,
+.career-intro-desc ol{ margin:0 0 14px; padding-left:22px; }
+.career-intro-desc > :last-child{ margin-bottom:0; }
 /* ===== Openings ===== */
 .openings{
   position:relative;
@@ -903,39 +922,79 @@ html.career-lock{ overflow:hidden; }
 </style>
 
 {{-- ===== Hero ===== --}}
-<section class="hero">
+@php
+  $bannerTitle = $careerPage->banner_title ?? 'Careers at Energy Inspection Services';
+  // no saved record yet: show the default line; saved record: show only what the admin typed
+  $bannerDesc  = $careerPage
+      ? $careerPage->banner_description
+      : 'Build your career with a team that keeps critical oil and gas equipment safe, reliable and ready for work.';
+@endphp
+
+<section class="hero @if(!empty($careerPage->banner_video)) has-video @endif">
 @include('web.layout.navbar')
 
-  <div class="hero-slides">
-    <img src="{{ asset('images/hero_image.jpeg') }}" class="hero-slide active" alt="">
-  </div>
+  @if (!empty($careerPage->banner_video))
+    {{-- Video takes priority over the banner image --}}
+    <video
+      class="hero-video"
+      src="{{ asset('storage/' . $careerPage->banner_video) }}"
+      poster="{{ !empty($careerPage->banner) ? asset('storage/' . $careerPage->banner) : '' }}"
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="auto"
+    ></video>
+  @elseif (!empty($careerPage->banner))
+    <div class="hero-slides">
+      <img src="{{ asset('storage/' . $careerPage->banner) }}" class="hero-slide active" alt="{{ $bannerTitle }}">
+    </div>
+  @else
+    <div class="hero-slides">
+      <img src="{{ asset('images/hero_image.jpeg') }}" class="hero-slide active" alt="Career banner">
+    </div>
+  @endif
 
-  <div class="hero-vignette" aria-hidden="true"></div>
+  @if (empty($careerPage->banner_video))
+    <div class="hero-vignette" aria-hidden="true"></div>
+  @endif
 
   <div class="hero-content">
     <div class="hero-inner">
       <p class="eyebrow">Join Our Team</p>
-      <h1>Careers at Energy Inspection Services</h1>
-      <p class="lede">Build your career with a team that keeps critical oil and gas equipment safe, reliable and ready for work.</p>
+      <h1>{{ $bannerTitle }}</h1>
+      @if (!empty($bannerDesc))
+        <p class="lede">{{ $bannerDesc }}</p>
+      @endif
     </div>
   </div>
 </section>
 
 {{-- ===== Intro ===== --}}
+@php
+  $careerTitle = $careerPage->career_title ?? 'Work where precision and safety matter';
+  $careerDesc  = (string) ($careerPage->career_description
+      ?? 'Energy Inspection Services Ltd welcomes qualified inspectors, technicians and support staff who take pride in careful, standards-driven work. Browse the current openings below, read the details of each role and send us your CV online.');
+
+  // Works for both kinds of admin field: formatted text is cleaned to safe tags,
+  // plain text is escaped and keeps its line breaks.
+  $careerDescHtml = $careerDesc !== strip_tags($careerDesc)
+      ? \App\Models\Career::cleanHtml($careerDesc)
+      : nl2br(e($careerDesc));
+@endphp
+
 <section class="career-intro">
   <div class="career-intro-inner">
 
     <div class="career-intro-left reveal reveal-left">
       <p class="career-intro-eyebrow">Careers</p>
-      <h2 class="career-intro-heading">Work where precision and safety matter</h2>
+      <h2 class="career-intro-heading">{{ $careerTitle }}</h2>
     </div>
 
     <div class="career-intro-divider" aria-hidden="true"></div>
 
     <div class="career-intro-right reveal reveal-right">
-      <p class="career-intro-desc">
-        Energy Inspection Services Ltd welcomes qualified inspectors, technicians and support staff who take pride in careful, standards-driven work. Browse the current openings below, read the details of each role and send us your CV online.
-      </p>
+      <div class="career-intro-desc">{!! $careerDescHtml !!}</div>   {{-- was a <p> with fixed text --}}
     </div>
 
   </div>

@@ -7,7 +7,7 @@ use App\Models\Career;
 use App\Models\CareerEnquiry;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-
+use App\Models\CareerPage; 
 /**
  * Public Career page of the website:
  * lists the careers added under Admin > Career and receives the "Apply Now" form.
@@ -15,19 +15,13 @@ use Illuminate\Support\Facades\Mail;
 class CareerPageController extends Controller
 {
     /** GET /career */
-    public function index()
+     public function index()
     {
-        $careers = Career::query()->latest('id')->get();
+        $careers    = Career::query()->latest('id')->get();
+        $careerPage = CareerPage::first();      // NEW: the record from Admin > Career > Banner
 
-        // options of the "Select Location" dropdown: every location used by a career
-        $locations = $careers->pluck('location')
-            ->map(fn ($location) => trim((string) $location))
-            ->filter()
-            ->unique()
-            ->sort()
-            ->values();
-
-        return view('web.career', compact('careers', 'locations'));
+        // $locations removed: the Location dropdown is a fixed list now
+        return view('web.career', compact('careers', 'careerPage'));
     }
 
     /** POST /career/apply */

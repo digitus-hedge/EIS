@@ -1510,7 +1510,7 @@
         @foreach (($stat->items ?? []) as $index => $item)
           <div class="stats-item reveal reveal-delay-{{ min($index, 3) }}">
             <div class="stats-icon-line"></div>
-            <p class="stats-value" data-count-to="{{ preg_replace('/[^0-9]/', '', $item['value']) }}" data-count-suffix="{{ preg_replace('/[0-9]/', '', $item['value']) }}">{{ $item['value'] }}</p>
+           <p class="stats-value">{{ $item['value'] }}</p>
             <p class="stats-label">{{ $item['label'] }}</p>
           </div>
         @endforeach
