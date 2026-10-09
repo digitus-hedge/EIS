@@ -529,7 +529,7 @@
   position:relative;
   background:#ffffff;
   font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  padding:80px 60px 100px;
+  padding:80px 60px 80px;
 }
 
 .services *{ box-sizing:border-box; }
@@ -558,21 +558,24 @@
 }
 
 .services-photo{
+  position:relative;
   width:100%;
-  height:350px;
-  aspect-ratio: 4 / 3;
+  height:460px;                 /* was 350px */
   border-radius:24px;
   overflow:hidden;
-  margin-bottom:18px;
+  margin-bottom:0;              /* was 18px */
   background-color:#e8e8e8;
+  box-shadow:0 18px 36px rgba(0,0,0,0.12);
   transition:box-shadow 0.4s ease;
 }
 
 .services-photo-img{
+  position:absolute;
+  inset:0;
   width:100%;
   height:100%;
-  border-radius:24px;    /* was 64px — now matches parent exactly */
-  object-fit:fill;
+  object-fit:cover;             /* was fill, which caused the stretch */
+  object-position:center;
   display:block;
   transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);
 }
@@ -582,37 +585,31 @@
 }
 .services-inner{
   display:flex;
-  align-items:flex-start;
+  align-items:stretch;          /* was flex-start */
   gap:70px;
-  height:calc(100vh - 80px);   
+  max-width:1600px;
+  margin:0 auto;
+  /* removed: height:calc(100vh - 80px) */
 }
 
 .services-left{
   flex:1 1 0;
   min-width:0;
-  max-height:calc(100vh - 80px);
-  overflow-y:auto;
-  overflow-x:hidden;
-  scrollbar-width:none;
-  -ms-overflow-style:none;
-  background:transparent;
+  display:flex;
+  flex-direction:column;
+  /* removed: max-height, overflow-y, scrollbar rules */
+}
+
+.services-right{
+  flex:1 1 0;
+  min-width:0;
+  /* removed: max-width:50%, max-height, overflow-y, scrollbar rules */
 }
 
 .services-left::-webkit-scrollbar{
   display:none;
   width:0;
   height:0;
-}
-
-.services-right{
-  flex:1 1 0;
-  min-width:0;
-  max-width:50%;
-  max-height:calc(100vh - 80px);
-  overflow-y:auto;
-  overflow-x:hidden;
-  scrollbar-width:none;
-  -ms-overflow-style:none;
 }
 
 .services-right::-webkit-scrollbar{
@@ -655,13 +652,14 @@
   border-radius:20px;
   overflow:hidden;
   margin-bottom:18px;
+  background:#eef0f3;
   transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);
 }
 
 .service-photo-img{
   width:100%;
   height:100%;
-  object-fit:fill;
+  object-fit:cover;
   display:block;
 }
 
@@ -872,6 +870,15 @@
   }
   .services-photo{
     height:300px;
+  }
+}
+
+@media (min-width: 1025px){
+  .services-photo{
+    flex:1 1 auto;
+    height:auto;
+    min-height:460px;
+    max-height:680px;
   }
 }
 .trusted{
