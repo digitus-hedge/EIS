@@ -56,6 +56,7 @@
                         <th>Email</th>
                         <th>Phone</th>
                         <th>Apply For</th>
+                        <th>Resume / CV</th>
                         <th>Received</th>
                     </tr>
                 </thead>
@@ -67,6 +68,25 @@
                         <td><a class="contact" href="mailto:{{ $enquiry->email }}">{{ $enquiry->email }}</a></td>
                         <td class="nowrap"><a class="contact" href="tel:{{ preg_replace('/[^0-9+]/', '', $enquiry->phone) }}">{{ $enquiry->phone }}</a></td>
                         <td><span class="tag">{{ $enquiry->apply_for ?: '—' }}</span></td>
+                        <td>
+                            @if ($enquiry->cv)
+                                @php
+                                    // Opens through the admin route (works for files kept on the private disk).
+                                    // If that route has not been added yet, fall back to the public storage link.
+                                    $cvUrl = \Illuminate\Support\Facades\Route::has('admin.career.enquiries.cv')
+                                        ? route('admin.career.enquiries.cv', $enquiry->id)
+                                        : \Illuminate\Support\Facades\Storage::url($enquiry->cv);
+                                    $cvType = strtolower(pathinfo($enquiry->cv, PATHINFO_EXTENSION));
+                                @endphp
+                                <a class="cv-link" href="{{ $cvUrl }}" target="_blank" rel="noopener" title="Open the resume / CV">
+                                    <i class="bi {{ $cvType === 'pdf' ? 'bi-file-earmark-pdf' : 'bi-file-earmark-word' }}"></i>
+                                    View
+                                    @if ($cvType)<span class="cv-type">{{ strtoupper($cvType) }}</span>@endif
+                                </a>
+                            @else
+                                —
+                            @endif
+                        </td>
                         <td class="nowrap">{{ $enquiry->created_at?->format('d M Y, h:i A') ?? '—' }}</td>
                     </tr>
                     @empty
@@ -185,6 +205,14 @@
 
     a.contact{ color: var(--ink,#171B2C); text-decoration:none; }
     a.contact:hover{ color: var(--orange,#EF7B2E); text-decoration:underline; }
+    .cv-link{
+        display:inline-flex; align-items:center; gap:6px; padding:6px 11px; border-radius:8px; white-space:nowrap;
+        background: var(--orange-tint-strong,#FFE9D8); color: var(--orange-deep,#DA6A20);
+        font-size:12.5px; font-weight:600; text-decoration:none; transition:background .15s;
+    }
+    .cv-link:hover{ background:#FFDDBB; }
+    .cv-link i{ font-size:14px; }
+    .cv-type{ font-size:10px; font-weight:700; letter-spacing:.04em; padding:2px 6px; border-radius:5px; background:#fff; color: var(--muted,#667085); }
     .tag{
         display:inline-block; padding:4px 10px; border-radius:99px; font-size:12px; font-weight:600;
         background: var(--orange-tint-strong,#FFE9D8); color: var(--orange-deep,#DA6A20);
@@ -224,7 +252,7 @@
 
     @media (max-width:760px){
         .table-wrap{ overflow-x:auto; }
-        .table-wrap table{ min-width:720px; }
+        .table-wrap table{ min-width:860px; }
     }
 </style>
 
