@@ -560,6 +560,37 @@ $homeOpen = (request()->routeIs('admin.home') || request()->routeIs('admin.home.
                 </ul>
             </div>
 
+
+
+              {{-- Career submenu --}}
+              {{-- Career submenu --}}
+            @php
+            $careerOpen = request()->routeIs('admin.career') || request()->routeIs('admin.career.*');
+            @endphp
+            <div class="nav-group {{ $careerOpen ? 'expanded' : '' }}">
+                <a class="nav-item" onclick="toggleSub(this)">
+                    <i class="bi bi-person-workspace nav-ico"></i>
+                    Career
+                    <i class="bi bi-chevron-right chev"></i>
+                </a>
+                <ul class="submenu">
+                    <li>
+                        <a class="nav-item {{ request()->routeIs('admin.career', 'admin.career.create', 'admin.career.edit') ? 'active' : '' }}"
+                            href="{{ route('admin.career') }}">
+                            <i class="bi bi-list-ul nav-ico"></i> Career List
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-item {{ request()->routeIs('admin.career.enquiries*') ? 'active' : '' }}"
+                            href="{{ route('admin.career.enquiries') }}">
+                            <i class="bi bi-chat-left-text nav-ico"></i> Career Enquiries
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+
+
             {{-- Contact submenu --}}
           @php
     $contactOpen = request()->routeIs('admin.contact') || request()->routeIs('admin.contact.*') || request()->routeIs('admin.home.enquiries*');

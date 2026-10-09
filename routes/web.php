@@ -19,7 +19,8 @@ use App\Http\Controllers\Admin\ContactController;
 use App\Http\Controllers\ContactPageController;
 use App\Http\Controllers\Admin\CertificateController;
 use App\Http\Controllers\EnquiryController;
-
+use App\Http\Controllers\Admin\CareerController;
+use App\Http\Controllers\Admin\CareerEnquiryController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -64,7 +65,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('home/services/{service}', [ServiceController::class, 'destroy'])->name('home.services.destroy');
 
 
-        
+
 
         Route::get('home/clients', [ClientSectionController::class, 'index'])->name('home.clients');
         Route::post('home/clients', [ClientSectionController::class, 'store'])->name('home.clients.store');
@@ -87,9 +88,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('regional-footprint', [AboutController::class, 'regionalFootprint'])->name('about.regional-footprint');
         Route::post('regional-footprint', [AboutController::class, 'storeRegionalLocation'])->name('about.regional-footprint.store');
-       
+
         Route::post('regional-footprint/{location}/offices', [AboutController::class, 'storeRegionalOffice'])->name('about.regional-footprint.offices.store');
-       Route::put('regional-footprint/offices/{office}', [AboutController::class, 'updateRegionalOffice'])->name('about.regional-footprint.offices.update');
+        Route::put('regional-footprint/offices/{office}', [AboutController::class, 'updateRegionalOffice'])->name('about.regional-footprint.offices.update');
         Route::delete('regional-footprint/{location}', [AboutController::class, 'destroyRegionalLocation'])->name('about.regional-footprint.destroy');
         Route::delete('regional-footprint/offices/{office}', [AboutController::class, 'destroyRegionalOffice'])->name('about.regional-footprint.offices.destroy');
 
@@ -103,21 +104,30 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('service/our-service', [ServicePageController::class, 'ourService'])->name('service.our-service');
         Route::post('service/our-service', [ServicePageController::class, 'storeOurService'])->name('service.our-service.store');
-    
+
         Route::get('/contact', [ContactController::class, 'edit'])->name('contact.edit');
         Route::put('/contact', [ContactController::class, 'update'])->name('contact.update');
 
 
-         Route::get('home/enquiries', [EnquiryController::class, 'index'])->name('home.enquiries');
+        Route::get('home/enquiries', [EnquiryController::class, 'index'])->name('home.enquiries');
         Route::get('home/enquiries/{enquiry}', [EnquiryController::class, 'show'])->name('home.enquiries.show');
         Route::delete('home/enquiries/{enquiry}', [EnquiryController::class, 'destroy'])->name('home.enquiries.destroy');
-        
+
 
         Route::get('about/certificates', [CertificateController::class, 'index'])->name('about.certificates');
         Route::post('about/certificates', [CertificateController::class, 'store'])->name('about.certificates.store');
         Route::put('about/certificates/{certificate}', [CertificateController::class, 'update'])->name('about.certificates.update');
         Route::delete('about/certificates/{certificate}', [CertificateController::class, 'destroy'])->name('about.certificates.destroy');
 
-    });
 
+        //    Careers Page
+        Route::get('career/enquiries', [CareerEnquiryController::class, 'index'])->name('career.enquiries');   // NEW: Career > Career Enquiries
+
+        Route::get('career', [CareerController::class, 'index'])->name('career');                              // Career > Career List
+        Route::get('career/create', [CareerController::class, 'create'])->name('career.create');               // "Add Career" button
+        Route::post('career', [CareerController::class, 'store'])->name('career.store');
+        Route::get('career/{career}/edit', [CareerController::class, 'edit'])->name('career.edit');
+        Route::put('career/{career}', [CareerController::class, 'update'])->name('career.update');
+        Route::delete('career/{career}', [CareerController::class, 'destroy'])->name('career.destroy');
+    });
 });
