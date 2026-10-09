@@ -560,10 +560,10 @@
 .services-photo{
   position:relative;
   width:100%;
-  height:460px;                 /* was 350px */
+  height:500px;                 /* was 350px */
   border-radius:24px;
   overflow:hidden;
-  margin-bottom:0;              /* was 18px */
+  margin-bottom:18px;              /* was 18px */
   background-color:#e8e8e8;
   box-shadow:0 18px 36px rgba(0,0,0,0.12);
   transition:box-shadow 0.4s ease;
@@ -585,25 +585,31 @@
 }
 .services-inner{
   display:flex;
-  align-items:stretch;          /* was flex-start */
+  align-items:flex-start;
   gap:70px;
-  max-width:1600px;
-  margin:0 auto;
-  /* removed: height:calc(100vh - 80px) */
+  height:calc(100vh - 80px);
 }
 
 .services-left{
   flex:1 1 0;
   min-width:0;
-  display:flex;
-  flex-direction:column;
-  /* removed: max-height, overflow-y, scrollbar rules */
+  max-height:calc(100vh - 80px);
+  overflow-y:auto;
+  overflow-x:hidden;
+  scrollbar-width:none;
+  -ms-overflow-style:none;
+  background:transparent;
 }
 
 .services-right{
   flex:1 1 0;
   min-width:0;
-  /* removed: max-width:50%, max-height, overflow-y, scrollbar rules */
+  max-width:50%;
+  max-height:calc(100vh - 80px);
+  overflow-y:auto;
+  overflow-x:hidden;
+  scrollbar-width:none;
+  -ms-overflow-style:none;
 }
 
 .services-left::-webkit-scrollbar{
@@ -873,14 +879,6 @@
   }
 }
 
-@media (min-width: 1025px){
-  .services-photo{
-    flex:1 1 auto;
-    height:auto;
-    min-height:460px;
-    max-height:680px;
-  }
-}
 .trusted{
   position:relative;
   background:linear-gradient(135deg, var(--orange) 0%, #f0893f 100%);
