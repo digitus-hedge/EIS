@@ -564,9 +564,8 @@
   border-radius:24px;
   overflow:hidden;
   margin-bottom:18px;              /* was 18px */
-  background-color:#e8e8e8;
-  box-shadow:0 18px 36px rgba(0,0,0,0.12);
-  transition:box-shadow 0.4s ease;
+   background-color:transparent;
+  
 }
 
 .services-photo-img{

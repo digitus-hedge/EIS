@@ -6,13 +6,23 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * One application sent from the Career page of the website:
- * name, email, phone, nationality, the career applied for, a CV file and a message.
- * The CV is kept on the private "local" disk; only a logged-in admin can download it.
+ * name, email, phone, the career applied for, nationality, location,
+ * an optional message and the uploaded CV.
  * Shown (view only) under Admin > Career > Career Enquiries.
  */
 class CareerEnquiry extends Model
 {
-    protected $fillable = ['name', 'email', 'phone', 'nationality', 'career_id', 'apply_for', 'cv', 'message'];
+    protected $fillable = [
+        'name',
+        'email',
+        'phone',
+        'career_id',
+        'apply_for',
+        'nationality',
+        'location',
+        'message',
+        'cv',          // path on the public disk, e.g. career-cvs/xxxxxxxx.pdf
+    ];
 
     public function career()
     {

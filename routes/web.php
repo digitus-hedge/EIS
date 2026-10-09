@@ -22,6 +22,7 @@ use App\Http\Controllers\EnquiryController;
 use App\Http\Controllers\Admin\CareerController;
 use App\Http\Controllers\Admin\CareerEnquiryController;
 use App\Http\Controllers\Admin\CareerBannerController;
+use App\Http\Controllers\CareerPageController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -36,6 +37,13 @@ Route::get('/service/{slug}', [ServiceDetailController::class, 'show'])->name('s
 
 Route::get('/contact', [ContactPageController::class, 'index'])->name('contact');
 Route::post('/enquiry', [EnquiryController::class, 'store'])->name('enquiry.store');
+
+//career page
+Route::get('/career', [CareerPageController::class, 'index'])->name('career');
+Route::post('/career/apply', [CareerPageController::class, 'store'])
+    ->middleware('throttle:5,1')          // max 5 applications per minute per visitor
+    ->name('career.apply');
+
 
 Route::prefix('admin')->name('admin.')->group(function () {
 

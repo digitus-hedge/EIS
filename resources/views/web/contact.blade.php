@@ -945,6 +945,27 @@
 .leaflet-popup-tip{
     box-shadow:none;
 }
+/* ===== Large desktop (1367px and up): same content width as the home page ===== */
+@media (min-width: 1367px){
+    .get-in-touch-inner,
+    .find-us-inner,
+    .find-us-map-wrap,
+    .enquiry-inner{
+        max-width:1480px;         /* enquiry was max-width:none */
+    }
+}
+
+/* ===== Extra-large screens (1920px and up) ===== */
+@media (min-width: 1920px){
+    .get-in-touch-inner,
+    .find-us-inner,
+    .find-us-map-wrap,
+    .enquiry-inner{
+        max-width:1640px;
+    }
+    #contactMap{ height:640px; }
+    .enquiry-card{ padding:56px 64px; }
+}
 </style>
 
 <section class="hero @if(!empty($contact->banner_video)) has-video @endif">

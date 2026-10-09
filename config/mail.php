@@ -115,4 +115,16 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Career applications
+    |--------------------------------------------------------------------------
+    |
+    | The owner's address that receives each application sent from the
+    | Career page. If it is empty, the "from" address above is used.
+    |
+    */
+
+    'career_to' => env('CAREER_MAIL_TO'),      // NEW
+
 ];

@@ -1378,7 +1378,7 @@ body.cert-lightbox-open .cert-nav{
   <div class="certifications-inner">
     <div class="certifications-top reveal reveal-left">
       <p class="certifications-eyebrow">Accreditations</p>
-      <h2 class="certifications-heading">EIS Accredited Certifications</h2>
+      <h2 class="certifications-heading">EIS Accredited Certifications and Licenses</h2>
     </div>
 
     <div class="cert-carousel reveal reveal-delay-1">
