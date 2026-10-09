@@ -367,7 +367,7 @@
   flex:1;
   min-width:0;
   text-align:center;
-  padding:20px 20px 24px;
+  padding:18px 14px 20px;
   background:rgba(255,255,255,0.97);
   backdrop-filter:blur(6px);
   border-radius:28px;
@@ -395,12 +395,13 @@
 .stats-item:hover .stats-icon-line{ transform:scaleX(1); opacity:1; }
 
 .stats-value{
-  font-size:44px;
-  font-weight:800;
+  font-size:clamp(22px, 2.1vw, 30px);   /* was 44px */
+  font-weight:700;                      /* was 800 */
   color:var(--navy);
-  line-height:1;
-  margin:0 0 14px;
-  letter-spacing:-0.5px;
+  line-height:1.15;                     /* was 1 */
+  margin:0 0 10px;                      /* was 0 0 14px */
+  letter-spacing:-0.3px;                /* was -0.5px */
+  white-space:nowrap;                   /* NEW: keeps "DS-1 /NS2" on one line */
 }
 
 .stats-label{
@@ -456,8 +457,8 @@
 @media (max-width: 1024px){
   .stats{ padding:70px 40px; }
   .stats-row{ gap:18px; }
-  .stats-item{ padding:32px 16px 28px; }
-  .stats-value{ font-size:36px; }
+.stats-item{ padding:22px 12px 22px; }   /* was 32px 16px 28px */
+.stats-value{ font-size:20px; } 
 }
 
 /* ===== Small tablet — wrap to 2 columns ===== */
@@ -466,6 +467,7 @@
   .stats-row{ flex-wrap:wrap; row-gap:18px; }
   .stats-item{ flex:0 0 calc(50% - 9px); }
   .stats-heading{ margin-bottom:36px; }
+  .stats-value{ font-size:28px; }
 }
 /* ===== Phones — auto-sliding carousel (matches services carousel) ===== */
 @media (max-width: 600px){
@@ -473,7 +475,7 @@
   .stats-inner{ padding:0; }
   .stats-heading{ margin-bottom:30px; padding:0 24px; }
   .stats-eyebrow{ padding:0 24px; }
-
+  .stats-value{ font-size:28px; }
   .stats-row-wrap{
     position:relative;
     width:100%;
@@ -521,8 +523,8 @@
   .stats-dots{ display:flex; padding:0 24px; }
 }
 @media (max-width: 380px){
-  .stats-item{ flex:0 0 100% !important; padding:28px 16px 24px; }
-  .stats-value{ font-size:32px; }
+  .stats-item{ flex:0 0 100% !important; padding:22px 16px 20px; }   /* was 28px 16px 24px */
+  .stats-value{ font-size:26px; }                                    /* was 32px */
 }
 
 .services{
@@ -531,7 +533,7 @@
   font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   padding:80px 60px 80px;
 }
-
+/* was 32px */
 .services *{ box-sizing:border-box; }
 
 .services-eyebrow{
