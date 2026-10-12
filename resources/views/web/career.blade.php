@@ -178,67 +178,51 @@
 /* ===== Intro ===== */
 .career-intro{
   position:relative;
-  background:#ffffff;
+  background:#f3f3f3;
   font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  padding:90px 60px 80px;
+  padding:70px 90px 80px;
 }
 
 .career-intro *{ box-sizing:border-box; }
 
 .career-intro-inner{
-  display:flex;
-  align-items:flex-start;
-  gap:64px;
+  max-width:1240px;
   margin:0 auto;
-}
-
-.career-intro-left{
-  flex:0 0 50%;
-  max-width:50%;
 }
 
 .career-intro-eyebrow{
   color:var(--orange);
   font-weight:700;
-  font-size:22px;
-  margin:0 0 16px;
+  font-size:15px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  margin:0 0 18px;
 }
 
 .career-intro-heading{
-  font-size:clamp(28px, 3.6vw, 52px);
-  line-height:1.22;
-  font-weight:600;
+  font-size:clamp(26px, 4.2vw, 48px);
+  line-height:1.1;
+  font-weight:700;
   color:#111111;
-  margin:0;
-}
-
-.career-intro-divider{
-  flex:0 0 1px;
-  align-self:stretch;
-  background:linear-gradient(to bottom, transparent, #d8d8d8 12%, #d8d8d8 88%, transparent);
-}
-
-.career-intro-right{
-  flex:1;
-  min-width:0;
-  padding-top:6px;
+  margin:0 0 36px;
+  letter-spacing:-0.5px;
 }
 
 .career-intro-desc{
-  font-size:19px;
-  line-height:1.7;
-  color:#111111;
+  font-size:17px;
+  line-height:1.75;
+  color: #2b2b2b;
   margin:0;
-  max-width:640px;
+  max-width:none;
 }
-.career-intro-desc p{ margin:0 0 14px; }
+.career-intro-desc p{ margin:0 0 18px; }
 .career-intro-desc ul,
-.career-intro-desc ol{ margin:0 0 14px; padding-left:22px; }
+.career-intro-desc ol{ margin:0 0 18px; padding-left:22px; }
 .career-intro-desc > :last-child{ margin-bottom:0; }
 /* ===== Openings ===== */
 .openings{
   position:relative;
-  background:#faf8f5;
+  background: #faf8f5;
   font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   padding:90px 60px 110px;
   scroll-margin-top:90px;
@@ -827,37 +811,30 @@ html.career-lock{ overflow:hidden; }
 
 /* ===== Responsive ===== */
 @media (max-width: 1024px){
-  .career-intro{ padding:64px 40px 60px; }
-  .career-intro-inner{ gap:44px; }
+  .career-intro{ padding:60px 40px 60px; }
   .openings{ padding:70px 40px 90px; }
 }
 
 @media (max-width: 900px){
-  .career-intro{ padding:56px 24px 52px; }
-  .career-intro-inner{
-    flex-direction:column;
-    gap:28px;
-  }
-  .career-intro-left,
-  .career-intro-right{
-    flex:none;
-    max-width:none;
-    width:100%;
-  }
-  .career-intro-divider{
-    flex:none;
-    align-self:auto;
-    width:100%;
-    height:1px;
-    background:linear-gradient(to right, transparent, #d8d8d8 8%, #d8d8d8 92%, transparent);
-  }
-  .career-intro-right{ padding-top:0; }
-  .career-intro-desc{ max-width:none; font-size:17px; }
+  .career-intro{ padding:52px 24px 52px; }
+  .career-intro-heading{ margin-bottom:28px; }
+  .career-intro-desc{ font-size:16px; }
 
   .openings{ padding:60px 24px 76px; }
   .opening-head{ padding:0 24px; gap:18px; }
   .opening-toggle{ gap:18px; padding:24px 0; }
   .opening-body{ padding:20px 24px 28px; }
+}
+
+@media (max-width: 600px){
+  .career-intro{ padding:42px 18px 44px; }
+  .career-intro-eyebrow{ font-size:13px; letter-spacing:1.6px; margin-bottom:14px; }
+  .career-intro-heading{ margin-bottom:22px; }
+  .career-intro-desc{ font-size:15.5px; line-height:1.7; }
+
+  .openings{ padding:48px 16px 60px; }
+  .openings-top{ margin-bottom:32px; }
+  .openings-heading{ font-size:clamp(24px, 6.5vw, 30px); }
 }
 
 @media (max-width: 700px){
@@ -887,16 +864,6 @@ html.career-lock{ overflow:hidden; }
   .cf-field select,
   .cf-field textarea{ font-size:16px; }   /* stops iPhone zooming into the field */
   .cf-submit{ width:100%; }
-}
-
-@media (max-width: 600px){
-  .career-intro{ padding:46px 18px 44px; }
-  .career-intro-eyebrow{ font-size:16px; margin-bottom:12px; }
-  .career-intro-heading{ font-size:clamp(24px, 6.5vw, 30px); }
-  .career-intro-desc{ font-size:15.5px; }
-  .openings{ padding:48px 16px 60px; }
-  .openings-top{ margin-bottom:32px; }
-  .openings-heading{ font-size:clamp(24px, 6.5vw, 30px); }
 }
 
 @media (max-width: 380px){
@@ -986,15 +953,13 @@ html.career-lock{ overflow:hidden; }
 <section class="career-intro">
   <div class="career-intro-inner">
 
-    <div class="career-intro-left reveal reveal-left">
+    <div class="reveal">
       <p class="career-intro-eyebrow">Careers</p>
       <h2 class="career-intro-heading">{{ $careerTitle }}</h2>
     </div>
 
-    <div class="career-intro-divider" aria-hidden="true"></div>
-
-    <div class="career-intro-right reveal reveal-right">
-      <div class="career-intro-desc">{!! $careerDescHtml !!}</div>   {{-- was a <p> with fixed text --}}
+    <div class="reveal reveal-right">
+      <div class="career-intro-desc">{!! $careerDescHtml !!}</div>
     </div>
 
   </div>
