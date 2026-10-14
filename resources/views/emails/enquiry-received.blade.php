@@ -47,10 +47,6 @@
                                     <td style="padding:14px 20px; border-bottom:1px solid #eeeeee; font-size:14.5px; color:#1B2A2E;">{{ $enquiry->address ?: '—' }}</td>
                                 </tr>
                                 <tr>
-                                    <td style="padding:14px 20px; border-bottom:1px solid #eeeeee; font-size:12.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.4px; color:#C4611E;">Town/City</td>
-                                    <td style="padding:14px 20px; border-bottom:1px solid #eeeeee; font-size:14.5px; color:#1B2A2E;">{{ $enquiry->town_city ?: '—' }}</td>
-                                </tr>
-                                <tr>
                                     <td style="padding:14px 20px; border-bottom:1px solid #eeeeee; font-size:12.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.4px; color:#C4611E;">Country</td>
                                     <td style="padding:14px 20px; border-bottom:1px solid #eeeeee; font-size:14.5px; color:#1B2A2E;">{{ $enquiry->country ?: '—' }}</td>
                                 </tr>

@@ -124,7 +124,7 @@ return [
     | Career page. If it is empty, the "from" address above is used.
     |
     */
-
-    'career_to' => env('CAREER_MAIL_TO'),      // NEW
-
+    'contact_to' => env('MAIL_CONTACT_TO'),
+    'career_to' => env('MAIL_CAREERS_TO'),      // NEW
+    'career_cc' => env('MAIL_CAREERS_CC'),
 ];

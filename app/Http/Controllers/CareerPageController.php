@@ -5,9 +5,10 @@ namespace App\Http\Controllers;
 use App\Mail\CareerEnquiryMail;
 use App\Models\Career;
 use App\Models\CareerEnquiry;
+use App\Models\CareerPage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-use App\Models\CareerPage; 
+
 /**
  * Public Career page of the website:
  * lists the careers added under Admin > Career and receives the "Apply Now" form.
@@ -15,10 +16,10 @@ use App\Models\CareerPage;
 class CareerPageController extends Controller
 {
     /** GET /career */
-     public function index()
+    public function index()
     {
         $careers    = Career::query()->latest('id')->get();
-        $careerPage = CareerPage::first();      // NEW: the record from Admin > Career > Banner
+        $careerPage = CareerPage::first();      // the record from Admin > Career > Banner
 
         // $locations removed: the Location dropdown is a fixed list now
         return view('web.career', compact('careers', 'careerPage'));
@@ -75,8 +76,16 @@ class CareerPageController extends Controller
         // it is written to the log and the visitor still sees the success message.
         try {
             $to = config('mail.career_to') ?: config('mail.from.address');
+            $cc = config('mail.career_cc');
+
             if ($to) {
-                Mail::to($to)->send(new CareerEnquiryMail($enquiry));
+                $mail = Mail::to($to);
+
+                if (! empty($cc)) {
+                    $mail->cc($cc);
+                }
+
+                $mail->send(new CareerEnquiryMail($enquiry));
             }
         } catch (\Throwable $e) {
             report($e);

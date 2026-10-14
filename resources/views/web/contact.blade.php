@@ -1194,15 +1194,15 @@ document.addEventListener('DOMContentLoaded', function () {
     const mapEl = document.getElementById('contactMap');
     if (!mapEl) return;
 
-    const lat = {{ (float) ($contact->latitude ?: 36.2682541) }};
-    const lng = {{ (float) ($contact->longitude ?: 43.9647897) }};
+    const lat = {{ (float) ($contact?->latitude ?: 36.2682541) }};
+    const lng = {{ (float) ($contact?->longitude ?: 43.9647897) }};
 
     const map = L.map('contactMap', { scrollWheelZoom: false }).setView([lat, lng], 16);
 
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    maxZoom: 19,
-}).addTo(map);
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 19,
+    }).addTo(map);
 
     const pinIcon = L.divIcon({
         className: '',
@@ -1216,62 +1216,58 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     L.marker([lat, lng], { icon: pinIcon })
-    .addTo(map)
-    .bindPopup('<strong>Energy Inspection Services Ltd</strong><br>Erbil, Iraq')
-    .openPopup();
+        .addTo(map)
+        .bindPopup('<strong>Energy Inspection Services Ltd</strong><br>Erbil, Iraq')
+        .openPopup();
 
-    // Re-check size in case the map rendered while its container was hidden/animating
     setTimeout(function () { map.invalidateSize(); }, 300);
 });
 
-    document.addEventListener('DOMContentLoaded', function () {
-        const revealEls = document.querySelectorAll('.reveal');
-        if ('IntersectionObserver' in window && revealEls.length) {
-            const revealObserver = new IntersectionObserver(function (entries, obs) {
-                entries.forEach(function (entry) {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('in-view');
-                        obs.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.2, rootMargin: '0px 0px -60px 0px' });
+document.addEventListener('DOMContentLoaded', function () {
+    const revealEls = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window && revealEls.length) {
+        const revealObserver = new IntersectionObserver(function (entries, obs) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('in-view');
+                    obs.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.2, rootMargin: '0px 0px -60px 0px' });
 
-            revealEls.forEach(function (el) { revealObserver.observe(el); });
-        } else {
-            revealEls.forEach(function (el) { el.classList.add('in-view'); });
+        revealEls.forEach(function (el) { revealObserver.observe(el); });
+    } else {
+        revealEls.forEach(function (el) { el.classList.add('in-view'); });
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const phoneInput = document.getElementById('phoneNumber');
+    if (!phoneInput) return;
+
+    phoneInput.addEventListener('input', function () {
+        const cleaned = phoneInput.value.replace(/[^0-9+\-\s()]/g, '');
+        if (cleaned !== phoneInput.value) {
+            phoneInput.value = cleaned;
         }
     });
 
-    document.addEventListener('DOMContentLoaded', function () {
-        const phoneInput = document.getElementById('phoneNumber');
-        if (!phoneInput) return;
-
-        // Allow only digits, spaces, +, -, ( ) while typing
-        phoneInput.addEventListener('input', function () {
-            const cleaned = phoneInput.value.replace(/[^0-9+\-\s()]/g, '');
-            if (cleaned !== phoneInput.value) {
-                phoneInput.value = cleaned;
-            }
-        });
-
-        // Also block obviously invalid keys as they're pressed (belt-and-suspenders)
-        phoneInput.addEventListener('keypress', function (e) {
-            const allowedChar = /[0-9+\-\s()]/;
-            if (!allowedChar.test(e.key)) {
-                e.preventDefault();
-            }
-        });
-
-        // Handle pasted text too (e.g. pasting "+964 (750) 123-abc4")
-        phoneInput.addEventListener('paste', function (e) {
+    phoneInput.addEventListener('keypress', function (e) {
+        const allowedChar = /[0-9+\-\s()]/;
+        if (!allowedChar.test(e.key)) {
             e.preventDefault();
-            const pasted = (e.clipboardData || window.clipboardData).getData('text');
-            const cleaned = pasted.replace(/[^0-9+\-\s()]/g, '');
-            const start = phoneInput.selectionStart;
-            const end = phoneInput.selectionEnd;
-            phoneInput.value = phoneInput.value.slice(0, start) + cleaned + phoneInput.value.slice(end);
-            phoneInput.dispatchEvent(new Event('input'));
-        });
+        }
     });
+
+    phoneInput.addEventListener('paste', function (e) {
+        e.preventDefault();
+        const pasted = (e.clipboardData || window.clipboardData).getData('text');
+        const cleaned = pasted.replace(/[^0-9+\-\s()]/g, '');
+        const start = phoneInput.selectionStart;
+        const end = phoneInput.selectionEnd;
+        phoneInput.value = phoneInput.value.slice(0, start) + cleaned + phoneInput.value.slice(end);
+        phoneInput.dispatchEvent(new Event('input'));
+    });
+});
 </script>
 @endsection
