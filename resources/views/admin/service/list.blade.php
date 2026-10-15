@@ -94,9 +94,6 @@
                         </td>
                         <td class="title-cell">
                             {{ $service->banner_title }}
-                            <!-- @if ($service->show_on_home ?? false)
-                                <span class="status-pill">Live</span>
-                            @endif -->
                         </td>
                         <td class="desc-cell">
                             <div class="desc-clamp">{{ Str::limit($service->banner_description, 90) ?: '—' }}</div>
@@ -120,7 +117,6 @@
                         </td>
                     </tr>
                     @empty
-                        {{-- Empty state rendered outside <tbody> below --}}
                     @endforelse
                 </tbody>
             </table>
@@ -134,10 +130,57 @@
         </div>
         @else
         <div class="table-footer">
-            <span class="count">Showing {{ $services->firstItem() ?? 0 }} to {{ $services->lastItem() ?? 0 }} of {{ $services->total() }} entries</span>
-            <div class="pagination-wrap">
-                {{ $services->links('pagination::bootstrap-5') }}
-            </div>
+            <span class="count">
+                Showing {{ $services->firstItem() ?? 0 }} to {{ $services->lastItem() ?? 0 }} of {{ $services->total() }} entries
+            </span>
+
+            {{-- ============================================================
+                 CUSTOM PAGINATION — only the buttons we actually want
+               ============================================================ --}}
+            @if ($services->hasPages())
+            <nav class="pagination-wrap" aria-label="Pagination">
+                <ul class="pagination">
+                    {{-- Previous --}}
+                    @if ($services->onFirstPage())
+                        <li class="disabled" aria-disabled="true">
+                            <span><i class="bi bi-chevron-left"></i></span>
+                        </li>
+                    @else
+                        <li>
+                            <a href="{{ $services->previousPageUrl() }}" rel="prev" aria-label="Previous">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+                    @endif
+
+                    {{-- Numbered page links --}}
+                    @foreach ($services->getUrlRange(1, $services->lastPage()) as $page => $url)
+                        @if ($page == $services->currentPage())
+                            <li class="active" aria-current="page">
+                                <span>{{ $page }}</span>
+                            </li>
+                        @else
+                            <li>
+                                <a href="{{ $url }}">{{ $page }}</a>
+                            </li>
+                        @endif
+                    @endforeach
+
+                    {{-- Next --}}
+                    @if ($services->hasMorePages())
+                        <li>
+                            <a href="{{ $services->nextPageUrl() }}" rel="next" aria-label="Next">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                    @else
+                        <li class="disabled" aria-disabled="true">
+                            <span><i class="bi bi-chevron-right"></i></span>
+                        </li>
+                    @endif
+                </ul>
+            </nav>
+            @endif
         </div>
         @endif
     </div>
@@ -170,8 +213,6 @@
     });
 
     // ===== Auto-search: submit the search form automatically as the user types =====
-    // Debounced so it doesn't fire a request on every single keystroke — waits until
-    // typing pauses briefly, which keeps it feeling instant without hammering the server.
     (function () {
         const searchInput = document.getElementById('searchInput');
         const searchForm = document.getElementById('searchForm');
@@ -187,7 +228,6 @@
             }, DEBOUNCE_MS);
         });
 
-        // Pressing Enter should search immediately, not wait for the debounce delay.
         searchInput.addEventListener('keydown', function (e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
@@ -262,12 +302,6 @@
     .thumb-wrap img{ width:100%; height:100%; object-fit:cover; display:block; }
 
     .title-cell{ font-size:13.5px; font-weight:700; color: var(--ink,#171B2C); }
-    .status-pill{
-        display:inline-flex; align-items:center; gap:5px; font-size:10.5px; font-weight:700;
-        padding:3px 9px; border-radius:99px; text-transform:uppercase; letter-spacing:.02em;
-        background: var(--green-tint,#E9F8EF); color: var(--green,#12875A); margin-left:8px; vertical-align:middle;
-    }
-    .status-pill::before{ content:""; width:5px; height:5px; border-radius:99px; background: var(--green,#12875A); display:inline-block; }
 
     .desc-cell{ font-size:13px; color: var(--muted,#667085); max-width:420px; }
     .desc-clamp{ display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; line-height:1.45; }
@@ -289,21 +323,62 @@
     }
     .table-footer .count{ font-size:12.5px; color: var(--faint,#9AA1B2); }
 
-    /* Best-effort styling for Laravel's default pagination view output */
-    .pagination-wrap nav{ display:flex; }
-    .pagination-wrap ul{ list-style:none; display:flex; gap:6px; margin:0; padding:0; }
-    .pagination-wrap li{ display:flex; }
-    .pagination-wrap li > a, .pagination-wrap li > span{
-        min-width:32px; height:32px; padding:0 8px; border-radius:8px; border:1px solid var(--input-border,#DBDFEA);
-        background:#fff; font-size:12.5px; font-weight:600; color: var(--muted,#667085); cursor:pointer;
-        display:flex; align-items:center; justify-content:center; text-decoration:none;
+    /* ============================================================
+       PAGINATION — custom buttons only
+       ============================================================ */
+    .pagination-wrap{
+        display:flex;
+    }
+    .pagination-wrap .pagination{
+        list-style:none;
+        display:flex;
+        gap:6px;
+        margin:0;
+        padding:0;
+        align-items:center;
+        flex-wrap:wrap;
+    }
+    .pagination-wrap .pagination li{
+        display:flex;
+    }
+    .pagination-wrap .pagination li > a,
+    .pagination-wrap .pagination li > span{
+        min-width:34px;
+        height:34px;
+        padding:0 10px;
+        border-radius:8px;
+        border:1px solid var(--input-border,#DBDFEA);
+        background:#fff;
+        font-size:13px;
+        font-weight:600;
+        color: var(--muted,#667085);
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        text-decoration:none;
+        line-height:1;
         transition:background .15s, color .15s, border-color .15s;
+        box-sizing:border-box;
     }
-    .pagination-wrap li > a:hover{ border-color: var(--orange,#EF7B2E); color: var(--orange,#EF7B2E); }
-    .pagination-wrap li.active span, .pagination-wrap li > span[aria-current]{
-        background: linear-gradient(135deg, #0F1526, #1D2439); border-color: transparent; color:#fff;
+    .pagination-wrap .pagination li > a:hover{
+        border-color: var(--orange,#EF7B2E);
+        color: var(--orange,#EF7B2E);
+        background:#fff;
     }
-    .pagination-wrap li.disabled span{ opacity:.4; cursor:not-allowed; }
+    .pagination-wrap .pagination li.active > span{
+        background: linear-gradient(135deg, #0F1526, #1D2439);
+        border-color: transparent;
+        color:#fff;
+    }
+    .pagination-wrap .pagination li.disabled > span{
+        opacity:.4;
+        cursor:not-allowed;
+        background:#FBFBFD;
+    }
+    .pagination-wrap .pagination li i{
+        font-size:12px;
+        line-height:1;
+    }
 
     .empty-state{ padding:64px 24px; text-align:center; }
     .empty-state .ico{

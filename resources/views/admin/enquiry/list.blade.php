@@ -58,7 +58,6 @@
             @forelse ($enquiries as $enquiry)
             <tr class="{{ !$enquiry->is_read ? 'unread-row' : '' }}">
                 <td class="title-cell">
-                 
                     {{ $enquiry->full_name }}
                 </td>
                 <td>{{ $enquiry->email }}</td>
@@ -99,7 +98,54 @@
     <div class="pagination-info">
         Showing {{ $enquiries->firstItem() ?? 0 }} to {{ $enquiries->lastItem() ?? 0 }} of {{ $enquiries->total() }} entries
     </div>
-    {{ $enquiries->links() }}
+
+    {{-- ============================================================
+         CUSTOM PAGINATION — only the buttons we actually want
+       ============================================================ --}}
+    @if ($enquiries->hasPages())
+    <nav class="pagination-wrap" aria-label="Pagination">
+        <ul class="pagination">
+            {{-- Previous --}}
+            @if ($enquiries->onFirstPage())
+                <li class="disabled" aria-disabled="true">
+                    <span><i class="bi bi-chevron-left"></i></span>
+                </li>
+            @else
+                <li>
+                    <a href="{{ $enquiries->previousPageUrl() }}" rel="prev" aria-label="Previous">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+            @endif
+
+            {{-- Numbered page links --}}
+            @foreach ($enquiries->getUrlRange(1, $enquiries->lastPage()) as $page => $url)
+                @if ($page == $enquiries->currentPage())
+                    <li class="active" aria-current="page">
+                        <span>{{ $page }}</span>
+                    </li>
+                @else
+                    <li>
+                        <a href="{{ $url }}">{{ $page }}</a>
+                    </li>
+                @endif
+            @endforeach
+
+            {{-- Next --}}
+            @if ($enquiries->hasMorePages())
+                <li>
+                    <a href="{{ $enquiries->nextPageUrl() }}" rel="next" aria-label="Next">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+            @else
+                <li class="disabled" aria-disabled="true">
+                    <span><i class="bi bi-chevron-right"></i></span>
+                </li>
+            @endif
+        </ul>
+    </nav>
+    @endif
 </div>
 
 <style>
@@ -140,6 +186,63 @@
     .empty-row i { font-size: 36px; display: block; margin-bottom: 10px; }
     .pagination-wrapper { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
     .pagination-info { font-size: 13px; color: #888; }
+
+    /* ============================================================
+       PAGINATION — custom buttons only
+       ============================================================ */
+    .pagination-wrap{
+        display:flex;
+    }
+    .pagination-wrap .pagination{
+        list-style:none;
+        display:flex;
+        gap:6px;
+        margin:0;
+        padding:0;
+        align-items:center;
+        flex-wrap:wrap;
+    }
+    .pagination-wrap .pagination li{
+        display:flex;
+    }
+    .pagination-wrap .pagination li > a,
+    .pagination-wrap .pagination li > span{
+        min-width:34px;
+        height:34px;
+        padding:0 10px;
+        border-radius:8px;
+        border:1px solid #DBDFEA;
+        background:#fff;
+        font-size:13px;
+        font-weight:600;
+        color:#667085;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        text-decoration:none;
+        line-height:1;
+        transition:background .15s, color .15s, border-color .15s;
+        box-sizing:border-box;
+    }
+    .pagination-wrap .pagination li > a:hover{
+        border-color:#3b3b58;
+        color:#3b3b58;
+        background:#fff;
+    }
+    .pagination-wrap .pagination li.active > span{
+        background: linear-gradient(135deg, #0F1526, #1D2439);
+        border-color: transparent;
+        color:#fff;
+    }
+    .pagination-wrap .pagination li.disabled > span{
+        opacity:.4;
+        cursor:not-allowed;
+        background:#FBFBFD;
+    }
+    .pagination-wrap .pagination li i{
+        font-size:12px;
+        line-height:1;
+    }
 </style>
 
 <script>
